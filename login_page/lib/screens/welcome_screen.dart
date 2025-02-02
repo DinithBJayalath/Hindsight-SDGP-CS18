@@ -7,66 +7,45 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return login_style(
-        child: Column(
-      children: [
-        Flexible(
-            flex: 8,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: 40.0,
-              ),
+    return Scaffold(
+      body: login_style(
+        child: Stack(
+          children: [
+            // "Hindsight" Text Positioned at Exact Location
+            Positioned(
+              top: 200, // Adjust this value to move the text up/down
+              left: 0,
+              right: 0,
               child: Center(
                 child: RichText(
                   textAlign: TextAlign.center,
                   text: const TextSpan(
-                    children: [
-                      TextSpan(
-                          text: 'Hindsight !\n',
-                          style: TextStyle(
-                            color: Color.fromARGB(231, 0, 0, 0),
-                            fontSize: 45.0,
-                            fontWeight: FontWeight.w600,
-                          )),
-                      TextSpan(
-                        text: '\n Enter to login / logout',
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                    text: 'Hindsight',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 172, 112, 255),
+                      fontSize: 48.0,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-            )),
-        const Flexible(
-          flex: 0,
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: Row(
-              children: [
-                Expanded(
-                  child: welcome_button(
-                    buttonText: 'Sign in',
-                    color: Colors.transparent,
-                    textColor: Colors.white,
-                  ),
-                ),
-                Expanded(
-                  child: welcome_button(
-                    buttonText: 'Sign Up',
-                    color: Colors.white,
-                    textColor: Colors.black,
-                  ),
-                ),
-              ],
             ),
-          ),
-        )
-      ],
-    ));
+
+            // "Log in" Button Positioned at Exact Location
+            const Positioned(
+              top: 650,
+              bottom: 100, // Adjust this value to move the button up/down
+              left: 50, // Adjust horizontal position
+              right: 50, // Adjust horizontal position
+              child: welcome_button(
+                buttonText: 'Log in',
+                color: Color.fromARGB(255, 172, 112, 255),
+                textColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
