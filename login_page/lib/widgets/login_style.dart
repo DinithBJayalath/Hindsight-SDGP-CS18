@@ -6,18 +6,10 @@ class login_style extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          Image.asset(
-            'assets/images/welcome_background.jpg',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          Container(
+            color: const Color.fromARGB(255, 248, 228, 252),
           ),
           SafeArea(
             child: child!,
