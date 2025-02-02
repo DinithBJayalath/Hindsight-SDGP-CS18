@@ -12,12 +12,10 @@ class welcome_button extends StatelessWidget {
     return GestureDetector(
         onTap: () {}, // route to pages
         child: Container(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
             color: color!,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(50),
-            ),
+            borderRadius: BorderRadius.circular(50),
           ),
           child: Text(
             buttonText!,
