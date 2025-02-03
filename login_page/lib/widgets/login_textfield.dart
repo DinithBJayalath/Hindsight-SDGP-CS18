@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoginTextField extends StatelessWidget {
-  final controller;
+  final TextEditingController controller;
   final String hintText;
   final bool obscureText;
   const LoginTextField({
@@ -18,21 +18,26 @@ class LoginTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
+        textAlign: TextAlign.left,
         decoration: InputDecoration(
-            enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              //borderRadius: const BorderRadius.circular(50),
-              borderSide: BorderSide(color: Color.fromARGB(255, 245, 237, 255)),
-            ),
-            fillColor: Colors.white,
-            filled: true,
-            hintText: hintText,
-            hintStyle: const TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 16)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide:
+                const BorderSide(color: Color.fromARGB(255, 245, 237, 255)),
+          ),
+          fillColor: Colors.white,
+          filled: true,
+          hintText: hintText,
+          hintStyle: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }
