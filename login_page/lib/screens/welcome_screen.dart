@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_page/screens/login_screen.dart';
 import 'package:login_page/widgets/login_style.dart';
 import 'package:login_page/widgets/welcome_button.dart';
 
@@ -41,6 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                 buttonText: 'Log in',
                 color: Color.fromARGB(255, 172, 112, 255),
                 textColor: Colors.white,
+                onTap: login_screen(),
               ),
             ),
           ],
