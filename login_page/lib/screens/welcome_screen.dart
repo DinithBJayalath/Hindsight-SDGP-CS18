@@ -34,7 +34,7 @@ class WelcomeScreen extends StatelessWidget {
 
             // "Log in" Button Positioned at Exact Location
             const Positioned(
-              top: 650,
+              top: 600,
               bottom: 100, // Adjust this value to move the button up/down
               left: 50, // Adjust horizontal position
               right: 50, // Adjust horizontal position
