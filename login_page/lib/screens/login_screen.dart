@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:login_page/widgets/login_style.dart';
 import 'package:login_page/widgets/login_textfield.dart';
+import 'package:login_page/widgets/logo_tile.dart';
 import 'package:login_page/widgets/welcome_button.dart';
 
 class login_screen extends StatefulWidget {
@@ -19,45 +20,123 @@ class _LoginScreenState extends State<login_screen> {
     return login_style(
       child: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 50),
-            const Icon(
-              Icons.favorite,
-              size: 100,
-            ),
-            const SizedBox(height: 50),
+            // const SizedBox(height: 50),
+            // const Icon(
+            //   Icons.favorite,
+            //   size: 100,
+            // ),
+            const SizedBox(height: 100),
             const Text(
               'Sign in',
               style: TextStyle(
                   color: Color.fromARGB(255, 172, 112, 255),
-                  fontSize: 36,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 50),
             LoginTextField(
               controller: usernameController,
               hintText: 'Email',
               obscureText: false,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 20),
             LoginTextField(
               controller: passwordController,
               hintText: 'Password',
               obscureText: true,
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
+
+            // sign in button
             const welcome_button(
               buttonText: 'Sign in',
               color: Color.fromARGB(255, 172, 112, 255),
               textColor: Colors.white,
               onTap: Placeholder(),
             ),
+
+            const SizedBox(
+              height: 40,
+            ),
+
+            // add divider
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Color.fromARGB(255, 137, 137, 137),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      ' Or ',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 137, 137, 137),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Color.fromARGB(255, 137, 137, 137),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(
+              height: 20,
+            ),
+            //Google ,Twitter , Apple buttons
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //Google button
+                LogoTile(imagePath: 'assets/images/google.png'),
+
+                SizedBox(
+                  width: 60,
+                ),
+
+                //apple button
+                LogoTile(imagePath: 'assets/images/apple.png'),
+
+                SizedBox(
+                  width: 60,
+                ),
+
+                //Twitter button
+                LogoTile(imagePath: 'assets/images/x.png'),
+              ],
+            ),
+
+            // Don’t have an account? Sign up
+            const SizedBox(
+              height: 40,
+            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Don’t have an account? '),
+                SizedBox(
+                  width: 4,
+                ),
+                Text(
+                  'Sign up',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 172, 112, 255),
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),
