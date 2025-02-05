@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:login_page/screens/login_screen.dart';
 
 class welcome_button extends StatelessWidget {
   const welcome_button(

@@ -9,9 +9,9 @@ class LogoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Image.asset(imagePath),
+    return SizedBox(
       height: 48,
+      child: Image.asset(imagePath),
     );
   }
 }

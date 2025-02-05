@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_page/widgets/login_style.dart';
 import 'package:login_page/widgets/login_textfield.dart';
 import 'package:login_page/widgets/logo_tile.dart';
-import 'package:login_page/widgets/welcome_button.dart';
+import 'package:login_page/widgets/signin_botton.dart';
 
 class login_screen extends StatefulWidget {
   const login_screen({super.key});
@@ -14,6 +14,8 @@ class login_screen extends StatefulWidget {
 class _LoginScreenState extends State<login_screen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+
+  void signUserIn() {}
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class _LoginScreenState extends State<login_screen> {
             //   Icons.favorite,
             //   size: 100,
             // ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 90),
             const Text(
               'Sign in',
               style: TextStyle(
@@ -41,20 +43,17 @@ class _LoginScreenState extends State<login_screen> {
               hintText: 'Email',
               obscureText: false,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 15),
             LoginTextField(
               controller: passwordController,
               hintText: 'Password',
               obscureText: true,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
 
             // sign in button
-            const welcome_button(
-              buttonText: 'Sign in',
-              color: Color.fromARGB(255, 172, 112, 255),
-              textColor: Colors.white,
-              onTap: Placeholder(),
+            SigninButton(
+              onTap: signUserIn,
             ),
 
             const SizedBox(
