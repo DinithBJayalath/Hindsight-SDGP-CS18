@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from algorithms import algorithms_pb2 as algorithms_dot_algorithms__pb2
+import algorithms_pb2 as algorithms_dot_algorithms__pb2
 
 GRPC_GENERATED_VERSION = '1.70.0'
 GRPC_VERSION = grpc.__version__
@@ -36,8 +36,8 @@ class JournalAnalyzerStub(object):
         """
         self.analyze = channel.unary_unary(
                 '/algorithms.JournalAnalyzer/analyze',
-                request_serializer=algorithms_dot_algorithms__pb2.query.SerializeToString,
-                response_deserializer=algorithms_dot_algorithms__pb2.response.FromString,
+                request_serializer=algorithms_dot_algorithms__pb2.AnalyzeRequest.SerializeToString,
+                response_deserializer=algorithms_dot_algorithms__pb2.AnalyzeResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,8 +55,8 @@ def add_JournalAnalyzerServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'analyze': grpc.unary_unary_rpc_method_handler(
                     servicer.analyze,
-                    request_deserializer=algorithms_dot_algorithms__pb2.query.FromString,
-                    response_serializer=algorithms_dot_algorithms__pb2.response.SerializeToString,
+                    request_deserializer=algorithms_dot_algorithms__pb2.AnalyzeRequest.FromString,
+                    response_serializer=algorithms_dot_algorithms__pb2.AnalyzeResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -84,8 +84,8 @@ class JournalAnalyzer(object):
             request,
             target,
             '/algorithms.JournalAnalyzer/analyze',
-            algorithms_dot_algorithms__pb2.query.SerializeToString,
-            algorithms_dot_algorithms__pb2.response.FromString,
+            algorithms_dot_algorithms__pb2.AnalyzeRequest.SerializeToString,
+            algorithms_dot_algorithms__pb2.AnalyzeResponse.FromString,
             options,
             channel_credentials,
             insecure,

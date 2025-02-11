@@ -13,18 +13,10 @@ from langchain_core.runnables import RunnablePassthrough
 DIMENSIONS = 384
 INDEX = faiss.IndexFlatL2(DIMENSIONS)
 EMB_MODEL = SentenceTransformer('sentence-transformers/all-miniLM-L6-v2')
-with open('tests/Emotions_dataset.json') as file:
+with open('./algorithms/LLM_Analysis/tests/Emotions_dataset.json') as file:
     data = json.load(file)
-embeddings = np.array(entry['embeddings'] for entry in data)
+embeddings = np.array([entry['embedding'] for entry in data])
 INDEX.add(embeddings)
-
-def retrieve_similar(query, k=10):
-    '''This function takes the user's query and returns the top k journal entries that are similar to the query.'''
-    query_embedding = np.array(EMB_MODEL.encode(query)).reshape(1, -1)
-    _, indices = INDEX.search(query_embedding, k)
-    results = [{'journal_entry':data[i]['journal_entry'], 'emotion': data[i]['emotion'], 'sentiment_score':data[i]['sentiment_score']} for i in indices[0]]
-    return results
-
 # List of emotions to choose from
 EMOTIONAL_STATES = ["Hopeful",
                      "Anxious", 
@@ -41,6 +33,13 @@ and the mapped emotions from the given context.
 context: {context}
 journal entry: {journal_entry}
 Note: only choose from the following emotions and only output that emotion: {EMOTIONAL_STATES}"""
+
+def retrieve_similar(query, k=10):
+    '''This function takes the user's query and returns the top k journal entries that are similar to the query.'''
+    query_embedding = np.array(EMB_MODEL.encode(query)).reshape(1, -1)
+    _, indices = INDEX.search(query_embedding, k)
+    results = [{'journal_entry':data[i]['journal_entry'], 'emotion': data[i]['emotion'], 'sentiment_score':data[i]['sentiment_score']} for i in indices[0]]
+    return results
 
 def Generate(query, context):
     '''This function takes the user's query and context and generates the most relevant emotion.'''
