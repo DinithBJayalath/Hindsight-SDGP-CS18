@@ -21,20 +21,17 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 
 _sym_db = _symbol_database.Default()
 
-
-
-
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61lgorithms/algorithms.proto\x12\nalgorithms\"\x16\n\x05query\x12\r\n\x05query\x18\x01 \x01(\t\"\x1c\n\x08response\x12\x10\n\x08response\x18\x01 \x01(\t2E\n\x0fJournalAnalyzer\x12\x32\n\x07\x61nalyze\x12\x11.algorithms.query\x1a\x14.algorithms.responseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1b\x61lgorithms/algorithms.proto\x12\nalgorithms\"\x1f\n\x0e\x41nalyzeRequest\x12\r\n\x05query\x18\x01 \x01(\t\"#\n\x0f\x41nalyzeResponse\x12\x10\n\x08response\x18\x01 \x01(\t2U\n\x0fJournalAnalyzer\x12\x42\n\x07\x61nalyze\x12\x1a.algorithms.AnalyzeRequest\x1a\x1b.algorithms.AnalyzeResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'algorithms.algorithms_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_QUERY']._serialized_start=43
-  _globals['_QUERY']._serialized_end=65
-  _globals['_RESPONSE']._serialized_start=67
-  _globals['_RESPONSE']._serialized_end=95
-  _globals['_JOURNALANALYZER']._serialized_start=97
-  _globals['_JOURNALANALYZER']._serialized_end=166
+  _globals['_ANALYZEREQUEST']._serialized_start=43
+  _globals['_ANALYZEREQUEST']._serialized_end=74
+  _globals['_ANALYZERESPONSE']._serialized_start=76
+  _globals['_ANALYZERESPONSE']._serialized_end=111
+  _globals['_JOURNALANALYZER']._serialized_start=113
+  _globals['_JOURNALANALYZER']._serialized_end=198
 # @@protoc_insertion_point(module_scope)
