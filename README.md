@@ -25,3 +25,6 @@ this directory is the flutter project for the frontend of the application.
 ## proto
 This directory contains the proto files for the gRPC services.  
 make a new sub-directory for your feature and make the proto files related to that service in that sub-directory.  
+
+## resources
+This directory contains the SSL certificates used in the node server and the python server
