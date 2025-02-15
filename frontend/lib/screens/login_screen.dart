@@ -3,23 +3,30 @@ import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
 import 'package:frontend/widgets/logo_tile.dart';
 import 'package:frontend/widgets/signin_botton.dart';
+import 'package:frontend/services/auth_service.dart';
 
-class login_screen extends StatefulWidget {
-  const login_screen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<login_screen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<login_screen> {
+class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void signUserIn() {}
+  // Instantiate AuthService
+
+  final AuthService _authService = AuthService();
+  void signUserIn() async {
+    await _authService
+        .login(); // Call login method when user taps the sign-in button
+  }
 
   @override
   Widget build(BuildContext context) {
-    return login_style(
+    return LoginStyle(
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,7 +60,7 @@ class _LoginScreenState extends State<login_screen> {
 
             // sign in button
             SigninButton(
-              onTap: signUserIn,
+              onTap: signUserIn, // Trigger login on tap
             ),
 
             const SizedBox(

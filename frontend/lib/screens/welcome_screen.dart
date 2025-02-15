@@ -9,7 +9,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: login_style(
+      body: LoginStyle(
         child: Stack(
           children: [
             // "Hindsight" Text Positioned at Exact Location
@@ -38,11 +38,11 @@ class WelcomeScreen extends StatelessWidget {
               bottom: 100, // Adjust this value to move the button up/down
               left: 50, // Adjust horizontal position
               right: 50, // Adjust horizontal position
-              child: welcome_button(
+              child: WellcomeButton(
                 buttonText: 'Log in',
                 color: Color.fromARGB(255, 172, 112, 255),
                 textColor: Colors.white,
-                onTap: login_screen(),
+                onTap: LoginScreen(),
               ),
             ),
           ],
