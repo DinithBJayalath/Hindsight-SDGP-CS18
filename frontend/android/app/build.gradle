@@ -54,7 +54,6 @@ android {
         manifestPlaceholders = [
             auth0Domain: "dev-hindsight.uk.auth0.com",
             auth0Scheme: "com.frontend",
-            applicationName: "com.frontend.Hindsight" // ADD THIS LINE
         ]
     }
     
