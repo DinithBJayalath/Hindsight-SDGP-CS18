@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 
 class WellcomeButton extends StatelessWidget {
-  const WellcomeButton(
-      {super.key, this.buttonText, this.color, this.textColor, this.onTap});
+  const WellcomeButton({super.key, this.buttonText, this.onTap});
   final String? buttonText;
-  final Color? color;
-  final Color? textColor;
   final Widget? onTap;
 
   @override
@@ -22,16 +19,16 @@ class WellcomeButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
-            color: color!,
+            color: const Color.fromARGB(255, 140, 211, 255),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             buttonText!,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 25.0,
               fontWeight: FontWeight.bold,
-              color: textColor!,
+              color: Colors.black,
             ),
           ),
         ));

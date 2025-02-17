@@ -54,8 +54,6 @@ class WelcomeScreen extends StatelessWidget {
               right: 50, // Adjust horizontal position
               child: WellcomeButton(
                 buttonText: 'Log in',
-                color: Color.fromARGB(255, 140, 211, 255),
-                textColor: Colors.black,
                 onTap: LoginScreen(),
               ),
             ),
@@ -68,9 +66,6 @@ class WelcomeScreen extends StatelessWidget {
               right: 50,
               child: WellcomeButton(
                 buttonText: 'Sign Up',
-                color: Color.fromARGB(
-                    255, 140, 211, 255), // You can customize the color
-                textColor: Colors.black,
                 onTap: SignUpScreen(), // Navigate to the SignUpScreen
               ),
             ),

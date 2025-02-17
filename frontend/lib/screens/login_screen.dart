@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/forget_password_screen.dart';
 import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/signup_screen.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
 import 'package:frontend/widgets/logo_tile.dart';
@@ -60,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result != null) {
       PopupMessage.show(context, "Google Login successful", isSuccess: true);
       await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
       Map<String, dynamic> userInfo = {};
       if (result.containsKey('id_token')) {
         userInfo = Jwt.parseJwt(result['id_token']);
@@ -82,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result != null) {
       PopupMessage.show(context, "Apple Login successful", isSuccess: true);
       await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
       Map<String, dynamic> userInfo = {};
       if (result.containsKey('id_token')) {
         userInfo = Jwt.parseJwt(result['id_token']);
@@ -104,6 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (result != null) {
       PopupMessage.show(context, "Twitter Login successful", isSuccess: true);
       await Future.delayed(const Duration(milliseconds: 500));
+      if (!mounted) return;
       Map<String, dynamic> userInfo = {};
       if (result.containsKey('id_token')) {
         userInfo = Jwt.parseJwt(result['id_token']);
@@ -136,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const Text(
               'Login',
               style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0),
+                  color: Colors.black,
                   fontSize: 40,
                   fontWeight: FontWeight.bold),
             ),
@@ -146,18 +151,48 @@ class _LoginScreenState extends State<LoginScreen> {
               hintText: 'Email',
               obscureText: false,
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             LoginTextField(
               controller: passwordController,
               hintText: 'Password',
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             // Sign in button for username/password login
             SigninButton(
               onTap: signUserIn,
+              buttonText: 'Log In',
             ),
-            const SizedBox(height: 40),
+            // Left-aligned "Forgot password?" text
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 27.0,
+                    bottom: 5,
+                    top: 5), // Adjust this value as needed
+                child: GestureDetector(
+                  onTap: () {
+                    // Navigate to forgot password screen
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Forgot password?',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Color.fromARGB(159, 21, 18, 18),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
             // Divider
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
@@ -187,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             // Social login buttons row
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -211,18 +246,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
-            // Sign up prompt
-            const Row(
+            const SizedBox(height: 15),
+            // Sign up prompt: "Don't have an account? Sign up" with clickable, underlined sign-up text
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Don’t have an account? '),
-                SizedBox(width: 4),
-                Text(
-                  'Sign up',
+                const Text(
+                  'Don’t have an account? ',
                   style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(159, 21, 18, 18),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignUpScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Color.fromARGB(159, 21, 18, 18),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],

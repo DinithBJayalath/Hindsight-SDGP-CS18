@@ -99,139 +99,115 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: LoginStyle(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return LoginStyle(
+      child: SingleChildScrollView(
+        //padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 70),
+            const Text(
+              'Register',
+              style: TextStyle(
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 50),
+            LoginTextField(
+              controller: fullNameController,
+              hintText: 'Full Name',
+              obscureText: false,
+            ),
+            const SizedBox(height: 10),
+            LoginTextField(
+              controller: emailController,
+              hintText: 'Email',
+              obscureText: false,
+            ),
+            const SizedBox(height: 10),
+            LoginTextField(
+              controller: passwordController,
+              hintText: 'Password',
+              obscureText: true,
+            ),
+            const SizedBox(height: 10),
+            LoginTextField(
+              controller: confirmPasswordController,
+              hintText: 'Confirm Password',
+              obscureText: true,
+            ),
+            //const SizedBox(height: 5),
+            Row(
               children: [
-                const SizedBox(height: 50),
-                const Text(
-                  'Register',
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const SizedBox(width: 5),
+                Checkbox(
+                  value: agreedToTerms,
+                  onChanged: (value) {
+                    setState(() {
+                      agreedToTerms = value ?? false;
+                    });
+                  },
                 ),
-                const SizedBox(height: 30),
-                LoginTextField(
-                  controller: fullNameController,
-                  hintText: 'Full Name',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 15),
-                LoginTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 15),
-                LoginTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 15),
-                LoginTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: agreedToTerms,
-                      onChanged: (value) {
-                        setState(() {
-                          agreedToTerms = value ?? false;
-                        });
-                      },
-                    ),
-                    const Text('I agree with Terms & Conditions'),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SigninButton(
-                  onTap: signUpUser,
-                ),
-                const SizedBox(height: 30),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Color.fromARGB(255, 137, 137, 137),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          ' Or ',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 137, 137, 137),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 1,
-                          color: Color.fromARGB(255, 137, 137, 137),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _authService.loginWithGoogle(),
-                      child:
-                          const LogoTile(imagePath: 'assets/images/google.png'),
-                    ),
-                    const SizedBox(width: 40),
-                    GestureDetector(
-                      onTap: () => _authService.loginWithApple(),
-                      child:
-                          const LogoTile(imagePath: 'assets/images/apple.png'),
-                    ),
-                    const SizedBox(width: 40),
-                    GestureDetector(
-                      onTap: () => _authService.loginWithTwitter(),
-                      child: const LogoTile(imagePath: 'assets/images/x.png'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Already have an account? '),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        'Log in',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                const Text('I agree with Terms & Conditions'),
               ],
             ),
-          ),
+            const SizedBox(height: 20),
+            SigninButton(
+              onTap: signUpUser,
+              buttonText: 'Create Account',
+            ),
+            const SizedBox(height: 30),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Color.fromARGB(255, 137, 137, 137),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(
+                      ' Or ',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 137, 137, 137),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      thickness: 1,
+                      color: Color.fromARGB(255, 137, 137, 137),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _authService.loginWithGoogle(),
+                  child: const LogoTile(imagePath: 'assets/images/google.png'),
+                ),
+                const SizedBox(width: 60),
+                GestureDetector(
+                  onTap: () => _authService.loginWithApple(),
+                  child: const LogoTile(imagePath: 'assets/images/apple.png'),
+                ),
+                const SizedBox(width: 60),
+                GestureDetector(
+                  onTap: () => _authService.loginWithTwitter(),
+                  child: const LogoTile(imagePath: 'assets/images/x.png'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
