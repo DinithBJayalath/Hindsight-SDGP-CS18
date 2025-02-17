@@ -20,10 +20,10 @@ class WellcomeButton extends StatelessWidget {
           );
         }, // route to pages
         child: Container(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(10.0),
           decoration: BoxDecoration(
             color: color!,
-            borderRadius: BorderRadius.circular(50),
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             buttonText!,

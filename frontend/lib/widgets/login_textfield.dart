@@ -21,13 +21,14 @@ class LoginTextField extends StatelessWidget {
         textAlign: TextAlign.left,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+                const BorderSide(color: Color.fromARGB(255, 140, 211, 255)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(10),
             borderSide:
-                const BorderSide(color: Color.fromARGB(255, 245, 237, 255)),
+                const BorderSide(color: Color.fromARGB(255, 140, 211, 255)),
           ),
           fillColor: Colors.white,
           filled: true,

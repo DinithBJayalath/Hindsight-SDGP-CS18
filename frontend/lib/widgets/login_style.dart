@@ -7,14 +7,14 @@ class LoginStyle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 248, 228, 252),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         elevation: 0,
       ),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           Container(
-            color: const Color.fromARGB(255, 248, 228, 252),
+            color: Color.fromARGB(255, 255, 255, 255),
           ),
           SafeArea(
             child: child,

@@ -10,17 +10,17 @@ class SigninButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         margin: const EdgeInsets.symmetric(horizontal: 25),
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 172, 112, 255),
-          borderRadius: BorderRadius.circular(32),
+          color: const Color.fromARGB(255, 140, 211, 255),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: const Center(
           child: Text(
-            'Sign in',
+            'Login',
             style: TextStyle(
-              color: Colors.white,
+              color: Color.fromARGB(255, 0, 0, 0),
               fontWeight: FontWeight.bold,
               fontSize: 20,
             ),
