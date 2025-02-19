@@ -133,151 +133,157 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return LoginStyle(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 90),
-            const Text(
-              'Login',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 50),
-            LoginTextField(
-              controller: usernameController,
-              hintText: 'Email',
-              obscureText: false,
-            ),
-            const SizedBox(height: 10),
-            LoginTextField(
-              controller: passwordController,
-              hintText: 'Password',
-              obscureText: true,
-            ),
-            const SizedBox(height: 10),
-            // Sign in button for username/password login
-            SigninButton(
-              onTap: signUserIn,
-              buttonText: 'Log In',
-            ),
-            // Left-aligned "Forgot password?" text
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 27.0,
-                    bottom: 5,
-                    top: 5), // Adjust this value as needed
-                child: GestureDetector(
-                  onTap: () {
-                    // Navigate to forgot password screen
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordScreen(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    'Forgot password?',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Color.fromARGB(159, 21, 18, 18),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Divider
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Color.fromARGB(255, 137, 137, 137),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      ' Or ',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 137, 137, 137),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Color.fromARGB(255, 137, 137, 137),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            // Social login buttons row
-            Row(
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Google button
-                GestureDetector(
-                  onTap: loginWithGoogle,
-                  child: const LogoTile(imagePath: 'assets/images/google.png'),
-                ),
-                const SizedBox(width: 60),
-                // Apple button
-                GestureDetector(
-                  onTap: loginWithApple,
-                  child: const LogoTile(imagePath: 'assets/images/apple.png'),
-                ),
-                const SizedBox(width: 60),
-                // Twitter button
-                GestureDetector(
-                  onTap: loginWithTwitter,
-                  child: const LogoTile(imagePath: 'assets/images/x.png'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            // Sign up prompt: "Don't have an account? Sign up" with clickable, underlined sign-up text
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                const SizedBox(height: 90),
                 const Text(
-                  'Don’t have an account? ',
+                  'Login',
                   style: TextStyle(
-                    color: Color.fromARGB(159, 21, 18, 18),
-                  ),
+                      color: Colors.black,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignUpScreen(),
+                const SizedBox(height: 50),
+                LoginTextField(
+                  controller: usernameController,
+                  hintText: 'Email',
+                  obscureText: false,
+                ),
+                const SizedBox(height: 10),
+                LoginTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: true,
+                ),
+                const SizedBox(height: 10),
+                // Sign in button for username/password login
+                SigninButton(
+                  onTap: signUserIn,
+                  buttonText: 'Log In',
+                ),
+                // Left-aligned "Forgot password?" text
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 27.0,
+                        bottom: 5,
+                        top: 5), // Adjust this value as needed
+                    child: GestureDetector(
+                      onTap: () {
+                        // Navigate to forgot password screen
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ForgotPasswordScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Color.fromARGB(159, 21, 18, 18),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  },
-                  child: const Text(
-                    'Sign up',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Color.fromARGB(159, 21, 18, 18),
-                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+                const SizedBox(height: 30),
+                // Divider
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Color.fromARGB(255, 137, 137, 137),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          ' Or ',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 137, 137, 137),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                          color: Color.fromARGB(255, 137, 137, 137),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Social login buttons row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Google button
+                    GestureDetector(
+                      onTap: loginWithGoogle,
+                      child:
+                          const LogoTile(imagePath: 'assets/images/google.png'),
+                    ),
+                    const SizedBox(width: 60),
+                    // Apple button
+                    GestureDetector(
+                      onTap: loginWithApple,
+                      child:
+                          const LogoTile(imagePath: 'assets/images/apple.png'),
+                    ),
+                    const SizedBox(width: 60),
+                    // Twitter button
+                    GestureDetector(
+                      onTap: loginWithTwitter,
+                      child: const LogoTile(imagePath: 'assets/images/x.png'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                // Sign up prompt: "Don't have an account? Sign up" with clickable, underlined sign-up text
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Don’t have an account? ',
+                      style: TextStyle(
+                        color: Color.fromARGB(159, 21, 18, 18),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignUpScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Sign up',
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Color.fromARGB(159, 21, 18, 18),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
