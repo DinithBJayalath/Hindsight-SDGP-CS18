@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
+import { Link } from "react-scroll";
 // Temporary: Comment out image until we have one
 import { fadeIn, slideIn } from "../utils/animations";
 
@@ -28,13 +29,27 @@ const Hero = () => {
               well-being, and discover insights to improve your daily life.
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-              <button className="btn-primary dark:bg-dark-primary dark:hover:bg-dark-primary-dark flex items-center gap-2">
+              {/* Get Started Button - Scrolls to Features section */}
+              <Link
+                to="features"
+                smooth={true}
+                duration={500}
+                className="btn-primary dark:bg-dark-primary dark:hover:bg-dark-primary-dark flex items-center gap-2 cursor-pointer"
+              >
                 Get Started
                 <FiArrowRight />
-              </button>
-              <button className="btn-secondary dark:border-dark-primary dark:text-dark-primary dark:hover:bg-dark-primary/10">
+              </Link>
+
+              {/* Learn More Button - Scrolls to About section */}
+              <Link
+                to="features"
+                smooth={true}
+                duration={500}
+                offset={-100}
+                className="btn-secondary dark:border-dark-primary dark:text-dark-primary dark:hover:bg-dark-primary/10 cursor-pointer"
+              >
                 Learn More
-              </button>
+              </Link>
             </div>
           </motion.div>
 
@@ -42,15 +57,14 @@ const Hero = () => {
           <motion.div
             {...fadeIn}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative order-1 lg:order-2"
+            className="relative order-1 lg:order-2 flex justify-end pr-[10%]"
           >
             <div className="relative z-10">
-              {/* Temporary: Comment out image until we have one */}
-              {/* <img
-                src={mockupImage}
+              <img
+                src="/Pixel 9 Pro.png"
                 alt="HindSight App"
-                className="w-full max-w-[280px] sm:max-w-[320px] lg:max-w-md mx-auto"
-              /> */}
+                className="w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] drop-shadow-2xl animate-float"
+              />
             </div>
             {/* Decorative Background Elements */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 dark:from-dark-primary/20 dark:to-dark-secondary/20 blur-3xl -z-10" />
