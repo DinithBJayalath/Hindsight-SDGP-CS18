@@ -13,11 +13,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = [
-    { name: "Home", href: "#home" },
-    { name: "Features", href: "#features" },
-    { name: "Team", href: "#team" },
-    { name: "FAQ", href: "#faq" },
-    { name: "Contact", href: "#contact" },
+    { name: "Home", href: "home" },
+    { name: "Features", href: "features" },
+    { name: "Team", href: "team" },
+    { name: "FAQ", href: "faq" },
+    { name: "Contact", href: "contact" },
   ];
 
   const socialLinks = [
@@ -32,6 +32,11 @@ const Footer = () => {
       icon: FiLinkedin,
     },
     {
+      name: "Twitter",
+      href: "https://twitter.com/your-twitter",
+      icon: FiTwitter,
+    },
+    {
       name: "Email",
       href: "mailto:your@email.com",
       icon: FiMail,
@@ -39,13 +44,16 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-white dark:bg-gray-900 py-12 mt-20">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Logo and Description */}
+    <footer className="relative bg-white dark:bg-gray-900 pt-20 pb-6 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent dark:via-dark-primary/5" />
+
+      <div className="container relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
+          {/* Brand */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-primary dark:text-dark-primary">
-              HindSight
+            <h3 className="text-2xl font-bold">
+              <span className="gradient-text">Hind</span>
+              <span className="text-gray-900 dark:text-white">Sight</span>
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-xs">
               Your personal mental wellness companion. Track, reflect, and grow
@@ -61,21 +69,35 @@ const Footer = () => {
             <ul className="space-y-2">
               {footerLinks.map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
+                  <Link
+                    to={link.href}
+                    smooth={true}
+                    duration={500}
+                    className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors cursor-pointer"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+              Contact
+            </h4>
+            <ul className="space-y-2 text-gray-600 dark:text-gray-400">
+              <li>Colombo, Sri Lanka</li>
+              <li>+94 77 123 4567</li>
+              <li>support@hindsight.com</li>
             </ul>
           </div>
 
           {/* Social Links */}
           <div>
             <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-              Connect With Us
+              Follow Us
             </h4>
             <div className="flex space-x-4">
               {socialLinks.map((link) => {
@@ -86,10 +108,9 @@ const Footer = () => {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
-                    aria-label={link.name}
+                    className="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-primary/10 dark:hover:bg-dark-primary/10 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors flex items-center justify-center"
                   >
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5" />
                   </a>
                 );
               })}
@@ -97,9 +118,27 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-200 dark:border-gray-800 mt-12 pt-8 text-center text-gray-600 dark:text-gray-400">
-          <p>© {currentYear} HindSight. All rights reserved.</p>
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-200 dark:border-gray-800 pt-6 mt-12">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              © {currentYear} HindSight. All rights reserved.
+            </p>
+            <div className="flex space-x-6 text-sm text-gray-600 dark:text-gray-400">
+              <a
+                href="#"
+                className="hover:text-primary dark:hover:text-dark-primary transition-colors"
+              >
+                Privacy Policy
+              </a>
+              <a
+                href="#"
+                className="hover:text-primary dark:hover:text-dark-primary transition-colors"
+              >
+                Terms of Service
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

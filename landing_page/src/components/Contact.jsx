@@ -30,12 +30,15 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="section-bg section-bg-alternate py-20">
+    <section
+      id="contact"
+      className="section-bg section-bg-alternate section-padding"
+    >
       <div className="section-gradient" />
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container">
         <motion.div
           {...fadeInUp}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className="content-narrow text-center section-spacing"
         >
           <h2 className="text-3xl lg:text-4xl font-bold mb-4 dark:text-white">
             Get in Touch
@@ -46,7 +49,7 @@ const Contact = () => {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 content-wide">
           {/* Contact Form */}
           <motion.div
             variants={stagger}
@@ -55,8 +58,11 @@ const Contact = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <div className="card-bg-light rounded-xl p-8 shadow-lg">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+              {/* Add decorative gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent dark:from-dark-primary/5" />
+
+              <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
                 <div>
                   <label
                     htmlFor="name"
@@ -69,7 +75,12 @@ const Contact = () => {
                     id="name"
                     name="name"
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary"
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 
+                               border border-white/20 dark:border-gray-700/30
+                               text-gray-900 dark:text-white 
+                               placeholder-gray-500 dark:placeholder-gray-400
+                               focus:ring-2 focus:ring-primary/20 dark:focus:ring-dark-primary/20
+                               transition-all duration-300"
                     required
                   />
                 </div>
@@ -85,7 +96,12 @@ const Contact = () => {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
-                    className="w-full px-4 py-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary"
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 
+                               border border-white/20 dark:border-gray-700/30
+                               text-gray-900 dark:text-white 
+                               placeholder-gray-500 dark:placeholder-gray-400
+                               focus:ring-2 focus:ring-primary/20 dark:focus:ring-dark-primary/20
+                               transition-all duration-300"
                     required
                   />
                 </div>
@@ -101,7 +117,12 @@ const Contact = () => {
                     name="message"
                     rows={4}
                     placeholder="Enter your message"
-                    className="w-full px-4 py-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 
+                               border border-white/20 dark:border-gray-700/30
+                               text-gray-900 dark:text-white 
+                               placeholder-gray-500 dark:placeholder-gray-400
+                               focus:ring-2 focus:ring-primary/20 dark:focus:ring-dark-primary/20
+                               transition-all duration-300 resize-none"
                     required
                   ></textarea>
                 </div>
@@ -121,7 +142,7 @@ const Contact = () => {
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {contactInfo.map((info, index) => (
               <motion.a

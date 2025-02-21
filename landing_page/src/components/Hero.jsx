@@ -77,26 +77,88 @@ const Hero = () => {
           </motion.div>
 
           {/* App Mockup */}
-          <motion.div
-            {...fadeInRight}
-            className="relative order-1 lg:order-2 flex justify-end pr-[10%]"
-          >
-            <div className="relative z-10">
+          <motion.div className="relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="relative"
+            >
               <motion.img
-                {...fadeInUp}
                 src="/Pixel 9 Pro.png"
                 alt="HindSight App"
-                className="w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] drop-shadow-2xl animate-float"
+                className="w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[280px] drop-shadow-2xl"
               />
-            </div>
-            {/* Decorative Background Elements */}
-            <motion.div
-              {...fadeInUp}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 dark:from-dark-primary/20 dark:to-dark-secondary/20 blur-3xl -z-10"
-            />
+
+              {/* Modern Gradient Orbs */}
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 90, 0],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="absolute -top-20 -right-20 w-48 h-48 bg-gradient-to-r from-primary/50 to-secondary/50 rounded-full blur-3xl z-10"
+              />
+              <motion.div
+                animate={{
+                  scale: [1.1, 1, 1.1],
+                  rotate: [0, -90, 0],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: "linear",
+                  delay: 4,
+                }}
+                className="absolute -bottom-20 -left-20 w-48 h-48 bg-gradient-to-r from-secondary/50 to-primary/50 rounded-full blur-3xl z-10"
+              />
+
+              {/* Floating UI Elements */}
+              <motion.div
+                animate={{ y: [-8, 8, -8], x: [-5, 5, -5] }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute top-10 -right-10 w-20 h-20 bg-primary/20 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-primary/30 shadow-xl z-30"
+              />
+              <motion.div
+                animate={{ y: [8, -8, 8], x: [5, -5, 5] }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: 2.5,
+                }}
+                className="absolute bottom-20 -left-12 w-16 h-16 bg-secondary/20 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-secondary/30 shadow-xl z-30"
+              />
+
+              {/* Subtle Shine Effect */}
+              <motion.div
+                animate={{
+                  opacity: [0, 0.5, 0],
+                  rotateZ: [0, 360],
+                  scale: [0.8, 1.2, 0.8],
+                }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="absolute inset-0 bg-gradient-conic from-primary/0 via-primary/30 to-primary/0 z-20 rounded-[40px]"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </div>
+
+      {/* Background Effect */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary-rgb),0.2),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(107,169,217,0.1),transparent_50%)] z-0" />
     </section>
   );
 };

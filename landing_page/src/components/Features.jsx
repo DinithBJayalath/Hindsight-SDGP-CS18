@@ -50,50 +50,59 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="section-bg section-bg-alternate py-20">
+    <section
+      id="features"
+      className="section-bg section-bg-alternate section-padding"
+    >
       <div className="section-gradient" />
-      <div className="container mx-auto px-6">
-        <motion.div
-          {...fadeInUp}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4 dark:text-white">
-            Features That Empower Your Journey
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300">
-            Discover powerful tools designed to support your mental well-being
-            and personal growth journey
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={stagger}
-          initial="initial"
-          whileInView="animate"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              {...fadeInUp}
-              transition={{ delay: index * 0.1 }}
-              className="card-bg-light rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="w-12 h-12 bg-primary/10 dark:bg-dark-primary/10 rounded-lg flex items-center justify-center mb-6">
-                <span className="text-primary dark:text-dark-primary">
-                  {feature.icon}
-                </span>
-              </div>
-              <h3 className="text-xl font-semibold mb-4 dark:text-white">
-                {feature.title}
-              </h3>
+      <div className="container">
+        <div className="section-inner">
+          <div className="section-content">
+            <motion.div {...fadeInUp} className="section-header">
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4 dark:text-white">
+                Features That Empower Your Journey
+              </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                {feature.description}
+                Discover powerful tools designed to support your mental
+                well-being and personal growth journey
               </p>
             </motion.div>
-          ))}
-        </motion.div>
+
+            <motion.div
+              variants={stagger}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            >
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  {...fadeInUp}
+                  transition={{ delay: index * 0.1 }}
+                  className="glass-card rounded-2xl p-8 hover-lift group"
+                >
+                  <div
+                    className="w-12 h-12 bg-gradient-to-br from-primary/10 to-secondary/10 
+                                  dark:from-dark-primary/10 dark:to-dark-secondary/10 
+                                  rounded-xl flex items-center justify-center mb-6
+                                  group-hover:scale-110 transition-transform duration-300"
+                  >
+                    <span className="text-primary dark:text-dark-primary">
+                      {feature.icon}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-semibold mb-4 dark:text-white group-hover:gradient-text">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    {feature.description}
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
