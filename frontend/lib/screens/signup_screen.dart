@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/widgets/agreements_popup.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
 import 'package:frontend/widgets/logo_tile.dart';
@@ -25,6 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   final AuthService _authService = AuthService();
 
+  /// Handles sign-up via email/password.
   void signUpUser() async {
     if (!agreedToTerms) {
       if (mounted) {
@@ -67,27 +69,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
       PopupMessage.show(context, "Sign up successful", isSuccess: true);
       await Future.delayed(const Duration(milliseconds: 500));
 
-      Map<String, dynamic> userInfo = {};
-      if (result.containsKey('id_token')) {
-        userInfo = Jwt.parseJwt(result['id_token']);
-      }
+      // apply login
+      final loginResult = await _authService.login(email, password);
 
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(userInfo: userInfo),
-          ),
-        );
+      if (!mounted) return;
+      if (loginResult != null) {
+        // Decode the token to get user info
+        Map<String, dynamic> userInfo = {};
+        if (loginResult.containsKey('id_token')) {
+          userInfo = Jwt.parseJwt(loginResult['id_token']);
+        }
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(userInfo: userInfo),
+            ),
+          );
+        }
+      } else {
+        PopupMessage.show(context, "Login failed. Please try manually.",
+            isSuccess: false);
       }
     } else {
-      if (mounted) {
-        PopupMessage.show(
-          context,
-          "Sign up failed. Please try again.",
-          isSuccess: false,
-        );
-      }
+      PopupMessage.show(context, "Sign up failed. Please try again.",
+          isSuccess: false);
     }
   }
 
@@ -148,6 +155,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     setState(() {
                       agreedToTerms = value ?? false;
                     });
+                    // When the user ticks the box, show the agreements popup.
+                    if (agreedToTerms) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AgreementsPopup(
+                          onAccept: () {
+                            // User accepts the terms: simply close the dialog.
+                            Navigator.of(context).pop();
+                          },
+                          onDecline: () {
+                            // User declines the terms: reset the checkbox and close the dialog.
+                            setState(() {
+                              agreedToTerms = false;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      );
+                    }
                   },
                 ),
                 const Text('I agree with Terms & Conditions'),
