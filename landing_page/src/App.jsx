@@ -13,6 +13,10 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingScreen from "./components/LoadingScreen";
 import AppShowcase from "./components/AppShowcase";
+import emailjs from "@emailjs/browser";
+
+// Replace with your actual public key
+emailjs.init("yBE9NtQo_BddvpYha");
 
 function App() {
   const { isLoading, isDarkMode } = useApp();

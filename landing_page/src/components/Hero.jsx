@@ -125,7 +125,7 @@ const Hero = () => {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute top-10 -right-10 w-20 h-20 bg-primary/20 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-primary/30 shadow-xl z-30"
+                className="absolute top-10 -right-10 w-20 h-20 bg-primary/40 dark:bg-white/5 backdrop-blur-lg rounded-2xl border-2 border-primary/50 shadow-[0_8px_32px_rgba(0,0,0,0.1)] z-30"
               />
               <motion.div
                 animate={{ y: [8, -8, 8], x: [5, -5, 5] }}
@@ -135,7 +135,7 @@ const Hero = () => {
                   ease: "easeInOut",
                   delay: 2.5,
                 }}
-                className="absolute bottom-20 -left-12 w-16 h-16 bg-secondary/20 dark:bg-white/5 backdrop-blur-lg rounded-2xl border border-secondary/30 shadow-xl z-30"
+                className="absolute bottom-20 -left-12 w-16 h-16 bg-secondary/40 dark:bg-white/5 backdrop-blur-lg rounded-2xl border-2 border-secondary/50 shadow-[0_8px_32px_rgba(0,0,0,0.1)] z-30"
               />
 
               {/* Subtle Shine Effect */}
