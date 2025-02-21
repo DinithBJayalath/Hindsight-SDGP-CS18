@@ -74,22 +74,22 @@ const Team = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300 w-full"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300 w-full flex flex-col"
             >
-              <div className="relative mb-6 w-32 h-32 mx-auto">
+              <div className="relative w-32 h-32 mx-auto mt-4 mb-6">
                 <img
                   src={member.image}
                   alt={member.name}
                   className="rounded-full w-full h-full object-cover ring-2 ring-primary/20 dark:ring-dark-primary/20"
                 />
               </div>
-              <h3 className="text-xl font-semibold mb-2 dark:text-white">
+              <h3 className="text-xl font-semibold mb-3 dark:text-white">
                 {member.name}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
                 {member.role}
               </p>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-4 mt-auto">
                 <a
                   href={member.linkedin}
                   target="_blank"
