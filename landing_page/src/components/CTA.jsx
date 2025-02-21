@@ -1,4 +1,4 @@
-import { motion from "framer-motion";
+import { motion } from "framer-motion";
 import { FiDownload, FiArrowRight } from "react-icons/fi";
 import { fadeIn, slideIn, staggerContainer } from "../utils/animations";
 
@@ -6,7 +6,7 @@ const CTA = () => {
   return (
     <section className="py-20 relative overflow-hidden">
       <div className="absolute inset-0">
-        <div className="absolute in} set-0= bg-gradient-radial from-primary/30 to-transparent dark:from-dark-primary/20 animate-gradient-xy" />
+        <div className="absolute inset-0 bg-gradient-radial from-primary/30 to-transparent dark:from-dark-primary/20 animate-gradient-xy" />
         <div className="absolute inset-0 bg-gradient-conic from-secondary/10 via-transparent to-secondary/20 dark:from-dark-secondary/10 dark:to-dark-secondary/10 animate-gradient-x opacity-50" />
       </div>
       <div className="container mx-auto px-6">
