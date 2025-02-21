@@ -78,7 +78,7 @@ const Features = () => {
               key={feature.title}
               {...fadeInUp}
               transition={{ delay: index * 0.1 }}
-              className="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700"
+              className="card-bg-light rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <div className="w-12 h-12 bg-primary/10 dark:bg-dark-primary/10 rounded-lg flex items-center justify-center mb-6">
                 <span className="text-primary dark:text-dark-primary">

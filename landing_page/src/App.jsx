@@ -24,7 +24,7 @@ function App() {
         {isLoading && <LoadingScreen />}
       </AnimatePresence>
       <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
-        <div className="bg-gradient-to-b from-white to-secondary/20 dark:from-gray-900 dark:to-dark-secondary/20">
+        <div className="app-background">
           <Navbar scrolled={scrolled} />
           <main>
             <Hero />

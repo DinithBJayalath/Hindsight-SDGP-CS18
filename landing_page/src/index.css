@@ -45,15 +45,35 @@
   }
 
   .section-bg-light {
-    @apply bg-white dark:bg-gray-900;
+    @apply bg-[#EBF5FF] dark:bg-gray-900;
   }
 
   .section-bg-alternate {
-    @apply bg-primary/5 dark:bg-gray-800;
+    @apply bg-[#E1F0FF] dark:bg-gray-800;
   }
 
   .section-gradient {
-    @apply absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent dark:via-dark-primary/10 opacity-50;
+    @apply absolute inset-0 bg-gradient-to-b from-transparent via-[#D0E7FF]/30 to-transparent dark:via-dark-primary/10 opacity-50;
+  }
+
+  .card-bg-light {
+    @apply bg-white/70 backdrop-blur-sm dark:bg-gray-900 
+           border border-[#BFE6FF]/30 dark:border-gray-700 
+           hover:bg-white/80 hover:border-[#BFE6FF]/50 
+           transition-all duration-300 shadow-[0_0_15px_rgba(191,230,255,0.1)];
+  }
+
+  .card-bg-alternate {
+    @apply bg-[#F5FAFF] backdrop-blur-sm dark:bg-gray-800 
+           border border-[#BFE6FF]/30 dark:border-gray-700 
+           hover:bg-[#F8FCFF] hover:border-[#BFE6FF]/50 
+           transition-all duration-300 shadow-[0_0_15px_rgba(191,230,255,0.1)];
+  }
+
+  /* Update base background */
+  .app-background {
+    @apply bg-gradient-to-b from-[#F5FAFF] via-[#EBF5FF] to-[#E1F0FF] 
+           dark:from-gray-900 dark:via-gray-900 dark:to-gray-900;
   }
 }
 

@@ -72,7 +72,7 @@ const Testimonials = () => {
                 key={currentIndex}
                 {...scaleIn}
                 transition={{ duration: 0.4 }}
-                className="bg-white dark:bg-dark-bg backdrop-blur-sm rounded-xl shadow-lg p-6 sm:p-8 text-center supports-blur:bg-white/80 dark:supports-blur:bg-dark-bg/80"
+                className="card-bg-alternate rounded-xl shadow-lg p-6 sm:p-8 text-center"
               >
                 <div className="flex justify-center mb-4">
                   {[...Array(testimonials[currentIndex].rating)].map((_, i) => (

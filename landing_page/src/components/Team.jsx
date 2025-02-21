@@ -75,7 +75,7 @@ const Team = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300 w-full flex flex-col"
+              className="card-bg-light rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-300 w-full flex flex-col"
             >
               <div className="relative w-32 h-32 mx-auto mt-4 mb-6">
                 <img

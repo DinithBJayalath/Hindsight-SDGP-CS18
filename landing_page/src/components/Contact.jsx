@@ -55,7 +55,7 @@ const Contact = () => {
             viewport={{ once: true }}
             className="relative z-10"
           >
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg">
+            <div className="card-bg-light rounded-xl p-8 shadow-lg">
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
@@ -131,7 +131,7 @@ const Contact = () => {
                 rel="noopener noreferrer"
                 {...fadeInUp}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
+                className="card-bg-alternate flex items-center p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
               >
                 <div className="w-12 h-12 bg-primary/10 dark:bg-dark-primary/10 rounded-lg flex items-center justify-center text-primary dark:text-dark-primary">
                   {info.icon}
