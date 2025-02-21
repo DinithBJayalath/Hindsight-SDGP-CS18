@@ -12,13 +12,13 @@ const contactInfo = [
   {
     icon: <FiPhone className="w-6 h-6" />,
     title: "Phone",
-    content: "+1 (555) 123-4567",
-    link: "tel:+15551234567",
+    content: "+94 770492904",
+    link: "tel:+94770492904",
   },
   {
     icon: <FiMapPin className="w-6 h-6" />,
     title: "Location",
-    content: "San Francisco, CA",
+    content: "Colombo, Sri Lanka",
     link: "https://maps.google.com",
   },
 ];
