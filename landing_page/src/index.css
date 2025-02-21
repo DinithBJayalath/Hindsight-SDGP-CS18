@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    @apply scroll-pt-20;
+  }
+
+  body {
+    @apply font-sans text-gray-800 dark:text-gray-200 overflow-x-hidden transition-colors duration-300;
+  }
+
+  /* Improve mobile touch targets */
+  button,
+  a {
+    @apply min-h-[44px] min-w-[44px];
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 rounded-full transition-all duration-300 font-medium text-center;
+  }
+
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-primary to-secondary dark:from-dark-primary dark:to-dark-secondary hover:from-primary-dark hover:to-secondary-dark dark:hover:from-dark-primary-dark dark:hover:to-dark-secondary-dark text-white shadow-lg hover:shadow-xl active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply btn border-2 border-primary dark:border-dark-primary hover:bg-primary/10 dark:hover:bg-dark-primary/10 text-primary dark:text-dark-primary active:scale-95;
+  }
+}
