@@ -39,18 +39,35 @@
   .btn-secondary {
     @apply btn border-2 border-primary dark:border-dark-primary hover:bg-primary/10 dark:hover:bg-dark-primary/10 text-primary dark:text-dark-primary active:scale-95;
   }
+
+  .section-bg {
+    @apply relative overflow-hidden;
+  }
+
+  .section-bg-light {
+    @apply bg-white dark:bg-gray-900;
+  }
+
+  .section-bg-alternate {
+    @apply bg-primary/5 dark:bg-gray-800;
+  }
+
+  .section-gradient {
+    @apply absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent dark:via-dark-primary/10 opacity-50;
+  }
 }
 
-@keyframes float {
+@keyframes gradient-y {
   0%,
   100% {
-    transform: translateY(0);
+    background-position: center 0%;
   }
   50% {
-    transform: translateY(-20px);
+    background-position: center 100%;
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+.animate-gradient-y {
+  animation: gradient-y 15s ease infinite;
+  background-size: 100% 200%;
 }

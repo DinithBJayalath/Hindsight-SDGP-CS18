@@ -48,7 +48,8 @@ const teamMembers = [
 
 const Team = () => {
   return (
-    <section id="team" className="py-20 dark:bg-gray-900/30">
+    <section id="team" className="section-bg section-bg-light py-20">
+      <div className="section-gradient" />
       <div className="container mx-auto px-6 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

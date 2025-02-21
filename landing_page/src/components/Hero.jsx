@@ -13,11 +13,8 @@ import {
 
 const Hero = () => {
   return (
-    <section id="home" className="pt-20 lg:pt-24 relative overflow-hidden">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-radial from-primary/20 to-transparent dark:from-dark-primary/10 animate-gradient-xy" />
-        <div className="absolute inset-0 bg-gradient-conic from-secondary/20 via-transparent to-secondary/20 dark:from-dark-secondary/10 dark:to-dark-secondary/10 animate-gradient-x opacity-50" />
-      </div>
+    <section id="home" className="section-bg section-bg-light pt-20 lg:pt-24">
+      <div className="section-gradient" />
       <div className="container mx-auto px-6 py-12 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Text Content */}

@@ -12,6 +12,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingScreen from "./components/LoadingScreen";
+import AppShowcase from "./components/AppShowcase";
 
 function App() {
   const { isLoading, isDarkMode } = useApp();
@@ -28,6 +29,7 @@ function App() {
           <main>
             <Hero />
             <Features />
+            <AppShowcase />
             <Team />
             <Testimonials />
             <FAQ />

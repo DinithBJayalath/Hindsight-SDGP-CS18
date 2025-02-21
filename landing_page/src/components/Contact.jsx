@@ -30,11 +30,8 @@ const Contact = () => {
   };
 
   return (
-    <section
-      id="contact"
-      className="py-20 relative overflow-hidden dark:bg-gray-900"
-    >
-      <div className="absolute inset-0 bg-gradient-y from-transparent via-primary/5 to-transparent dark:via-dark-primary/5 animate-gradient-y opacity-50" />
+    <section id="contact" className="section-bg section-bg-alternate py-20">
+      <div className="section-gradient" />
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           {...fadeInUp}

@@ -4,11 +4,8 @@ import { fadeIn } from "../utils/animations";
 
 const CTA = () => {
   return (
-    <section className="py-20 relative overflow-hidden bg-gray-900">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-radial from-primary/10 to-transparent animate-gradient-xy" />
-        <div className="absolute inset-0 bg-gradient-conic from-secondary/5 via-transparent to-secondary/5 animate-gradient-x opacity-50" />
-      </div>
+    <section className="section-bg section-bg-light py-20">
+      <div className="section-gradient" />
       <div className="container mx-auto px-6">
         <motion.div
           {...fadeIn}
