@@ -12,7 +12,6 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import LoadingScreen from "./components/LoadingScreen";
-import CustomCursor from "./components/CustomCursor";
 
 function App() {
   const { isLoading, isDarkMode } = useApp();
@@ -23,7 +22,6 @@ function App() {
       <AnimatePresence mode="wait">
         {isLoading && <LoadingScreen />}
       </AnimatePresence>
-      <CustomCursor />
       <div className={`min-h-screen ${isDarkMode ? "dark" : ""}`}>
         <div className="bg-gradient-to-b from-white to-secondary/20 dark:from-gray-900 dark:to-dark-secondary/20">
           <Navbar scrolled={scrolled} />

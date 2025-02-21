@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply font-sans text-gray-800 dark:text-gray-200 overflow-x-hidden transition-colors duration-300 cursor-none;
+    @apply font-sans text-gray-800 dark:text-gray-200 overflow-x-hidden transition-colors duration-300;
   }
 
   /* Improve mobile touch targets */
@@ -19,11 +19,11 @@
     @apply min-h-[44px] min-w-[44px];
   }
 
-  /* Make clickable elements show pointer on hover */
+  /* Remove the cursor-none classes */
   a,
   button,
   [role="button"] {
-    @apply cursor-none hover:cursor-none;
+    @apply cursor-pointer;
   }
 }
 

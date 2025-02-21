@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
-import { FiDownload, FiArrowRight } from "react-icons/fi";
-import { fadeIn, slideIn, staggerContainer } from "../utils/animations";
+import { FiDownload } from "react-icons/fi";
+import { fadeIn } from "../utils/animations";
 
 const CTA = () => {
   return (
@@ -16,35 +16,24 @@ const CTA = () => {
           transition={{ duration: 0.5 }}
           className="max-w-4xl mx-auto text-center relative"
         >
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6 dark:text-black">
+          <h2 className="text-3xl lg:text-4xl font-bold mb-6 dark:text-white">
             Start Your Mental Health Journey Today
           </h2>
-          <p className="text-lg text-black-600 dark:text-black-300 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Join thousands of users who have transformed their lives with
             HindSight. Download now and get 14 days free trial.
           </p>
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="animate"
-            viewport={{ once: true }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4"
-          >
-            <motion.button
-              variants={slideIn}
-              className="btn-primary dark:bg-dark-primary dark:hover:bg-dark-primary-dark flex items-center gap-2 w-full sm:w-auto backdrop-blur-sm supports-blur:bg-primary/90 dark:supports-blur:bg-dark-primary/90"
+          <div className="flex justify-center">
+            <a
+              href="#download"
+              className="relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-full font-semibold transition-all duration-300 transform hover:scale-105 group"
             >
-              <FiDownload />
+              <FiDownload className="w-5 h-5" />
               <span>Download App</span>
-            </motion.button>
-            <motion.button
-              variants={slideIn}
-              className="btn-secondary dark:border-dark-primary dark:text-dark-primary dark:hover:bg-dark-primary/10 flex items-center gap-2 w-full sm:w-auto backdrop-blur-sm"
-            >
-              Learn More
-              <FiArrowRight />
-            </motion.button>
-          </motion.div>
+              {/* Glow effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-secondary blur-xl opacity-50 group-hover:opacity-75 transition-opacity -z-10" />
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>

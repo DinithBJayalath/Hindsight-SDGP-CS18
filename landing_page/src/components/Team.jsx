@@ -3,44 +3,44 @@ import { FiLinkedin, FiGithub } from "react-icons/fi";
 
 const teamMembers = [
   {
-    name: "Sarah Johnson",
-    role: "Founder & CEO",
-    image: "/team/sarah.jpg", // We'll add these images later
+    name: "Dinith Jayalath",
+    role: "Team Leader",
+    image: "/team/dinith.jpg", // We'll add these images later
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
   {
-    name: "Michael Chen",
-    role: "Lead Developer",
-    image: "/team/michael.jpg",
+    name: "Achintha Ekanayake",
+    role: "Team Member",
+    image: "/team/achintha.jpg",
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
   {
-    name: "Emily Rodriguez",
-    role: "UX Designer",
-    image: "/team/emily.jpg",
+    name: "Ruwantha Ekanayake",
+    role: "Team Member",
+    image: "/team/ruwantha.jpg",
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
   {
-    name: "David Kim",
-    role: "AI Engineer",
-    image: "/team/david.jpg",
+    name: "Ramudi Hearth",
+    role: "Team Member",
+    image: "/team/ramudi.jpg",
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
   {
-    name: "Lisa Thompson",
-    role: "Product Manager",
-    image: "/team/lisa.jpg",
+    name: "Suhas Jayalath",
+    role: "Team Member",
+    image: "/team/suhas.jpg",
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
   {
-    name: "James Wilson",
-    role: "Marketing Director",
-    image: "/team/james.jpg",
+    name: "Kavindu Rajapaksha",
+    role: "Team Member",
+    image: "/team/kavindu.jpg",
     linkedin: "https://linkedin.com",
     github: "https://github.com",
   },
@@ -89,12 +89,12 @@ const Team = () => {
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 {member.role}
               </p>
-              <div className="flex justify-center space-x-4">
+              <div className="flex items-center justify-center gap-4">
                 <a
                   href={member.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
+                  className="p-2 text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
                 >
                   <FiLinkedin className="w-5 h-5" />
                 </a>
@@ -102,7 +102,7 @@ const Team = () => {
                   href={member.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
+                  className="p-2 text-gray-400 hover:text-primary dark:hover:text-dark-primary transition-colors"
                 >
                   <FiGithub className="w-5 h-5" />
                 </a>
