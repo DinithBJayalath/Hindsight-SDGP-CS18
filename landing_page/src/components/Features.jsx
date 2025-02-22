@@ -5,7 +5,10 @@ import {
   FiCpu,
   FiTarget,
   FiTrendingUp,
-  FiAward,
+  FiSun,
+  FiHeart,
+  FiActivity,
+  FiLifeBuoy,
 } from "react-icons/fi";
 import { fadeInUp, stagger } from "../utils/animations";
 
@@ -41,10 +44,15 @@ const features = [
       "Visualize your growth with interactive charts and progress indicators. Celebrate streaks and achievements as you maintain healthy habits.",
   },
   {
-    icon: <FiAward className="w-6 h-6" />,
-    title: "Achievement System",
+    icon: (
+      <div className="flex items-center justify-center">
+        <FiActivity className="w-6 h-6" />
+        <FiHeart className="w-4 h-4 -ml-2 text-primary/70" />
+      </div>
+    ),
+    title: "Activity Suggestions",
     description:
-      "Earn rewards and badges as you reach milestones in your mental wellness journey. Share and celebrate your progress with the community.",
+      "Get personalized self-care activity recommendations to support your mental wellness journey. Stay engaged, explore new techniques, and build healthier habits effortlessly!",
   },
 ];
 
