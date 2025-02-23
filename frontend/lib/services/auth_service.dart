@@ -49,20 +49,29 @@ class AuthService {
   Future<Map<String, dynamic>?> loginWithGoogle() async {
     try {
       final GoogleSignIn googleSignIn =
-          GoogleSignIn(scopes: ['email', 'profile']);
+          GoogleSignIn(scopes: ['openid', 'email', 'profile']);
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       if (googleUser == null) return null; // User cancelled
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      // Exchange Google idToken with Auth0 using token exchange grant
+
+      // Verify the ID token is available
+      if (googleAuth.idToken == null) {
+        print(
+            "Google idToken is null. Please check your GoogleSignIn configuration.");
+        return null;
+      }
+
+      // Now perform the token exchange with Auth0
       final response = await http.post(
         Uri.parse("https://$auth0Domain/oauth/token"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
           "client_id": clientId,
-          "subject_token": googleAuth.idToken,
+          "subject_token":
+              googleAuth.idToken!, // Now non-null and must be a string
           "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
           "scope": "openid profile email offline_access",
         }),
@@ -247,15 +256,15 @@ class AuthService {
         "email": email,
         "password": password,
         "connection": "Username-Password-Authentication",
+        "name": fullName, // Explicitly set the full name in the name field
         "user_metadata": {
-          "full_name": fullName,
+          "full_name": fullName, // Also store it in user metadata for reference
         },
       }),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      // Optionally store tokens if provided (typically, signup only creates the user)
       print("Sign Up successful: $data");
       return data;
     } else {
