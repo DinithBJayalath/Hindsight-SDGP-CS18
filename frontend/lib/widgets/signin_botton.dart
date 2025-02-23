@@ -12,7 +12,7 @@ class SigninButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(15),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
+        margin: const EdgeInsets.symmetric(horizontal: 15),
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 140, 211, 255),
           borderRadius: BorderRadius.circular(10),
