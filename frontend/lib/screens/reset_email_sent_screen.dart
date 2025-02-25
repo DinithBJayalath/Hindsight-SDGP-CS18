@@ -67,8 +67,8 @@ class _ResetEmailSentScreenState extends State<ResetEmailSentScreen> {
             Center(
               // Center the image
               child: Container(
-                height: 220,
-                width: 220,
+                height: 300,
+                width: 300,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: const Color.fromARGB(0, 224, 224, 224),
@@ -76,7 +76,7 @@ class _ResetEmailSentScreenState extends State<ResetEmailSentScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.asset(
-                    'assets/images/forgotpassword.png',
+                    'assets/images/emailsent.png',
                     fit: BoxFit.cover,
                   ),
                 ),

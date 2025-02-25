@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/services/email_verification_service.dart';
 import 'package:frontend/widgets/agreements_popup.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
@@ -25,6 +26,50 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool agreedToTerms = false;
 
   final AuthService _authService = AuthService();
+
+  /// Shows a dialog for email verification.
+  Future<bool> showVerificationDialog(String expectedCode) async {
+    TextEditingController codeController = TextEditingController();
+    bool verified = false;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text("Email Verification"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Enter the verification code sent to your email."),
+            TextField(
+              controller: codeController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                hintText: "Verification Code",
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Compare entered code with the expected code.
+              if (codeController.text.trim() == expectedCode) {
+                verified = true;
+                Navigator.of(context).pop();
+              } else {
+                verified = false;
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text("Verify"),
+          ),
+        ],
+      ),
+    );
+
+    return verified;
+  }
 
   /// Handles sign-up via email/password.
   void signUpUser() async {
@@ -66,10 +111,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      PopupMessage.show(context, "Sign up successful", isSuccess: true);
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // apply login
+      // Send verification email and get the expected code.
+      String verificationCode =
+          await EmailVerificationService.sendVerificationEmail(email);
+      // Show the verification popup.
+      bool codeVerified = await showVerificationDialog(verificationCode);
+
+      if (!codeVerified) {
+        PopupMessage.show(
+            context, "Incorrect verification code. Please try again.",
+            isSuccess: false);
+        return;
+      }
+
+      //If code verified, apply login
       final loginResult = await _authService.login(email, password);
 
       if (!mounted) return;

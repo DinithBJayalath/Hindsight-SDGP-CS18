@@ -20,32 +20,32 @@ class WelcomeScreen extends StatelessWidget {
               right: 0,
               child: Center(
                 child: Image.asset(
-                  'assets/images/logo.png', // Replace with your logo's asset path
-                  width: 240, // Adjust the logo size as needed
-                  height: 240, // Adjust the logo size as needed
+                  'assets/images/logo.jpg', // Replace with your logo's asset path
+                  width: 300, // Adjust the logo size as needed
+                  height: 300, // Adjust the logo size as needed
                 ),
               ),
             ),
 
             // "Hindsight" Text Positioned at Exact Location
-            Positioned(
-              top: 310, // Adjust this value to move the text up/down
-              left: 0,
-              right: 0,
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    text: 'Hindsight',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 48.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 310, // Adjust this value to move the text up/down
+            //   left: 0,
+            //   right: 0,
+            //   child: Center(
+            //     child: RichText(
+            //       textAlign: TextAlign.center,
+            //       text: const TextSpan(
+            //         text: 'Hindsight',
+            //         style: TextStyle(
+            //           color: Colors.black,
+            //           fontSize: 48.0,
+            //           fontWeight: FontWeight.w600,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // "Log in" Button Positioned at Exact Location
             const Positioned(
