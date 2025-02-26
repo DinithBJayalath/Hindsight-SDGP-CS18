@@ -32,7 +32,8 @@ TEMPLATE = """Give the most relevant emotion to the following journal entry base
 and the mapped emotions from the given context.
 context: {context}
 journal entry: {journal_entry}
-Note: only choose from the following emotions and only output that emotion: {EMOTIONAL_STATES}"""
+Note: only choose from the following emotions and only output that emotion: {EMOTIONAL_STATES}, 
+and give the sentiment score of the journal entry."""
 
 def retrieve_similar(query, k=10):
     '''This function takes the user's query and returns the top k journal entries that are similar to the query.'''
