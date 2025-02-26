@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/forgot_password_screen.dart';
-import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/signup_screen.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userInfo: userInfo),
+          builder: (context) => ProfileScreen(userInfo: userInfo),
         ),
       );
     } else {
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userInfo: userInfo),
+          builder: (context) => ProfileScreen(userInfo: userInfo),
         ),
       );
     } else {
@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userInfo: userInfo),
+          builder: (context) => ProfileScreen(userInfo: userInfo),
         ),
       );
     } else {
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomeScreen(userInfo: userInfo),
+          builder: (context) => ProfileScreen(userInfo: userInfo),
         ),
       );
     } else {

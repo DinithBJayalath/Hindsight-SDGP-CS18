@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/services/email_verification_service.dart';
 import 'package:frontend/widgets/agreements_popup.dart';
 import 'package:frontend/widgets/login_style.dart';
@@ -141,7 +141,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => HomeScreen(userInfo: userInfo),
+              builder: (context) => ProfileScreen(userInfo: userInfo),
             ),
           );
         }

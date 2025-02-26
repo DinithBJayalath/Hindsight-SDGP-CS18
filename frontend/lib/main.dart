@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:frontend/services/auth_service.dart';
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     final isLoggedIn = !(await _authService.isTokenExpired());
 
     if (isLoggedIn) {
-      _defaultHome = const HomeScreen(userInfo: {});
+      _defaultHome = const ProfileScreen(userInfo: {});
     } else {
       _defaultHome = const WelcomeScreen();
     }
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/home': (context) => const HomeScreen(userInfo: {}),
+        '/profile': (context) => const ProfileScreen(userInfo: {}),
       },
       home: _isLoading
           ? const Scaffold(
