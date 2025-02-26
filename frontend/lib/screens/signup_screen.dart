@@ -8,6 +8,7 @@ import 'package:frontend/widgets/logo_tile.dart';
 import 'package:frontend/widgets/signin_botton.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
+import 'package:frontend/widgets/verification_code_input.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -24,12 +25,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   bool agreedToTerms = false;
+  bool isLoading = false;
 
   final AuthService _authService = AuthService();
 
-  /// Shows a dialog for email verification.
-  Future<bool> showVerificationDialog(String expectedCode) async {
-    TextEditingController codeController = TextEditingController();
+  /// Shows a dialog for email verification with 6-digit code input
+  Future<bool> showVerificationDialog(String email) async {
+    String enteredCode = '';
     bool verified = false;
 
     await showDialog(
@@ -40,29 +42,78 @@ class _SignUpScreenState extends State<SignUpScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Enter the verification code sent to your email."),
-            TextField(
-              controller: codeController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                hintText: "Verification Code",
-              ),
+            const Text(
+              "Enter the 6-digit verification code sent to your email.",
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            VerificationCodeInput(
+              onCompleted: (code) {
+                enteredCode = code;
+              },
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () async {
+                // Resend verification code
+                setState(() {
+                  isLoading = true;
+                });
+                await EmailVerificationService.sendVerificationEmail(email);
+                setState(() {
+                  isLoading = false;
+                });
+                if (mounted) {
+                  PopupMessage.show(
+                    context,
+                    "Verification code resent to your email",
+                    isSuccess: true,
+                  );
+                }
+              },
+              child: const Text("Resend Code"),
             ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () {
-              // Compare entered code with the expected code.
-              if (codeController.text.trim() == expectedCode) {
-                verified = true;
+              Navigator.of(context).pop();
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              setState(() {
+                isLoading = true;
+              });
+
+              // Verify the entered code
+              verified =
+                  await EmailVerificationService.verifyCode(email, enteredCode);
+
+              setState(() {
+                isLoading = false;
+              });
+
+              if (verified) {
                 Navigator.of(context).pop();
               } else {
-                verified = false;
-                Navigator.of(context).pop();
+                if (mounted) {
+                  PopupMessage.show(
+                    context,
+                    "Invalid verification code. Please try again.",
+                    isSuccess: false,
+                  );
+                }
               }
             },
-            child: const Text("Verify"),
+            child: isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text("Verify"),
           ),
         ],
       ),
@@ -107,51 +158,68 @@ class _SignUpScreenState extends State<SignUpScreen> {
       return;
     }
 
-    final result = await _authService.signUp(fullName, email, password);
-    if (!mounted) return;
+    setState(() {
+      isLoading = true;
+    });
 
-    if (result != null) {
-      await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      // First, send verification email
+      await EmailVerificationService.sendVerificationEmail(email);
 
-      // Send verification email and get the expected code.
-      String verificationCode =
-          await EmailVerificationService.sendVerificationEmail(email);
-      // Show the verification popup.
-      bool codeVerified = await showVerificationDialog(verificationCode);
+      // Show the verification popup
+      bool codeVerified = await showVerificationDialog(email);
 
       if (!codeVerified) {
-        PopupMessage.show(
-            context, "Incorrect verification code. Please try again.",
-            isSuccess: false);
+        setState(() {
+          isLoading = false;
+        });
         return;
       }
 
-      //If code verified, apply login
-      final loginResult = await _authService.login(email, password);
+      // If code is verified, proceed with signup
+      final result = await _authService.signUp(fullName, email, password);
 
       if (!mounted) return;
-      if (loginResult != null) {
-        // Decode the token to get user info
-        Map<String, dynamic> userInfo = {};
-        if (loginResult.containsKey('id_token')) {
-          userInfo = Jwt.parseJwt(loginResult['id_token']);
-        }
 
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProfileScreen(userInfo: userInfo),
-            ),
-          );
+      if (result != null) {
+        // After successful signup, log the user in
+        final loginResult = await _authService.login(email, password);
+
+        if (!mounted) return;
+
+        if (loginResult != null) {
+          // Decode the token to get user info
+          Map<String, dynamic> userInfo = {};
+          if (loginResult.containsKey('id_token')) {
+            userInfo = Jwt.parseJwt(loginResult['id_token']);
+          }
+
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ProfileScreen(userInfo: userInfo),
+              ),
+            );
+          }
+        } else {
+          PopupMessage.show(context, "Login failed. Please try manually.",
+              isSuccess: false);
         }
       } else {
-        PopupMessage.show(context, "Login failed. Please try manually.",
+        PopupMessage.show(context, "Sign up failed. Please try again.",
             isSuccess: false);
       }
-    } else {
-      PopupMessage.show(context, "Sign up failed. Please try again.",
-          isSuccess: false);
+    } catch (e) {
+      if (mounted) {
+        PopupMessage.show(
+            context, "An error occurred during signup: ${e.toString()}",
+            isSuccess: false);
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -165,7 +233,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return LoginStyle(
       child: SingleChildScrollView(
-        //padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -202,7 +269,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               hintText: 'Confirm Password',
               obscureText: true,
             ),
-            //const SizedBox(height: 5),
             Row(
               children: [
                 const SizedBox(width: 5),
@@ -238,8 +304,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 20),
             SigninButton(
-              onTap: signUpUser,
-              buttonText: 'Create Account',
+              onTap: isLoading ? null : signUpUser,
+              buttonText: isLoading ? 'Processing...' : 'Create Account',
             ),
             const SizedBox(height: 30),
             const Padding(
