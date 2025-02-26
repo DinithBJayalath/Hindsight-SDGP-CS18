@@ -4,7 +4,7 @@ import 'package:frontend/services/auth_service.dart';
 class HomeScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
 
-  const HomeScreen({Key? key, required this.userInfo}) : super(key: key);
+  const HomeScreen({super.key, required this.userInfo});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
