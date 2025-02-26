@@ -1,34 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/auth_service.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
 
   const ProfileScreen({super.key, required this.userInfo});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final AuthService _authService = AuthService();
+  Map<String, dynamic> _userProfile = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  // Fetch the complete user profile from our backend
+  Future<void> _loadUserProfile() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // Get profile from backend
+      final profile = await _authService.getUserProfile();
+
+      setState(() {
+        _userProfile = profile;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error loading user profile: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _logout() async {
+    await _authService.logout();
+    if (!mounted) return;
+
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Retrieve user data from userInfo map
-    final String name = userInfo['name'] ?? 'Unknown';
-    final String email = userInfo['email'] ?? 'No email provided';
-    // You can display more details if available in userInfo
+    final String name =
+        _userProfile['name'] ?? widget.userInfo['name'] ?? 'User';
+
+    final String email = _userProfile['email'] ??
+        widget.userInfo['email'] ??
+        'No email available';
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
-        backgroundColor: const Color.fromARGB(255, 172, 112, 255),
+        title: const Text('not home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Name: $name", style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text("Email: $email", style: const TextStyle(fontSize: 18)),
-            // Add more fields here as needed
-          ],
-        ),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Welcome!',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Name: $name',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Email: $email',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  // Display more user profile information as needed
+                ],
+              ),
+            ),
     );
   }
 }
