@@ -7,7 +7,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:twitter_login/twitter_login.dart';
 
 class AuthService {
-  final String auth0Domain = "dev-hindsight.uk.auth0.com/oauth/token";
+  final String auth0Domain = "dev-hindsight.uk.auth0.com";
   final String clientId = "FFAKXDh8vl0RHvZcSp2em9UABrI3a746";
   final String audience = "https://dev-hindsight.uk.auth0.com/api/v2/";
   final String backendUrl =
