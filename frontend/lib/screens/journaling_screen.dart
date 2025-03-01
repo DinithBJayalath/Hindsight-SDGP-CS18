@@ -13,14 +13,7 @@ class JournalingScreen extends StatefulWidget {
 
 class _JournalingScreenState extends State<JournalingScreen> {
   final String userName = "John"; // Replace with dynamic username
-  List<Map<String, String>> journalEntries = [
-    {
-      'title': 'My first journal entry',
-      'emoji': '😊',
-      'date': '15 Feb 2025',
-      'entryContent': 'Today was a great day!',
-    }
-  ];
+  List<Map<String, String>> journalEntries = [];
 
   // Method to get the current date
   String getCurrentDate() {
@@ -48,94 +41,53 @@ class _JournalingScreenState extends State<JournalingScreen> {
     });
   }
 
-  // Show confirmation dialog before deleting
-  void _showDeleteConfirmationDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            "Are you sure you want to delete this entry?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text(
-                "Cancel",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                deleteJournalEntry(index); // Delete the entry
-                Navigator.pop(context); // Close the dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Entry deleted')),
-                );
-              },
-              child: const Text(
-                "Delete",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Journal")),
+      appBar: AppBar(
+        title:
+            Text("My Journal", style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        elevation: 2,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding:
+            const EdgeInsets.all(20.0), // Increased padding for better spacing
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             JournalContainer(userName: userName),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
-                itemCount: journalEntries.length,
-                itemBuilder: (context, index) {
-                  var entry = journalEntries[index];
-                  return Dismissible(
-                    key: UniqueKey(),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20),
-                      child: const Icon(Icons.delete, color: Colors.white),
+              child: journalEntries.isEmpty
+                  ? Center(
+                      child: Text(
+                        "No journal entries yet. Tap the '+' button to start writing!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: journalEntries.length,
+                      itemBuilder: (context, index) {
+                        var entry = journalEntries[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 10.0), // Added space between entries
+                          child: JournalEntryWidget(
+                            title: entry['title']!,
+                            date: entry['date']!,
+                            emoji: entry['emoji']!,
+                          ),
+                        );
+                      },
                     ),
-                    confirmDismiss: (direction) async {
-                      _showDeleteConfirmationDialog(index);
-                      return false;
-                    },
-                    child: JournalEntryWidget(
-                      title: entry['title']!,
-                      date: entry['date']!,
-                      emoji: entry['emoji']!,
-                    ),
-                  );
-                },
-              ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blueAccent, // Better button visibility
         onPressed: () {
           Navigator.push(
             context,
@@ -149,7 +101,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
             ),
           );
         },
-        child: const Icon(Icons.create),
+        child: Icon(Icons.create, size: 28),
       ),
     );
   }

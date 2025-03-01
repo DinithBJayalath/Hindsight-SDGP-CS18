@@ -33,11 +33,6 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     }
   }
 
-  void _deleteEntry() {
-    widget.deleteJournalEntry(widget.entryIndex);
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,28 +41,54 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
         actions: [
           if (widget.isEditMode)
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: _deleteEntry,
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () {
+                widget.deleteJournalEntry(widget.entryIndex);
+                Navigator.pop(context);
+              },
             ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding:
+            const EdgeInsets.all(20.0), // Increased padding for better layout
         child: Column(
           children: [
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(hintText: "Title"),
+              decoration: InputDecoration(
+                hintText: "Title",
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              ),
             ),
-            TextField(
-              controller: _entryController,
-              decoration:
-                  const InputDecoration(hintText: "Write your thoughts..."),
+            SizedBox(height: 10),
+            Expanded(
+              child: TextField(
+                controller: _entryController,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  hintText: "Write your thoughts...",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveEntry,
-              child: Text(widget.isEditMode ? "Update" : "Save"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent,
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                widget.isEditMode ? "Update" : "Save",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
