@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(String, String, String) addJournalEntry;
   final Function(int) deleteJournalEntry;
   final bool isEditMode;
   final int entryIndex;
+  final String? existingDate;
 
   const JournalWritingScreen({
     super.key,
@@ -12,6 +14,7 @@ class JournalWritingScreen extends StatefulWidget {
     required this.isEditMode,
     required this.entryIndex,
     required this.deleteJournalEntry,
+    this.existingDate,
   });
 
   @override
@@ -21,52 +24,130 @@ class JournalWritingScreen extends StatefulWidget {
 class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _entryController = TextEditingController();
-
-  bool isBold = false;
-  bool isItalic = false;
-  bool isUnderlined = false;
   double fontSize = 16.0;
-  Color textColor = Colors.black;
+  String? errorMessage;
+  late String displayedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    displayedDate = widget.isEditMode
+        ? widget.existingDate!
+        : DateFormat('dd MMM yyyy').format(DateTime.now());
+  }
+
+  void _showSaveConfirmationDialog() {
+    if (_titleController.text.trim().isEmpty) {
+      setState(() {
+        errorMessage = "Title cannot be empty!";
+      });
+      return;
+    } else if (_titleController.text.length > 50) {
+      setState(() {
+        errorMessage = "Title cannot exceed 50 characters!";
+      });
+      return;
+    } else if (_entryController.text.trim().isEmpty) {
+      setState(() {
+        errorMessage = "Journal content cannot be empty!";
+      });
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            widget.isEditMode ? "Update Entry?" : "Save New Entry?",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          content: Text(
+            widget.isEditMode
+                ? "Are you sure you want to update this journal entry?"
+                : "Do you want to save this new journal entry?",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _saveEntry();
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              child: Text(
+                widget.isEditMode ? "Update" : "Save",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Delete Entry?",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+          content: Text(
+            "Are you sure you want to delete this entry? This action cannot be undone.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                widget.deleteJournalEntry(widget.entryIndex);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: Text(
+                "Delete",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _saveEntry() {
-    if (_titleController.text.isNotEmpty && _entryController.text.isNotEmpty) {
-      widget.addJournalEntry(
-        _titleController.text,
-        '😊', // Default emoji for now
-        _entryController.text,
-      );
-      Navigator.pop(context);
-    }
-  }
-
-  void _toggleBold() {
-    setState(() {
-      isBold = !isBold;
-    });
-  }
-
-  void _toggleItalic() {
-    setState(() {
-      isItalic = !isItalic;
-    });
-  }
-
-  void _toggleUnderline() {
-    setState(() {
-      isUnderlined = !isUnderlined;
-    });
-  }
-
-  void _changeFontSize(double size) {
-    setState(() {
-      fontSize = size;
-    });
-  }
-
-  void _changeTextColor(Color color) {
-    setState(() {
-      textColor = color;
-    });
+    widget.addJournalEntry(
+      _titleController.text,
+      '😊',
+      _entryController.text,
+    );
+    Navigator.pop(context);
   }
 
   @override
@@ -78,10 +159,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
           if (widget.isEditMode)
             IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {
-                widget.deleteJournalEntry(widget.entryIndex);
-                Navigator.pop(context);
-              },
+              onPressed: _showDeleteConfirmationDialog,
             ),
         ],
       ),
@@ -89,6 +167,19 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            if (errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  errorMessage!,
+                  style: TextStyle(color: Colors.red, fontSize: 14),
+                ),
+              ),
+            Text(
+              "Date: $displayedDate",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
@@ -98,82 +189,31 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
               ),
             ),
             SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+            // Font Size Adjuster
+            Column(
               children: [
-                IconButton(
-                  icon: Icon(Icons.format_bold,
-                      color: isBold ? Colors.blue : Colors.black),
-                  onPressed: _toggleBold,
-                ),
-                IconButton(
-                  icon: Icon(Icons.format_italic,
-                      color: isItalic ? Colors.blue : Colors.black),
-                  onPressed: _toggleItalic,
-                ),
-                IconButton(
-                  icon: Icon(Icons.format_underline,
-                      color: isUnderlined ? Colors.blue : Colors.black),
-                  onPressed: _toggleUnderline,
-                ),
-                IconButton(
-                  icon: Icon(Icons.color_lens, color: textColor),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text("Select Text Color"),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ColorPickerButton(
-                              color: Colors.black,
-                              onPressed: () => _changeTextColor(Colors.black),
-                            ),
-                            ColorPickerButton(
-                              color: Colors.blue,
-                              onPressed: () => _changeTextColor(Colors.blue),
-                            ),
-                            ColorPickerButton(
-                              color: Colors.red,
-                              onPressed: () => _changeTextColor(Colors.red),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                DropdownButton<double>(
+                Text("Font Size: ${fontSize.toInt()}"),
+                Slider(
                   value: fontSize,
-                  items: [14.0, 16.0, 18.0, 20.0, 24.0].map((size) {
-                    return DropdownMenuItem(
-                      value: size,
-                      child: Text(size.toInt().toString(),
-                          style: TextStyle(fontSize: size)),
-                    );
-                  }).toList(),
+                  min: 12.0,
+                  max: 24.0,
+                  divisions: 6,
+                  label: fontSize.toStringAsFixed(0),
                   onChanged: (value) {
-                    if (value != null) _changeFontSize(value);
+                    setState(() {
+                      fontSize = value;
+                    });
                   },
                 ),
               ],
             ),
-            SizedBox(height: 10),
+
             Expanded(
               child: TextField(
                 controller: _entryController,
                 maxLines: null,
-                keyboardType: TextInputType.multiline,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                  fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
-                  decoration: isUnderlined
-                      ? TextDecoration.underline
-                      : TextDecoration.none,
-                  color: textColor,
-                ),
+                style: TextStyle(fontSize: fontSize),
                 decoration: InputDecoration(
                   hintText: "Write your thoughts...",
                   border: OutlineInputBorder(
@@ -183,41 +223,12 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _saveEntry,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                widget.isEditMode ? "Update" : "Save",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+              onPressed: _showSaveConfirmationDialog,
+              child: Text(widget.isEditMode ? "Update" : "Save"),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class ColorPickerButton extends StatelessWidget {
-  final Color color;
-  final VoidCallback onPressed;
-
-  const ColorPickerButton(
-      {super.key, required this.color, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.circle, color: color, size: 30),
-      onPressed: () {
-        onPressed();
-        Navigator.pop(context);
-      },
     );
   }
 }

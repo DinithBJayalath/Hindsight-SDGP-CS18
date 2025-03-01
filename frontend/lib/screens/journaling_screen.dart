@@ -19,10 +19,9 @@ class _JournalingScreenState extends State<JournalingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadInitialEntries(); // Load initial dummy entries
+    _loadInitialEntries();
   }
 
-  // Method to load some initial entries (simulating data retrieval)
   void _loadInitialEntries() {
     journalEntries = [
       {
@@ -38,22 +37,19 @@ class _JournalingScreenState extends State<JournalingScreen> {
         'entryContent': 'Had a lot of meetings, but learned a lot!',
       }
     ];
-    setState(() {}); // Update the UI once data is loaded
+    setState(() {});
   }
 
-  // Method to get the current date
   String getCurrentDate() {
     return DateFormat('dd MMM yyyy').format(DateTime.now());
   }
 
-  // Helper function to update state
   void _updateState(Function modifyList) {
     setState(() {
       modifyList();
     });
   }
 
-  // Add a new journal entry
   void addJournalEntry(String title, String emoji, String content) {
     _updateState(() {
       journalEntries.insert(0, {
@@ -65,14 +61,12 @@ class _JournalingScreenState extends State<JournalingScreen> {
     });
   }
 
-  // Delete journal entry function
   void deleteJournalEntry(int index) {
     _updateState(() {
       journalEntries.removeAt(index);
     });
   }
 
-  // Filter journal entries based on search query
   List<Map<String, String>> getFilteredEntries() {
     return journalEntries
         .where((entry) =>
@@ -90,8 +84,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
         elevation: 2,
       ),
       body: Padding(
-        padding:
-            const EdgeInsets.all(20.0), // Increased padding for better spacing
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -124,18 +117,15 @@ class _JournalingScreenState extends State<JournalingScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     )
-                  : ListView.builder(
+                  : ListView.separated(
                       itemCount: getFilteredEntries().length,
+                      separatorBuilder: (_, __) => SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         var entry = getFilteredEntries()[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 10.0), // Added space between entries
-                          child: JournalEntryWidget(
-                            title: entry['title']!,
-                            date: entry['date']!,
-                            emoji: entry['emoji']!,
-                          ),
+                        return JournalEntryWidget(
+                          title: entry['title']!,
+                          date: entry['date']!,
+                          emoji: entry['emoji']!,
                         );
                       },
                     ),
@@ -144,7 +134,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent, // Better button visibility
+        backgroundColor: Colors.blueAccent,
         onPressed: () {
           Navigator.push(
             context,
