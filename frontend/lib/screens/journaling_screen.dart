@@ -14,17 +14,48 @@ class JournalingScreen extends StatefulWidget {
 class _JournalingScreenState extends State<JournalingScreen> {
   final String userName = "John"; // Replace with dynamic username
   List<Map<String, String>> journalEntries = [];
+  String searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialEntries(); // Load initial dummy entries
+  }
+
+  // Method to load some initial entries (simulating data retrieval)
+  void _loadInitialEntries() {
+    journalEntries = [
+      {
+        'title': 'My first journal entry',
+        'emoji': '😊',
+        'date': '15 Feb 2025',
+        'entryContent': 'Today was a great day!',
+      },
+      {
+        'title': 'A busy day at work',
+        'emoji': '😓',
+        'date': '14 Feb 2025',
+        'entryContent': 'Had a lot of meetings, but learned a lot!',
+      }
+    ];
+    setState(() {}); // Update the UI once data is loaded
+  }
 
   // Method to get the current date
   String getCurrentDate() {
-    final now = DateTime.now();
-    final formatter = DateFormat('dd MMM yyyy');
-    return formatter.format(now);
+    return DateFormat('dd MMM yyyy').format(DateTime.now());
+  }
+
+  // Helper function to update state
+  void _updateState(Function modifyList) {
+    setState(() {
+      modifyList();
+    });
   }
 
   // Add a new journal entry
   void addJournalEntry(String title, String emoji, String content) {
-    setState(() {
+    _updateState(() {
       journalEntries.insert(0, {
         'title': title,
         'emoji': emoji,
@@ -36,9 +67,17 @@ class _JournalingScreenState extends State<JournalingScreen> {
 
   // Delete journal entry function
   void deleteJournalEntry(int index) {
-    setState(() {
+    _updateState(() {
       journalEntries.removeAt(index);
     });
+  }
+
+  // Filter journal entries based on search query
+  List<Map<String, String>> getFilteredEntries() {
+    return journalEntries
+        .where((entry) =>
+            entry['title']!.toLowerCase().contains(searchQuery.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -58,19 +97,37 @@ class _JournalingScreenState extends State<JournalingScreen> {
           children: [
             JournalContainer(userName: userName),
             SizedBox(height: 16),
+            TextField(
+              onChanged: (query) {
+                setState(() {
+                  searchQuery = query;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: "Search Entries...",
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                prefixIcon: Icon(Icons.search),
+              ),
+            ),
+            SizedBox(height: 16),
             Expanded(
-              child: journalEntries.isEmpty
+              child: getFilteredEntries().isEmpty
                   ? Center(
                       child: Text(
-                        "No journal entries yet. Tap the '+' button to start writing!",
+                        "No matching entries found.",
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     )
                   : ListView.builder(
-                      itemCount: journalEntries.length,
+                      itemCount: getFilteredEntries().length,
                       itemBuilder: (context, index) {
-                        var entry = journalEntries[index];
+                        var entry = getFilteredEntries()[index];
                         return Padding(
                           padding: const EdgeInsets.only(
                               bottom: 10.0), // Added space between entries
