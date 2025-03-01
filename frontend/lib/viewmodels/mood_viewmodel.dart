@@ -8,3 +8,16 @@ class MoodViewModel extends ChangeNotifier {
   Map<String, int> _stats = {};
   bool _isLoading = false;
 
+  Future<void> loadData() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _entries = await _moodService.getMoodEntries();
+      _stats = await _moodService.getStats();
+    } catch (e) {
+      print('Error loading data: $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
