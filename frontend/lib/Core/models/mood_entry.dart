@@ -8,3 +8,16 @@ class MoodEntry {
     required this.moodLevel,
     this.note,
   });
+
+  Map<String, dynamic> toJson() => {
+    'date': date.toIso8601String(),
+    'moodLevel': moodLevel,
+    'note': note,
+  };
+
+  factory MoodEntry.fromJson(Map<String, dynamic> json) => MoodEntry(
+    date: DateTime.parse(json['date']),
+    moodLevel: json['moodLevel'],
+    note: json['note'],
+  );
+}
