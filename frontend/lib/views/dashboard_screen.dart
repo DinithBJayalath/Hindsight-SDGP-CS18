@@ -17,3 +17,19 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<MoodViewModel>().loadData();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SafeArea(
+        child: Consumer<MoodViewModel>(
+        builder: (context, viewModel, child) {
+      if (viewModel.isLoading) {
+        return const Center(child: CircularProgressIndicator());
