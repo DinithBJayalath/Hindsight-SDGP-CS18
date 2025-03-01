@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'screens/journaling_screen.dart';
 
 void main() {
   runApp(const HindSightApp());

@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(String, String, String) addJournalEntry;
+  final Function(int) deleteJournalEntry;
+  final bool isEditMode;
+  final int entryIndex;
 
-  const JournalWritingScreen({super.key, required this.addJournalEntry});
+  const JournalWritingScreen({
+    super.key,
+    required this.addJournalEntry,
+    required this.isEditMode,
+    required this.entryIndex,
+    required this.deleteJournalEntry,
+  });
 
   @override
   _JournalWritingScreenState createState() => _JournalWritingScreenState();
@@ -24,10 +33,24 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     }
   }
 
+  void _deleteEntry() {
+    widget.deleteJournalEntry(widget.entryIndex);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("New Entry")),
+      appBar: AppBar(
+        title: Text(widget.isEditMode ? "Edit Entry" : "New Entry"),
+        actions: [
+          if (widget.isEditMode)
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: _deleteEntry,
+            ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -44,7 +67,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveEntry,
-              child: const Text("Save"),
+              child: Text(widget.isEditMode ? "Update" : "Save"),
             ),
           ],
         ),

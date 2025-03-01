@@ -41,6 +41,59 @@ class _JournalingScreenState extends State<JournalingScreen> {
     });
   }
 
+  // Delete journal entry function
+  void deleteJournalEntry(int index) {
+    setState(() {
+      journalEntries.removeAt(index);
+    });
+  }
+
+  // Show confirmation dialog before deleting
+  void _showDeleteConfirmationDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            "Are you sure you want to delete this entry?",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                deleteJournalEntry(index); // Delete the entry
+                Navigator.pop(context); // Close the dialog
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Entry deleted')),
+                );
+              },
+              child: const Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,10 +110,24 @@ class _JournalingScreenState extends State<JournalingScreen> {
                 itemCount: journalEntries.length,
                 itemBuilder: (context, index) {
                   var entry = journalEntries[index];
-                  return JournalEntryWidget(
-                    title: entry['title']!,
-                    date: entry['date']!,
-                    emoji: entry['emoji']!,
+                  return Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.only(right: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    confirmDismiss: (direction) async {
+                      _showDeleteConfirmationDialog(index);
+                      return false;
+                    },
+                    child: JournalEntryWidget(
+                      title: entry['title']!,
+                      date: entry['date']!,
+                      emoji: entry['emoji']!,
+                    ),
                   );
                 },
               ),
@@ -75,6 +142,9 @@ class _JournalingScreenState extends State<JournalingScreen> {
             MaterialPageRoute(
               builder: (context) => JournalWritingScreen(
                 addJournalEntry: addJournalEntry,
+                isEditMode: false,
+                entryIndex: -1,
+                deleteJournalEntry: deleteJournalEntry,
               ),
             ),
           );
