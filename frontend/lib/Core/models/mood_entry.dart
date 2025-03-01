@@ -7,7 +7,7 @@ class MoodEntry {
     required this.date,
     required this.moodLevel,
     this.note,
-  });
+
 
   Map<String, dynamic> toJson() => {
     'date': date.toIso8601String(),
