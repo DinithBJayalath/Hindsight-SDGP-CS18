@@ -21,3 +21,10 @@ class MoodViewModel extends ChangeNotifier {
 
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> addMoodEntry(MoodEntry entry) async {
+    await _moodService.addMoodEntry(entry);
+    await loadData();
+  }
+}
