@@ -12,7 +12,7 @@ class MoodEntry {
   Map<String, dynamic> toJson() => {
     'date': date.toIso8601String(),
     'moodLevel': moodLevel,
-    'note': notes,
+    'notes': notes,
   };
 
   factory MoodEntry.fromJson(Map<String, dynamic> json) => MoodEntry(
