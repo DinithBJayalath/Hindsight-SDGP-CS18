@@ -3,8 +3,12 @@ import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:frontend/services/auth_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
