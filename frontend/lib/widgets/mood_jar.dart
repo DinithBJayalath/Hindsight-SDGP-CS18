@@ -331,7 +331,8 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
             // Emojis in jar - position them relative to the jar
             ..._emojis.map((emoji) => Positioned(
-                  top: emoji.position.dy + 40, // Add jarTop offset
+                  top: emoji.position.dy +
+                      50, // Adjusted jarTop offset to remove gap
                   left: emoji.position.dx +
                       (280 - jarWidth) / 2, // Add jarLeft offset
                   child: SizedBox(
@@ -351,7 +352,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
             // Jar lid
             Positioned(
-              top: 0,
+              top: 11, // Increased gap between jar and lid
               left: (280 - jarWidth) / 2,
               child: SlideTransition(
                 position: _lidSlideAnimation,
