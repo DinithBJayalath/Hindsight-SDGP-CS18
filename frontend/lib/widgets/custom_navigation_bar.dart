@@ -13,6 +13,7 @@ class AppNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -23,42 +24,52 @@ class AppNavigationBar extends StatelessWidget {
           ),
         ],
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
+          topLeft: Radius.circular(32),
+          topRight: Radius.circular(32),
         ),
       ),
       child: NavigationBar(
+        height: 60,
         backgroundColor: Colors.transparent,
+        indicatorColor: Colors.transparent,
         selectedIndex: selectedIndex,
         onDestinationSelected: onItemTapped,
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home, color: Color(0xFF8CD3FF)),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.book_outlined),
-            selectedIcon: Icon(Icons.book, color: Color(0xFF8CD3FF)),
-            label: 'Journal',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sentiment_satisfied_outlined),
-            selectedIcon: Icon(Icons.emoji_emotions, color: Color(0xFF8CD3FF)),
-            label: 'Mood',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.lightbulb_outline),
-            selectedIcon: Icon(Icons.lightbulb, color: Color(0xFF8CD3FF)),
-            label: 'Activities',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard, color: Color(0xFF8CD3FF)),
-            label: 'Dashboard',
-          ),
+        animationDuration: const Duration(milliseconds: 200),
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+        destinations: [
+          _buildDestination(0, Icons.home_outlined, Icons.home, 'Home'),
+          _buildDestination(1, Icons.book_outlined, Icons.book, 'Journal'),
+          _buildDestination(2, Icons.sentiment_satisfied_outlined,
+              Icons.emoji_emotions, 'Mood'),
+          _buildDestination(
+              3, Icons.lightbulb_outline, Icons.lightbulb, 'Activities'),
+          _buildDestination(
+              4, Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
         ],
       ),
+    );
+  }
+
+  NavigationDestination _buildDestination(
+      int index, IconData icon, IconData selectedIcon, String label) {
+    return NavigationDestination(
+      icon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Icon(
+          icon,
+          size: 24,
+          color: Colors.grey,
+        ),
+      ),
+      selectedIcon: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: Icon(
+          selectedIcon,
+          size: 24,
+          color: const Color(0xFF8CD3FF),
+        ),
+      ),
+      label: label,
     );
   }
 }
