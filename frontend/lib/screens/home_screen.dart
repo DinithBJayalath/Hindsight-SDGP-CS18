@@ -81,7 +81,8 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFEBF6FA), // Light blue background like in the image
+      color: const Color.fromARGB(
+          255, 245, 250, 252), // Light blue background like in the image
       child: Column(
         children: [
           // Main content
@@ -127,21 +128,19 @@ class _HomeContentState extends State<HomeContent> {
                     ],
                   ),
 
-                  // Jar section
-                  Expanded(
-                    flex: 3,
-                    child: Center(
-                      child: MoodJar(
-                        key: _moodJarKey,
-                        onJarTap: () {
-                          // Show mood history or details when jar is tapped
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Mood history will be shown here')),
-                          );
-                        },
-                      ),
+                  // Removed SizedBox to eliminate gap between welcome message and jar
+
+                  // Jar section directly under the header
+                  Center(
+                    child: MoodJar(
+                      key: _moodJarKey,
+                      onJarTap: () {
+                        // Show mood history or details when jar is tapped
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Mood history will be shown here')),
+                        );
+                      },
                     ),
                   ),
 
