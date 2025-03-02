@@ -248,25 +248,32 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(80), // Custom height for the app bar
-        child: Padding(
-          padding:
-              const EdgeInsets.only(top: 10.0), // Add padding to move it down
+        preferredSize: Size.fromHeight(kToolbarHeight), // Reduced height
+        child: SafeArea(
           child: AppBar(
-            backgroundColor: Color.fromARGB(0, 255, 255, 255),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leadingWidth: 40, // Reduce the width of the leading icon
             leading: IconButton(
+              padding: EdgeInsets.zero, // Remove padding from back button
               icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
             ),
-            title: Center(
+            title: Padding(
+              padding:
+                  const EdgeInsets.only(top: 4.0), // Move title up slightly
               child: Text(
                 getCurrentDate(),
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
+            centerTitle: true,
             actions: [
+              if (widget.isEditMode)
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: _showDeleteConfirmationDialog,
+                ),
               Padding(
                 padding: const EdgeInsets.only(right: 16.0),
                 child: ElevatedButton(
@@ -274,70 +281,62 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFBFE6FF),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   ),
                   child: Text(
                     widget.isEditMode ? 'Update' : 'Save',
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-              if (widget.isEditMode) // Only show delete button when editing
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.red),
-                    onPressed:
-                        _showDeleteConfirmationDialog, // Show delete confirmation dialog
-                  ),
-                ),
             ],
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(
+            16.0, 8.0, 16.0, 16.0), // Reduced top padding
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Entry title section
-            Container(
-              color: Color.fromARGB(0, 255, 255, 255),
-              padding: EdgeInsets.all(2),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _titleController,
-                      onChanged: (text) {
-                        _limitTitleWords();
-                      },
-                      decoration: InputDecoration(
-                        hintText: "Enter Your Journal Title",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-                        filled: true,
-                        fillColor: const Color.fromARGB(0, 255, 255, 255),
-                      ),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            // Title section with adjusted padding
+            Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 12.0), // Reduced bottom padding
+              child: TextField(
+                controller: _titleController,
+                onChanged: (text) => _limitTitleWords(),
+                decoration: InputDecoration(
+                  hintText: "Enter Your Journal Title",
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 4.0), // Reduced vertical padding
+                  hintStyle: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 18,
                   ),
-                ],
+                ),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            SizedBox(height: 10),
-            // Text editing tools with blue background and 8 border radius
+
+            // Formatting toolbar with improved spacing
             Container(
-              color: Color(0xFFBFE6FF), // Blue background for the toolbar
-              padding: EdgeInsets.symmetric(vertical: 8.0),
+              decoration: BoxDecoration(
+                color: Color(0xFFBFE6FF),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
                     icon: Icon(Icons.format_bold),
@@ -347,6 +346,8 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                         updateTextStyle();
                       });
                     },
+                    color: isBold ? Colors.blue : Colors.black,
+                    padding: EdgeInsets.all(12),
                   ),
                   IconButton(
                     icon: Icon(Icons.format_italic),
@@ -356,6 +357,8 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                         updateTextStyle();
                       });
                     },
+                    color: isItalic ? Colors.blue : Colors.black,
+                    padding: EdgeInsets.all(12),
                   ),
                   IconButton(
                     icon: Icon(Icons.format_underline),
@@ -365,10 +368,15 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                         updateTextStyle();
                       });
                     },
+                    color: isUnderlined ? Colors.blue : Colors.black,
+                    padding: EdgeInsets.all(12),
                   ),
                   IconButton(
                     icon: Icon(Icons.color_lens),
                     onPressed: _changeTextColor,
+                    color:
+                        textColor == Colors.blue ? Colors.blue : Colors.black,
+                    padding: EdgeInsets.all(12),
                   ),
                   IconButton(
                     icon: Icon(Icons.text_fields),
@@ -416,26 +424,31 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                         },
                       );
                     },
+                    padding: EdgeInsets.all(12),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 10),
-            // Entry content section
+
+            SizedBox(height: 16),
+
+            // Journal content area with improved styling
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 191, 230, 255),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Color(0xFFBFE6FF).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _entryController,
                   maxLines: null,
-                  style: currentTextStyle, // Apply updated style
+                  style: currentTextStyle,
                   decoration: InputDecoration(
                     hintText: "Write about your day here...",
-                    filled: true,
-                    fillColor: const Color.fromARGB(0, 255, 255, 255),
+                    hintStyle: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                    ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.all(16),
                   ),
