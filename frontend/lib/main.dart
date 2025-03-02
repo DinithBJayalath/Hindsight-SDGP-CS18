@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/journaling_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
-  runApp(HindsightApp());
+  runApp(const HindsightApp());
 }
 
 class HindsightApp extends StatelessWidget {
@@ -15,8 +15,12 @@ class HindsightApp extends StatelessWidget {
       title: 'HindSight',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue,
+        ),
       ),
-      home: JournalingScreen(),
+      home: const HomeScreen(),
     );
   }
 }

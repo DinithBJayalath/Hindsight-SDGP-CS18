@@ -133,115 +133,107 @@ class _JournalingScreenState extends State<JournalingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0),
-        child: AppBar(
-          backgroundColor: Colors.transparent,
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            JournalContainer(userName: userName),
-            SizedBox(height: 10),
-            // Search bar implementation
-            TextField(
-              onChanged: (query) {
-                setState(() {
-                  searchQuery = query;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: "Search Entries",
-                filled: true,
-                fillColor: Color(0xFFBFE6FF),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide.none,
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          JournalContainer(userName: userName),
+          SizedBox(height: 10),
+          // Search bar implementation
+          TextField(
+            onChanged: (query) {
+              setState(() {
+                searchQuery = query;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: "Search Entries",
+              filled: true,
+              fillColor: Color(0xFFBFE6FF),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              prefixIcon: Icon(Icons.search),
+            ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    "Hi ! Tell me about your day... I'm waiting to hear your story...",
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-            SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Hi ! Tell me about your day... I'm waiting to hear your story...",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                Container(
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFBFE6FF),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  Container(
-                    padding: EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFBFE6FF),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.create),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => JournalWritingScreen(
-                              addJournalEntry: addJournalEntry,
-                              isEditMode: false,
-                              entryIndex: -1,
-                              deleteJournalEntry: deleteJournalEntry,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Divider(
-              color: const Color.fromARGB(255, 0, 0, 0),
-              thickness: 2,
-            ),
-            SizedBox(height: 6),
-            Expanded(
-              child: ListView.builder(
-                itemCount: getFilteredEntries().length,
-                itemBuilder: (context, index) {
-                  var entry = getFilteredEntries()[index];
-                  return GestureDetector(
-                    onTap: () {
+                  child: IconButton(
+                    icon: Icon(Icons.create),
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => JournalWritingScreen(
                             addJournalEntry: addJournalEntry,
-                            title: entry['title']!,
-                            emoji: entry['emoji']!,
-                            date: entry['date']!,
-                            entryContent: entry['entryContent']!,
-                            isEditMode: true,
-                            entryIndex: index,
+                            isEditMode: false,
+                            entryIndex: -1,
                             deleteJournalEntry: deleteJournalEntry,
                           ),
                         ),
                       );
                     },
-                    child: JournalEntryWidget(
-                      title: entry['title']!,
-                      date: entry['date']!,
-                      emoji: entry['emoji']!,
-                    ),
-                  );
-                },
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Divider(
+            color: const Color.fromARGB(255, 0, 0, 0),
+            thickness: 2,
+          ),
+          SizedBox(height: 6),
+          Expanded(
+            child: ListView.builder(
+              itemCount: getFilteredEntries().length,
+              itemBuilder: (context, index) {
+                var entry = getFilteredEntries()[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JournalWritingScreen(
+                          addJournalEntry: addJournalEntry,
+                          title: entry['title']!,
+                          emoji: entry['emoji']!,
+                          date: entry['date']!,
+                          entryContent: entry['entryContent']!,
+                          isEditMode: true,
+                          entryIndex: index,
+                          deleteJournalEntry: deleteJournalEntry,
+                        ),
+                      ),
+                    );
+                  },
+                  child: JournalEntryWidget(
+                    title: entry['title']!,
+                    date: entry['date']!,
+                    emoji: entry['emoji']!,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
