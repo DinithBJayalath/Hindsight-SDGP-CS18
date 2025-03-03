@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -153,7 +154,17 @@ class _HomeContentState extends State<HomeContent> {
                   // Last seven days calendar (improved)
                   _buildLastSevenDaysCalendar(),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
+
+                  MoodTrackingWidget(
+                    moodData: [
+                      MoodData('Good', 3, Colors.green, '😊'),
+                      MoodData('Great', 2, Colors.red, '😄'),
+                      // Add more moods as needed
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // Daily Quote
                   _buildDailyQuote(),
@@ -226,8 +237,8 @@ class _HomeContentState extends State<HomeContent> {
       child: Column(
         children: [
           Text(
-            'January', // Month name
-            style: TextStyle(
+            'Last 7 Days', // Title for the section
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -241,23 +252,70 @@ class _HomeContentState extends State<HomeContent> {
                   Text(
                     '${date.day}',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // Replace with actual emoji based on mood
-                  Text(
-                    _getEmojiForDate(date), // Function to get emoji
-                    style: const TextStyle(
-                      fontSize: 24,
-                    ),
-                  ),
-                  // Add a small description or mood label
-                  Text(
-                    _getMoodLabelForDate(date), // Function to get mood label
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
+                  const SizedBox(height: 4),
+                  GestureDetector(
+                    onTap: () {
+                      // Show popup with larger MoodJar
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          title: Text(
+                            'Mood Details for ${date.day}/${date.month}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              MoodJar(
+                                onJarTap: () {},
+                                // Add any additional properties if needed
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                'Emojis: ${_getEmojisForDate(date)}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 30, // Adjusted jar size
+                      height: 30,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 5,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: MoodJar(
+                        onJarTap: () {},
+                      ),
                     ),
                   ),
                 ],
@@ -269,16 +327,9 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  String _getEmojiForDate(DateTime date) {
-    // Placeholder logic for emoji selection
-    // Replace with actual logic to get mood for the date
-    return "😊"; // Example emoji
-  }
-
-  String _getMoodLabelForDate(DateTime date) {
-    // Placeholder logic for mood label selection
-    // Replace with actual logic to get mood for the date
-    return "Happy"; // Example mood label
+  String _getEmojisForDate(DateTime date) {
+    // Placeholder logic for getting emojis
+    return "😊, 😢"; // Example emojis
   }
 
   Widget _buildMoodSelectionSection() {
@@ -399,4 +450,126 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class MoodTrackingWidget extends StatelessWidget {
+  final List<MoodData> moodData;
+
+  MoodTrackingWidget({required this.moodData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Mood Count',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          _buildDonutChart(),
+          const SizedBox(height: 10),
+          _buildLegend(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDonutChart() {
+    int totalMoods = moodData.fold(0, (sum, item) => sum + item.count);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          height: 200,
+          child: PieChart(
+            PieChartData(
+              sections: moodData.map((data) {
+                return PieChartSectionData(
+                  color: data.color,
+                  value: data.count.toDouble(),
+                  title:
+                      '${(data.count / totalMoods * 100).toStringAsFixed(1)}%',
+                  radius: 50,
+                  titleStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                );
+              }).toList(),
+              sectionsSpace: 2,
+              centerSpaceRadius: 40,
+            ),
+          ),
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '$totalMoods',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text('Recorded moods'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: moodData.map((data) {
+        return Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 10,
+                  height: 10,
+                  color: data.color,
+                ),
+                const SizedBox(width: 4),
+                Text(data.emoji),
+              ],
+            ),
+            Text(
+              data.mood,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text('${data.count}'),
+          ],
+        );
+      }).toList(),
+    );
+  }
+}
+
+class MoodData {
+  final String mood;
+  final int count;
+  final Color color;
+  final String emoji;
+
+  MoodData(this.mood, this.count, this.color, this.emoji);
 }
