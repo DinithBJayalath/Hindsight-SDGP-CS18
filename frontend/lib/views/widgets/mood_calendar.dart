@@ -63,3 +63,28 @@ class _MoodCalendarState extends State<MoodCalendar> {
           fontWeight: FontWeight.bold,
         ),
     ),
+      calendarBuilders: CalendarBuilders(
+        markerBuilder: (context, date, events) {
+          final entry = widget.entries.firstWhere(
+                (e) => isSameDay(e.date, date),
+            orElse: () => MoodEntry(date: date, moodLevel: 0),
+          );
+
+          if (entry.moodLevel == 0) return null;
+
+          return _buildMoodEmoji(entry.moodLevel);
+        },
+      ),
+    );
+  }
+
+  Widget _buildMoodEmoji(int moodLevel) {
+    final emojis = ['😢', '😕', '😐', '😊', '😄'];
+    return Center(
+      child: Text(
+        emojis[moodLevel - 1],
+        style: const TextStyle(fontSize: 16),
+      ),
+    );
+  }
+}
