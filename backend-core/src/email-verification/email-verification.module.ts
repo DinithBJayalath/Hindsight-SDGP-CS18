@@ -20,10 +20,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         transport: {
           host: configService.get('MAIL_HOST', 'smtp.gmail.com'),
           port: configService.get('MAIL_PORT', 587),
-          secure: configService.get('MAIL_SECURE', false),
+          secure: false, // false for 587, true for 465
           auth: {
             user: configService.get('MAIL_USER'),
             pass: configService.get('MAIL_PASSWORD'),
+          },
+          requireTLS: true,
+          tls: {
+            ciphers: 'SSLv3',
+            rejectUnauthorized: false // Only set to false for debugging
           },
         },
         defaults: {
