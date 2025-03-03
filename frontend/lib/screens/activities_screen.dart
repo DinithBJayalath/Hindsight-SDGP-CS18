@@ -8,8 +8,58 @@ class ActivitiesScreen extends StatefulWidget {
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
 }
 
-class _ActivitiesScreenState extends State<ActivitiesScreen> {
-  int _selectedIndex = 4; // Activities tab is selected by default
+class _ActivitiesScreenState extends State<ActivitiesScreen>
+    with SingleTickerProviderStateMixin {
+  int _selectedIndex = 4;
+  late ScrollController _scrollController;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()
+      ..addListener(() {
+        setState(() {
+          // Calculate the slide animation value based on scroll position
+          final scrollPosition = _scrollController.offset;
+          final maxScroll = 300.0; // Height of the header
+          final slideValue = (scrollPosition / maxScroll).clamp(0.0, 1.0);
+          _slideAnimation = Tween<double>(begin: 0.0, end: -50.0).animate(
+            CurvedAnimation(
+              parent: AlwaysStoppedAnimation(slideValue),
+              curve: Curves.easeOut,
+            ),
+          );
+        });
+      });
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _slideAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: AlwaysStoppedAnimation(0.0),
+        curve: Curves.easeOut,
+      ),
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void _handleActivityTap(String activity) {
     // TODO: Navigate to respective activity screen
@@ -21,65 +71,158 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 40),
-                const Text(
-                  'Activities',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFFE0F4FF),
+              const Color(0xFFCCE9FF),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 300,
+                floating: false,
+                pinned: false,
+                backgroundColor: Colors.transparent,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: -50,
+                          top: -50,
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: -30,
+                          bottom: -30,
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Activities',
+                                style: TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              AnimatedBuilder(
+                                animation: _slideAnimation,
+                                builder: (context, child) {
+                                  return Transform.translate(
+                                    offset: Offset(_slideAnimation.value, 0),
+                                    child: Opacity(
+                                      opacity: 1 -
+                                          (_slideAnimation.value.abs() / 50),
+                                      child: const Text(
+                                        'Discover engaging activities designed to enhance your mental wellbeing and personal growth.',
+                                        style: TextStyle(
+                                          fontFamily: 'Montserrat',
+                                          fontSize: 16,
+                                          color: Colors.black54,
+                                          height: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Choose an activity to help improve your mental wellbeing',
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 16,
-                    color: Colors.black54,
+              ),
+              SliverToBoxAdapter(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, -2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ActivityCard(
+                          title: 'Deep Breathing',
+                          description:
+                              'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
+                          icon: Icons.self_improvement,
+                          onTap: () => _handleActivityTap('Deep Breathing'),
+                        ),
+                        const SizedBox(height: 16),
+                        ActivityCard(
+                          title: 'Expressive Art',
+                          description:
+                              'A digital canvas for you to draw or doodle your emotions.',
+                          icon: Icons.palette,
+                          onTap: () => _handleActivityTap('Expressive Art'),
+                        ),
+                        const SizedBox(height: 16),
+                        ActivityCard(
+                          title: 'Letter to Future Self',
+                          description:
+                              'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
+                          icon: Icons.mail,
+                          onTap: () =>
+                              _handleActivityTap('Letter to Future Self'),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 40),
-                ActivityCard(
-                  title: 'Deep Breathing',
-                  description:
-                      'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
-                  icon: Icons.self_improvement,
-                  onTap: () => _handleActivityTap('Deep Breathing'),
-                ),
-                const SizedBox(height: 16),
-                ActivityCard(
-                  title: 'Expressive Art',
-                  description:
-                      'A digital canvas for you to draw or doodle your emotions.',
-                  icon: Icons.palette,
-                  onTap: () => _handleActivityTap('Expressive Art'),
-                ),
-                const SizedBox(height: 16),
-                ActivityCard(
-                  title: 'Letter to Future Self',
-                  description:
-                      'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
-                  icon: Icons.mail,
-                  onTap: () => _handleActivityTap('Letter to Future Self'),
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.black.withOpacity(0.03),
+        backgroundColor: Colors.white,
         selectedIndex: _selectedIndex,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (int index) {
