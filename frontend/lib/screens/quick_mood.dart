@@ -129,7 +129,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MoodDescribeScreen(),
+                        builder: (context) => MoodDescribeScreen(mood: moods[moodIndex]),
                       ),
                     );
                   },

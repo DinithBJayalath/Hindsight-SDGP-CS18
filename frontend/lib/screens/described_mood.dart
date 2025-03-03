@@ -2,28 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'mood_impact_screen.dart';
 
-void main() {
-  runApp(const MoodDescribeApp());
-}
+// void main() {
+//   runApp(const MoodDescribeApp());
+// }
 
-class MoodDescribeApp extends StatelessWidget {
-  const MoodDescribeApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MoodDescribeScreen(),
-    );
-  }
-}
+// class MoodDescribeApp extends StatelessWidget {
+//   const MoodDescribeApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: MoodDescribeScreen(),
+//     );
+//   }
+// }
 
 class MoodDescribeScreen extends StatefulWidget {
+  final String mood;
+  const MoodDescribeScreen({Key? key, required this.mood}): super(key: key);
   @override
-  MoodDescribeScreenState createState() => MoodDescribeScreenState();
+  MoodDescribeScreenState createState() => MoodDescribeScreenState(mood: this.mood);
 }
 
 class MoodDescribeScreenState extends State<MoodDescribeScreen> {
+  final String mood;
+  late String emoji;
+  late String text;
+  MoodDescribeScreenState({required this.mood}) {
+    emoji = mood.split(' ')[0];
+    text = mood.split(' ')[1];
+  }
   String selectedMood = "Happy"; // Default mood
   String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
   List<String> emotions = [
@@ -72,10 +81,10 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                   color: Colors.blue.shade100,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
-                    "😊",
-                    style: TextStyle(fontSize: 60),
+                    emoji,
+                    style: const TextStyle(fontSize: 60),
                   ),
                 ),
               ),
@@ -83,7 +92,7 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
 
               // Mood Title
               Text(
-                selectedMood,
+                text,
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
@@ -113,7 +122,7 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.lightBlue.shade200,
+                        color: isSelected ? Colors.blue  : Colors.lightBlue.shade200,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
                       ),
