@@ -76,3 +76,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
         ),
       );
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await context.read<MoodViewModel>().addMoodEntry(
+            MoodEntry(
+              date: DateTime.now(),
+              moodLevel: 5,
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
