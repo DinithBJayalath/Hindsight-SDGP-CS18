@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -35,7 +36,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     fontFamily: 'Montserrat',
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E3E5C),
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -44,7 +45,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   style: TextStyle(
                     fontFamily: 'Montserrat',
                     fontSize: 16,
-                    color: Color(0xFF8F9BB3),
+                    color: Colors.black54,
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -53,8 +54,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   description:
                       'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
                   icon: Icons.self_improvement,
-                  color: const Color(0xFFE0F4FF),
-                  iconColor: const Color(0xFF4A97E9),
                   onTap: () => _handleActivityTap('Deep Breathing'),
                 ),
                 const SizedBox(height: 16),
@@ -63,8 +62,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   description:
                       'A digital canvas for you to draw or doodle your emotions.',
                   icon: Icons.palette,
-                  color: const Color(0xFFFFF3E0),
-                  iconColor: const Color(0xFFFF9800),
                   onTap: () => _handleActivityTap('Expressive Art'),
                 ),
                 const SizedBox(height: 16),
@@ -73,8 +70,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   description:
                       'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
                   icon: Icons.mail,
-                  color: const Color(0xFFE8F5E9),
-                  iconColor: const Color(0xFF66BB6A),
                   onTap: () => _handleActivityTap('Letter to Future Self'),
                 ),
                 const SizedBox(height: 20),
@@ -84,7 +79,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
       ),
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.black.withOpacity(0.03),
         selectedIndex: _selectedIndex,
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (int index) {
           setState(() {
             _selectedIndex = index;
@@ -92,28 +89,28 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined, color: Colors.black54),
+            selectedIcon: Icon(Icons.home, color: Colors.black),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.book_outlined),
-            selectedIcon: Icon(Icons.book),
+            icon: Icon(Icons.book_outlined, color: Colors.black54),
+            selectedIcon: Icon(Icons.book, color: Colors.black),
             label: 'Journal',
           ),
           NavigationDestination(
-            icon: Icon(Icons.mood_outlined),
-            selectedIcon: Icon(Icons.mood),
+            icon: Icon(Icons.mood_outlined, color: Colors.black54),
+            selectedIcon: Icon(Icons.mood, color: Colors.black),
             label: 'Mood',
           ),
           NavigationDestination(
-            icon: Icon(Icons.analytics_outlined),
-            selectedIcon: Icon(Icons.analytics),
+            icon: Icon(Icons.analytics_outlined, color: Colors.black54),
+            selectedIcon: Icon(Icons.analytics, color: Colors.black),
             label: 'Analytics',
           ),
           NavigationDestination(
-            icon: Icon(Icons.sports_gymnastics_outlined),
-            selectedIcon: Icon(Icons.sports_gymnastics),
+            icon: Icon(Icons.sports_gymnastics_outlined, color: Colors.black54),
+            selectedIcon: Icon(Icons.sports_gymnastics, color: Colors.black),
             label: 'Activities',
           ),
         ],
@@ -126,8 +123,6 @@ class ActivityCard extends StatelessWidget {
   final String title;
   final String description;
   final IconData icon;
-  final Color color;
-  final Color iconColor;
   final VoidCallback onTap;
 
   const ActivityCard({
@@ -135,66 +130,97 @@ class ActivityCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.icon,
-    required this.color,
-    required this.iconColor,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: color,
+    return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      icon,
-                      size: 32,
-                      color: iconColor,
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Icons.arrow_forward_ios,
-                    size: 20,
-                    color: iconColor.withOpacity(0.5),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2E3E5C),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 14,
-                  color: const Color(0xFF2E3E5C).withOpacity(0.7),
-                ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFFE0F4FF),
+                const Color(0xFFCCE9FF),
+              ],
+            ),
+            border: Border.all(
+              color: Colors.black12,
+              width: 0.5,
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                spreadRadius: 0,
               ),
             ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.black12,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Icon(
+                            icon,
+                            size: 32,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 20,
+                          color: Colors.black45,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      description,
+                      style: const TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
