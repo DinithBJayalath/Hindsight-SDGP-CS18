@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'mood_impact_screen.dart';
 
 void main() {
   runApp(const MoodDescribeApp());
@@ -140,9 +141,12 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                   ),
                 ),
                 onPressed: () {
-                  // Navigate to the next screen (Replace with actual navigation)
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Next screen with: $selectedEmotion")),
+                  // Navigate to the MoodDescribeScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MoodImpactScreen(),
+                    ),
                   );
                 },
                 child: const Text(
