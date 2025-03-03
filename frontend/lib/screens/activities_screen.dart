@@ -52,7 +52,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   title: 'Deep Breathing',
                   description:
                       'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
-                  icon: Icons.air,
+                  icon: Icons.self_improvement,
                   color: const Color(0xFFE0F4FF),
                   iconColor: const Color(0xFF4A97E9),
                   onTap: () => _handleActivityTap('Deep Breathing'),
