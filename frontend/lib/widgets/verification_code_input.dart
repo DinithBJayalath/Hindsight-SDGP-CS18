@@ -7,11 +7,11 @@ class VerificationCodeInput extends StatefulWidget {
   final bool autofocus;
 
   const VerificationCodeInput({
-    Key? key,
+    super.key,
     required this.onCompleted,
     this.length = 6,
     this.autofocus = true,
-  }) : super(key: key);
+  });
 
   @override
   State<VerificationCodeInput> createState() => _VerificationCodeInputState();

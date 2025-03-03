@@ -3,8 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EmailVerificationService {
-  static final String baseUrl =
-      dotenv.env['API_URL'] ?? 'http://localhost:3000';
+  static final String baseUrl = dotenv.env['API_URL'] ?? 'http://10.0.2.2:3000';
 
   /// Send verification email and get a 6-digit code
   static Future<String?> sendVerificationEmail(String email) async {
@@ -41,7 +40,7 @@ class EmailVerificationService {
         }),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
         return data['success'] ?? false;
       } else {

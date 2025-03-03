@@ -33,89 +33,114 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<bool> showVerificationDialog(String email) async {
     String enteredCode = '';
     bool verified = false;
+    // This loading state will be managed by the dialog itself
+    bool dialogIsLoading = false;
 
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text("Email Verification"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Enter the 6-digit verification code sent to your email.",
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            VerificationCodeInput(
-              onCompleted: (code) {
-                enteredCode = code;
-              },
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () async {
-                // Resend verification code
-                setState(() {
-                  isLoading = true;
-                });
-                await EmailVerificationService.sendVerificationEmail(email);
-                setState(() {
-                  isLoading = false;
-                });
-                if (mounted) {
-                  PopupMessage.show(
-                    context,
-                    "Verification code resent to your email",
-                    isSuccess: true,
-                  );
-                }
-              },
-              child: const Text("Resend Code"),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () async {
-              setState(() {
-                isLoading = true;
-              });
+      builder: (BuildContext dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text("Email Verification"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Enter the 6-digit verification code sent to your email.",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                VerificationCodeInput(
+                  onCompleted: (code) {
+                    enteredCode = code;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: dialogIsLoading
+                      ? null
+                      : () async {
+                          // Use the dialog's own setState
+                          setDialogState(() {
+                            dialogIsLoading = true;
+                          });
 
-              // Verify the entered code
-              verified =
-                  await EmailVerificationService.verifyCode(email, enteredCode);
+                          await EmailVerificationService.sendVerificationEmail(
+                              email);
 
-              setState(() {
-                isLoading = false;
-              });
+                          // Only update state if the dialog is still showing
+                          if (dialogContext.mounted) {
+                            setDialogState(() {
+                              dialogIsLoading = false;
+                            });
 
-              if (verified) {
-                Navigator.of(context).pop();
-              } else {
-                if (mounted) {
-                  PopupMessage.show(
-                    context,
-                    "Invalid verification code. Please try again.",
-                    isSuccess: false,
-                  );
-                }
-              }
-            },
-            child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2))
-                : const Text("Verify"),
-          ),
-        ],
+                            PopupMessage.show(
+                              dialogContext,
+                              "Verification code resent to your email",
+                              isSuccess: true,
+                            );
+                          }
+                        },
+                  child: const Text("Resend Code"),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: dialogIsLoading
+                    ? null
+                    : () {
+                        Navigator.of(dialogContext).pop();
+                      },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: dialogIsLoading
+                    ? null
+                    : () async {
+                        // Use the dialog's own setState
+                        setDialogState(() {
+                          dialogIsLoading = true;
+                        });
+
+                        try {
+                          verified = await EmailVerificationService.verifyCode(
+                              email, enteredCode);
+                        } catch (e) {
+                          verified = false;
+                          print("Error during verification: $e");
+                        }
+
+                        // Only update the UI if the dialog is still showing
+                        if (dialogContext.mounted) {
+                          setDialogState(() {
+                            dialogIsLoading = false;
+                          });
+
+                          if (verified) {
+                            Navigator.of(dialogContext).pop();
+                            PopupMessage.show(
+                                dialogContext, "Verification successful");
+                          } else {
+                            PopupMessage.show(
+                              dialogContext,
+                              "Invalid verification code. Please try again.",
+                              isSuccess: false,
+                            );
+                          }
+                        }
+                      },
+                child: dialogIsLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text("Verify"),
+              ),
+            ],
+          );
+        },
       ),
     );
 
@@ -125,13 +150,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   /// Handles sign-up via email/password.
   void signUpUser() async {
     if (!agreedToTerms) {
-      if (mounted) {
-        PopupMessage.show(
-          context,
-          "Please agree to Terms & Conditions",
-          isSuccess: false,
-        );
-      }
+      PopupMessage.show(
+        context,
+        "Please agree to Terms & Conditions",
+        isSuccess: false,
+      );
       return;
     }
 
@@ -144,17 +167,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      if (mounted) {
-        PopupMessage.show(context, "Please fill in all fields",
-            isSuccess: false);
-      }
+      PopupMessage.show(context, "Please fill in all fields", isSuccess: false);
       return;
     }
 
     if (password != confirmPassword) {
-      if (mounted) {
-        PopupMessage.show(context, "Passwords do not match", isSuccess: false);
-      }
+      PopupMessage.show(context, "Passwords do not match", isSuccess: false);
       return;
     }
 
@@ -166,8 +184,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // First, send verification email
       await EmailVerificationService.sendVerificationEmail(email);
 
+      if (!mounted) return;
+
       // Show the verification popup
       bool codeVerified = await showVerificationDialog(email);
+
+      if (!mounted) return;
 
       if (!codeVerified) {
         setState(() {
@@ -194,14 +216,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             userInfo = Jwt.parseJwt(loginResult['id_token']);
           }
 
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProfileScreen(userInfo: userInfo),
-              ),
-            );
-          }
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProfileScreen(userInfo: userInfo),
+            ),
+          );
         } else {
           PopupMessage.show(context, "Login failed. Please try manually.",
               isSuccess: false);
@@ -211,15 +231,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
             isSuccess: false);
       }
     } catch (e) {
-      if (mounted) {
-        PopupMessage.show(
-            context, "An error occurred during signup: ${e.toString()}",
-            isSuccess: false);
-      }
+      if (!mounted) return;
+
+      PopupMessage.show(
+          context, "An error occurred during signup: ${e.toString()}",
+          isSuccess: false);
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -282,17 +304,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (agreedToTerms) {
                       showDialog(
                         context: context,
-                        builder: (context) => AgreementsPopup(
+                        builder: (dialogContext) => AgreementsPopup(
                           onAccept: () {
                             // User accepts the terms: simply close the dialog.
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                           },
                           onDecline: () {
                             // User declines the terms: reset the checkbox and close the dialog.
                             setState(() {
                               agreedToTerms = false;
                             });
-                            Navigator.of(context).pop();
+                            Navigator.of(dialogContext).pop();
                           },
                         ),
                       );
