@@ -141,7 +141,7 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MoodImpactScreen(),
+                      builder: (context) => MoodImpactScreen(mood: mood, emotion: selectedEmotion),
                     ),
                   );
                 },

@@ -2,32 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // Full-screen mode
-  runApp(MoodImpactApp());
-}
-
-class MoodImpactApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MoodImpactScreen(),
-    );
-  }
-}
-
 class MoodImpactScreen extends StatefulWidget {
+  final String mood;
+  final String? emotion;
+  const MoodImpactScreen({Key? key, required this.mood, required this.emotion}): super(key: key);
   @override
-  MoodImpactScreenState createState() => MoodImpactScreenState();
+  MoodImpactScreenState createState() => MoodImpactScreenState(mood: mood, emotion: emotion);
 }
 
 class MoodImpactScreenState extends State<MoodImpactScreen> {
+  final String mood;
+  late String emoji;
+  late String text;
+  final String? emotion;
+  MoodImpactScreenState({required this.mood, required this.emotion}) {
+    final parts = mood.split(' ');
+    emoji = parts[0];
+    text = parts.sublist(1).join(' ');
+  }
   List<String> impactFactors = [
     "Health", "Fitness", "Self-Care",
     "Family", "Friends", "Work",
-    "Education", "Money"
+    "Education", "Money","Love"
   ];
 
   List<String> placeholderTexts = ["Text", "Text", "Text", "Text", "Text", "Text"];
@@ -66,18 +62,18 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
 
             // Mood Emoji & Text
             Column(
-              children: const [
+              children: [
                 Text(
-                  "😊",
+                  emoji,
                   style: TextStyle(fontSize: 60),
                 ),
                 SizedBox(height: 5),
                 Text(
-                  "Happy",
+                  text,
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "Emotion",
+                  emotion!,
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
