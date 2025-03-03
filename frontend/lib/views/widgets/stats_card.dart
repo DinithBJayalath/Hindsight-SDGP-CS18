@@ -13,3 +13,12 @@ class StatsCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildStatItem('Check-ins', stats['checkIns'] ?? 0),
+            _buildStatItem('Journaling', stats['journaling'] ?? 0),
+            _buildStatItem('Goals', stats['goals'] ?? 0),
+          ],
+        ),
+      ),
+    );
+  }
