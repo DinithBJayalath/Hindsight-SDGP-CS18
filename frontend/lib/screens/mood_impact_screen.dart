@@ -38,7 +38,6 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
       backgroundColor: Colors.black54, // Dark background like the screenshot
       body: Center(
         child: Container(
-          margin: EdgeInsets.all(20),
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
