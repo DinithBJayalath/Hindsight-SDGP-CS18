@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'breathing_exercises_screen.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -62,10 +63,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   }
 
   void _handleActivityTap(String activity) {
-    // TODO: Navigate to respective activity screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Opening $activity...')),
-    );
+    if (activity == 'Deep Breathing') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const BreathingExercisesScreen(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Opening $activity...')),
+      );
+    }
   }
 
   @override
