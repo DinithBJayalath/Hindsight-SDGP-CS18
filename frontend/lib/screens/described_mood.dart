@@ -2,21 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'mood_impact_screen.dart';
 
-// void main() {
-//   runApp(const MoodDescribeApp());
-// }
 
-// class MoodDescribeApp extends StatelessWidget {
-//   const MoodDescribeApp({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       home: MoodDescribeScreen(),
-//     );
-//   }
-// }
 
 class MoodDescribeScreen extends StatefulWidget {
   final String mood;
@@ -30,8 +16,9 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
   late String emoji;
   late String text;
   MoodDescribeScreenState({required this.mood}) {
-    emoji = mood.split(' ')[0];
-    text = mood.split(' ')[1];
+    final parts = mood.split(' ');
+    emoji = parts[0];
+    text = parts.sublist(1).join(' ');
   }
   String selectedMood = "Happy"; // Default mood
   String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());

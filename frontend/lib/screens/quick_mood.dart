@@ -88,7 +88,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 Text(
-                  moods[moodIndex].split(" ")[1], // Text only
+                  moods[moodIndex].split(" ").sublist(1).join(" "), // Text only
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
 
