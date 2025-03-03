@@ -33,3 +33,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         builder: (context, viewModel, child) {
       if (viewModel.isLoading) {
         return const Center(child: CircularProgressIndicator());
+      }
+
+      return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            const Text(
+            'Mood Dashboard',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          StatsCard(stats: viewModel.stats),
+          const SizedBox(height: 16),
+          Expanded(
+          child: MoodCalendar(entries: viewModel.entries),
