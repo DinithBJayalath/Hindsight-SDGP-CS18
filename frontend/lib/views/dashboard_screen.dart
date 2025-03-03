@@ -1,4 +1,4 @@
-// lib/views/dashboard_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/models/mood_entry.dart';  // Add this import
@@ -43,8 +43,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const Text(
                     'Mood Dashboard',
                     style: TextStyle(
-                     fontSize: 24,
-                     fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -75,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             );
           },
         ),
-      );
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           await context.read<MoodViewModel>().addMoodEntry(
