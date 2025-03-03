@@ -22,67 +22,64 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
-              const Text(
-                'Activities',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2E3E5C),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                const Text(
+                  'Activities',
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E3E5C),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Choose an activity to help improve your mental wellbeing',
-                style: TextStyle(
-                  fontFamily: 'Montserrat',
-                  fontSize: 16,
-                  color: Color(0xFF8F9BB3),
+                const SizedBox(height: 12),
+                const Text(
+                  'Choose an activity to help improve your mental wellbeing',
+                  style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontSize: 16,
+                    color: Color(0xFF8F9BB3),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ActivityCard(
-                      title: 'Deep Breathing',
-                      description:
-                          'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
-                      icon: Icons.air,
-                      color: const Color(0xFFE0F4FF),
-                      iconColor: const Color(0xFF4A97E9),
-                      onTap: () => _handleActivityTap('Deep Breathing'),
-                    ),
-                    ActivityCard(
-                      title: 'Expressive Art',
-                      description:
-                          'A digital canvas for you to draw or doodle your emotions.',
-                      icon: Icons.palette,
-                      color: const Color(0xFFFFF3E0),
-                      iconColor: const Color(0xFFFF9800),
-                      onTap: () => _handleActivityTap('Expressive Art'),
-                    ),
-                    ActivityCard(
-                      title: 'Letter to Future Self',
-                      description:
-                          'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
-                      icon: Icons.mail,
-                      color: const Color(0xFFE8F5E9),
-                      iconColor: const Color(0xFF66BB6A),
-                      onTap: () => _handleActivityTap('Letter to Future Self'),
-                    ),
-                  ],
+                const SizedBox(height: 40),
+                ActivityCard(
+                  title: 'Deep Breathing',
+                  description:
+                      'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
+                  icon: Icons.air,
+                  color: const Color(0xFFE0F4FF),
+                  iconColor: const Color(0xFF4A97E9),
+                  onTap: () => _handleActivityTap('Deep Breathing'),
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 16),
+                ActivityCard(
+                  title: 'Expressive Art',
+                  description:
+                      'A digital canvas for you to draw or doodle your emotions.',
+                  icon: Icons.palette,
+                  color: const Color(0xFFFFF3E0),
+                  iconColor: const Color(0xFFFF9800),
+                  onTap: () => _handleActivityTap('Expressive Art'),
+                ),
+                const SizedBox(height: 16),
+                ActivityCard(
+                  title: 'Letter to Future Self',
+                  description:
+                      'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
+                  icon: Icons.mail,
+                  color: const Color(0xFFE8F5E9),
+                  iconColor: const Color(0xFF66BB6A),
+                  onTap: () => _handleActivityTap('Letter to Future Self'),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -145,62 +142,59 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Material(
-        color: color,
+    return Material(
+      color: color,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        icon,
-                        size: 32,
-                        color: iconColor,
-                      ),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    const Spacer(),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      size: 20,
-                      color: iconColor.withOpacity(0.5),
+                    child: Icon(
+                      icon,
+                      size: 32,
+                      color: iconColor,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E3E5C),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 14,
-                    color: const Color(0xFF2E3E5C).withOpacity(0.7),
+                  const Spacer(),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: 20,
+                    color: iconColor.withOpacity(0.5),
                   ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2E3E5C),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                description,
+                style: TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 14,
+                  color: const Color(0xFF2E3E5C).withOpacity(0.7),
+                ),
+              ),
+            ],
           ),
         ),
       ),
