@@ -8,6 +8,10 @@ class MoodViewModel extends ChangeNotifier {
   Map<String, int> _stats = {};
   bool _isLoading = false;
 
+  List<MoodEntry> get entries => _entries;
+  Map<String, int> get stats => _stats;
+  bool get isLoading => _isLoading;
+
   Future<void> loadData() async {
     _isLoading = true;
     notifyListeners();
