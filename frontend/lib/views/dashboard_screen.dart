@@ -28,27 +28,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
+      body: SafeArea(
         child: Consumer<MoodViewModel>(
-        builder: (context, viewModel, child) {
-      if (viewModel.isLoading) {
-        return const Center(child: CircularProgressIndicator());
-      }
+          builder: (context, viewModel, child) {
+            if (viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-      return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            const Text(
-            'Mood Dashboard',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          StatsCard(stats: viewModel.stats),
-          const SizedBox(height: 16),
-          Expanded(
-          child: MoodCalendar(entries: viewModel.entries),
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Mood Dashboard',
+                    style: TextStyle(
+                     fontSize: 24,
+                     fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  StatsCard(stats: viewModel.stats),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: MoodCalendar(entries: viewModel.entries),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    height: 250, // Increased height for better visibility
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.1),
+                          spreadRadius: 1,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: MoodChart(entries: testData), // Use test data here
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
