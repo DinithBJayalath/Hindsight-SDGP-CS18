@@ -20,12 +20,6 @@
       "languageVersion": "3.3"
     },
     {
-      "name": "font_awesome_flutter",
-      "rootUri": "file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/font_awesome_flutter-10.8.0",
-      "packageUri": "lib/",
-      "languageVersion": "3.0"
-    },
-    {
       "name": "material_color_utilities",
       "rootUri": "file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1",
       "packageUri": "lib/",
@@ -34,6 +28,18 @@
     {
       "name": "meta",
       "rootUri": "file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.15.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "nested",
+      "rootUri": "file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "provider",
+      "rootUri": "file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -50,13 +56,13 @@
       "languageVersion": "2.14"
     },
     {
-      "name": "mental_health_journal_app",
+      "name": "hindsight_sdgp_cs18",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     }
   ],
-  "generated": "2025-03-02T20:36:34.272094Z",
+  "generated": "2025-03-03T00:18:23.417313Z",
   "generator": "pub",
   "generatorVersion": "3.6.2",
   "flutterRoot": "file:///C:/dev/flutter",

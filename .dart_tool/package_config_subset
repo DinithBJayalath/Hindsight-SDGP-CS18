@@ -6,10 +6,6 @@ collection
 3.4
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.0/
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.0/lib/
-font_awesome_flutter
-3.0
-file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/font_awesome_flutter-10.8.0/
-file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/font_awesome_flutter-10.8.0/lib/
 material_color_utilities
 2.17
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/material_color_utilities-0.11.1/
@@ -18,6 +14,14 @@ meta
 2.12
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.15.0/
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/meta-1.15.0/lib/
+nested
+2.12
+file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/
+file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib/
+provider
+2.12
+file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/
+file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2/lib/
 vector_math
 2.14
 file:///C:/Users/rkeka/AppData/Local/Pub/Cache/hosted/pub.dev/vector_math-2.1.4/
@@ -30,7 +34,7 @@ flutter
 3.3
 file:///C:/dev/flutter/packages/flutter/
 file:///C:/dev/flutter/packages/flutter/lib/
-mental_health_journal_app
+hindsight_sdgp_cs18
 2.12
 file:///D:/Work/Projects/Hindsight-SDGP-CS18/
 file:///D:/Work/Projects/Hindsight-SDGP-CS18/lib/

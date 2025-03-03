@@ -83,11 +83,11 @@ class _HomeContentState extends State<HomeContent> {
     return Container(
       color: const Color.fromARGB(
           255, 245, 250, 252), // Light blue background like in the image
-      child: Column(
-        children: [
-          // Main content
-          Expanded(
-            child: Padding(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Main content
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Column(
                 children: [
@@ -119,16 +119,15 @@ class _HomeContentState extends State<HomeContent> {
                       GestureDetector(
                         onTap: _navigateToProfile,
                         child: CircleAvatar(
-                          radius: 20,
-                          child: Icon(Icons.person,
-                              color: Colors.white), // Placeholder icon
+                          radius: 20, // Placeholder icon
                           backgroundColor: Colors.grey,
+                          child: Icon(Icons.person, color: Colors.white),
                         ),
                       ),
                     ],
                   ),
 
-                  // Removed SizedBox to eliminate gap between welcome message and jar
+                  const SizedBox(height: 10),
 
                   // Jar section directly under the header
                   Center(
@@ -144,17 +143,142 @@ class _HomeContentState extends State<HomeContent> {
                     ),
                   ),
 
+                  const SizedBox(height: 10),
+
                   // Mood selection section
                   _buildMoodSelectionSection(),
+
+                  const SizedBox(height: 10),
+
+                  // Last seven days calendar (improved)
+                  _buildLastSevenDaysCalendar(),
+
+                  const SizedBox(height: 10),
+
+                  // Daily Quote
+                  _buildDailyQuote(),
 
                   const SizedBox(height: 20),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDailyQuote() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          Text(
+            '"The only way to do great work is to love what you do."',
+            style: TextStyle(
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            '- Steve Jobs',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildLastSevenDaysCalendar() {
+    final today = DateTime.now();
+    final lastSevenDays =
+        List.generate(7, (index) => today.subtract(Duration(days: index)));
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'January', // Month name
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: lastSevenDays.map((date) {
+              return Column(
+                children: [
+                  Text(
+                    '${date.day}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Replace with actual emoji based on mood
+                  Text(
+                    _getEmojiForDate(date), // Function to get emoji
+                    style: const TextStyle(
+                      fontSize: 24,
+                    ),
+                  ),
+                  // Add a small description or mood label
+                  Text(
+                    _getMoodLabelForDate(date), // Function to get mood label
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getEmojiForDate(DateTime date) {
+    // Placeholder logic for emoji selection
+    // Replace with actual logic to get mood for the date
+    return "😊"; // Example emoji
+  }
+
+  String _getMoodLabelForDate(DateTime date) {
+    // Placeholder logic for mood label selection
+    // Replace with actual logic to get mood for the date
+    return "Happy"; // Example mood label
   }
 
   Widget _buildMoodSelectionSection() {

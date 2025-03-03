@@ -50,6 +50,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
   late AnimationController _lidSlideController;
   late Animation<Offset> _lidSlideAnimation;
   bool _isAnimating = false;
+  bool _isLidOpen = true; // State to track if the lid is open
 
   // Physics parameters
   final double emojiSize = 36.0;
@@ -308,12 +309,19 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     }
   }
 
+  void closeLid() {
+    setState(() {
+      _isLidOpen = false; // Close the lid
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (widget.onJarTap != null) {
           widget.onJarTap!();
+          closeLid(); // Close the lid when tapped
         }
       },
       child: SizedBox(
@@ -370,7 +378,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
       width: jarWidth,
       height: jarHeight,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
           color: Colors.grey.withOpacity(0.3),
@@ -380,15 +388,22 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(0.7),
-            Colors.white.withOpacity(0.2),
+            Colors.white.withOpacity(0.9),
+            Colors.white.withOpacity(0.1),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            spreadRadius: 2,
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(5, 5),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.5),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(-5, -5),
           ),
         ],
       ),
