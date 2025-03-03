@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/welcome_screen.dart';
+// import 'package:frontend/screens/welcome_screen.dart';
+import 'package:frontend/screens/quick_mood.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: const WelcomeScreen(),
+      home: MoodTrackerScreen(),
     );
   }
 }

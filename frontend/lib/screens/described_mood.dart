@@ -1,0 +1,159 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+void main() {
+  runApp(const MoodDescribeApp());
+}
+
+class MoodDescribeApp extends StatelessWidget {
+  const MoodDescribeApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MoodDescribeScreen(),
+    );
+  }
+}
+
+class MoodDescribeScreen extends StatefulWidget {
+  @override
+  MoodDescribeScreenState createState() => MoodDescribeScreenState();
+}
+
+class MoodDescribeScreenState extends State<MoodDescribeScreen> {
+  String selectedMood = "Happy"; // Default mood
+  String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
+  List<String> emotions = [
+    "Excited", "Relaxed", "Grateful", "Motivated",
+    "Energetic", "Content", "Optimistic", "Peaceful"
+  ];
+  String? selectedEmotion; // Track selected emotion
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Top Row (Back Button, Date, Close Button)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.black),
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Animated Mood Emoji
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade100,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Text(
+                    "😊",
+                    style: TextStyle(fontSize: 60),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Mood Title
+              Text(
+                selectedMood,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+
+              // "What describes this feeling?" Text
+              const Text(
+                "What described this feeling?",
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 5),
+              const Divider(thickness: 1),
+
+              const SizedBox(height: 20),
+
+              // Emotion Selection Buttons (Grid)
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: emotions.map((emotion) {
+                  bool isSelected = selectedEmotion == emotion;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedEmotion = emotion; // Select emotion
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.blue : Colors.lightBlue.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
+                      ),
+                      child: Text(
+                        emotion,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 40),
+
+              // "Next" Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: selectedEmotion != null ? Colors.blueAccent : Colors.grey,
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  // Navigate to the next screen (Replace with actual navigation)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Next screen with: $selectedEmotion")),
+                  );
+                },
+                child: const Text(
+                  "Next",
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
