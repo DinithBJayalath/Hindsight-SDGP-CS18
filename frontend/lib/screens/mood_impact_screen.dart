@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky); // Full-screen mode
   runApp(MoodImpactApp());
 }
 
@@ -35,99 +38,110 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
     String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
 
     return Scaffold(
-      backgroundColor: Colors.black54, // Dark background like the screenshot
-      body: Center(
-        child: Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Header Row
-              Row(
+      backgroundColor: Colors.white, // Full-screen background
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Text(
                     formattedDate,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () {},
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+            ),
 
-              // Mood Emoji & Text
-              Column(
+            // Mood Emoji & Text
+            Column(
+              children: const [
+                Text(
+                  "😊",
+                  style: TextStyle(fontSize: 60),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "Happy",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Emotion",
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+
+            // Question Text
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
                 children: [
                   Text(
-                    "😊",
-                    style: TextStyle(fontSize: 60),
+                    "What's having the biggest impact on you?",
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 5),
-                  Text(
-                    "Happy",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Emotion, Emotion, Emotion",
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
+                  Divider(thickness: 1),
                 ],
               ),
-              SizedBox(height: 15),
+            ),
+            const SizedBox(height: 10),
 
-              // Question Text
-              Text(
-                "What's having the biggest impact on you?",
-                style: TextStyle(fontSize: 16),
+            // Impact Factor Buttons (Scrollable)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    alignment: WrapAlignment.center,
+                    children: [
+                      ...impactFactors.map((factor) => _buildSelectableButton(factor)),
+                      ...placeholderTexts.map((text) => _buildSelectableButton(text)),
+                    ],
+                  ),
+                ),
               ),
-              Divider(thickness: 1),
+            ),
 
-              SizedBox(height: 10),
+            const SizedBox(height: 20),
 
-              // Impact Factor Buttons
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  ...impactFactors.map((factor) => _buildSelectableButton(factor)),
-                  ...placeholderTexts.map((text) => _buildSelectableButton(text)),
-                ],
-              ),
-
-              SizedBox(height: 20),
-
-              // Done Button
-              ElevatedButton(
+            // Done Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+              child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightBlue,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  minimumSize: Size(double.infinity, 50),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {
-                  // Perform action when done is clicked
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text("Selected: ${selectedFactors.join(", ")}")),
                   );
                 },
-                child: Text(
+                child: const Text(
                   "Done",
                   style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -147,7 +161,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
         });
       },
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? Colors.blueAccent : Colors.lightBlue.shade200,
           borderRadius: BorderRadius.circular(10),
