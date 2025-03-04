@@ -51,76 +51,71 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
           ),
         ),
         child: SafeArea(
-          child: Stack(
-            children: [
-              CustomScrollView(
-                slivers: [
-                  SliverAppBar(
-                    expandedHeight: 200,
-                    floating: false,
-                    pinned: false,
-                    backgroundColor: Colors.transparent,
-                    leading: IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios,
-                          color: Colors.black87),
-                    ),
-                    flexibleSpace: FlexibleSpaceBar(
-                      background: Stack(
-                        children: [
-                          Positioned(
-                            right: -50,
-                            top: -50,
-                            child: Container(
-                              width: 200,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white.withOpacity(0.2),
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 200,
+                floating: false,
+                pinned: false,
+                backgroundColor: Colors.transparent,
+                leading: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Stack(
+                    children: [
+                      Positioned(
+                        right: -50,
+                        top: -50,
+                        child: Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Expressive Art',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(24.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  'Expressive Art',
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'Draw your thoughts. Express yourself freely.',
-                                  style: TextStyle(
-                                    fontFamily: 'Montserrat',
-                                    fontSize: 16,
-                                    color: Colors.black54,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ],
+                            const SizedBox(height: 16),
+                            const Text(
+                              'Draw your thoughts. Express yourself freely.',
+                              style: TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 16,
+                                color: Colors.black54,
+                                height: 1.5,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
+              SliverToBoxAdapter(
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(24.0),
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height -
+                        200, // Subtract header height
+                  ),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -135,7 +130,8 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                       ),
                     ],
                   ),
-                  child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
