@@ -26,7 +26,6 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
     "Education", "Money","Love"
   ];
 
-  List<String> placeholderTexts = ["Text", "Text", "Text", "Text", "Text", "Text"];
   List<String> selectedFactors = [];
 
   @override
@@ -106,8 +105,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
                     runSpacing: 10,
                     alignment: WrapAlignment.center,
                     children: [
-                      ...impactFactors.map((factor) => _buildSelectableButton(factor)),
-                      ...placeholderTexts.map((text) => _buildSelectableButton(text)),
+                      ...impactFactors.map((factor) => _buildSelectableButton(factor))
                     ],
                   ),
                 ),
