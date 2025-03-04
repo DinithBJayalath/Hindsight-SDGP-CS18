@@ -23,7 +23,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   List<String> impactFactors = [
     "Health", "Fitness", "Self-Care",
     "Family", "Friends", "Work",
-    "Education", "Money","Love"
+    "Education", "Money","Love",
+    "Vacation", "Weather", "Traffic"
   ];
 
   List<String> selectedFactors = [];
