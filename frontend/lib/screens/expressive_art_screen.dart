@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'drawing_canvas_screen.dart';
 
 class Artwork {
   final String title;
@@ -50,67 +51,76 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
           ),
         ),
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 200,
-                floating: false,
-                pinned: false,
-                backgroundColor: Colors.transparent,
-                leading: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
-                ),
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    children: [
-                      Positioned(
-                        right: -50,
-                        top: -50,
-                        child: Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.2),
+          child: Stack(
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 200,
+                    floating: false,
+                    pinned: false,
+                    backgroundColor: Colors.transparent,
+                    leading: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios,
+                          color: Colors.black87),
+                    ),
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Stack(
+                        children: [
+                          Positioned(
+                            right: -50,
+                            top: -50,
+                            child: Container(
+                              width: 200,
+                              height: 200,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white.withOpacity(0.2),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'Expressive Art',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Expressive Art',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'Draw your thoughts. Express yourself freely.',
+                                  style: TextStyle(
+                                    fontFamily: 'Montserrat',
+                                    fontSize: 16,
+                                    color: Colors.black54,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'Draw your thoughts. Express yourself freely.',
-                              style: TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 16,
-                                color: Colors.black54,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-              SliverToBoxAdapter(
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
                 child: Container(
                   width: double.infinity,
+                  padding: const EdgeInsets.all(24.0),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -125,16 +135,22 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                       ),
                     ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                  child: SingleChildScrollView(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // New Drawing Button
                         Center(
                           child: ElevatedButton(
                             onPressed: () {
-                              // TODO: Navigate to drawing screen
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DrawingCanvasScreen(),
+                                ),
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE0F4FF),
@@ -166,7 +182,6 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // Saved Artworks Section
                         const Text(
                           'Your Artworks',
                           style: TextStyle(
