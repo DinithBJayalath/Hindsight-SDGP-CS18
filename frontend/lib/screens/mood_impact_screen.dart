@@ -34,7 +34,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
     String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
 
     return Scaffold(
-      backgroundColor: Colors.white, // Full-screen background
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [

@@ -37,7 +37,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue.shade900, Colors.blue.shade700],
+            colors: [Colors.blue.shade900, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -50,16 +50,16 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
               children: [
                 Text(
                   formattedDate,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black ),
                 ),
                 SizedBox(height: 20),
                 Text(
                   "Hey, $userName!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black ),
                 ),
                 Text(
                   "How are you feeling today?",
-                  style: TextStyle(fontSize: 18, color: Colors.white70),
+                  style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
                 SizedBox(height: 30),
 
@@ -85,11 +85,11 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
                 Text(
                   "I'm Feeling",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: Colors.black),
                 ),
                 Text(
                   moods[moodIndex].split(" ").sublist(1).join(" "), // Text only
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
 
                 SizedBox(height: 20),
@@ -112,8 +112,8 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("😢 Very Sad", style: TextStyle(color: Colors.white70)),
-                    Text("😄 Very Happy", style: TextStyle(color: Colors.white70)),
+                    Text("😢 Very Sad", style: TextStyle(color: Colors.black)),
+                    Text("😄 Very Happy", style: TextStyle(color: Colors.black)),
                   ],
                 ),
 
@@ -121,7 +121,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.blue,
                     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   ),
                   onPressed: () {
