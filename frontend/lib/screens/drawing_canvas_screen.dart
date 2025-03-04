@@ -33,17 +33,14 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
-      final availableHeight =
-          size.height - 300; // Account for header and toolbar
+      final availableHeight = size.height - 200; // Account for toolbar only
 
-      // Set a maximum size for better performance
-      canvasWidth = size.width;
-      canvasHeight = availableHeight;
-
-      if (canvasWidth > 800) canvasWidth = 800;
-      if (canvasHeight > 1000) canvasHeight = 1000;
-
-      _initializeCanvas();
+      setState(() {
+        // Set fixed dimensions for better performance
+        canvasWidth = 800;
+        canvasHeight = availableHeight < 1200 ? availableHeight : 1200;
+        _initializeCanvas();
+      });
     });
   }
 
@@ -334,119 +331,136 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Main Content
-            Column(
-              children: [
-                // Header with blue background
-                Container(
-                  color: const Color(0xFFE0F4FF),
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.arrow_back_ios,
-                            color: Colors.black87),
-                      ),
-                      const Spacer(),
-                      // Timer Display
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${_remainingSeconds ~/ 60}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
-                          style: const TextStyle(
-                            fontFamily: 'Montserrat',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        onPressed: _isTimerRunning ? _stopTimer : _startTimer,
-                        icon: Icon(
-                          _isTimerRunning ? Icons.pause : Icons.play_arrow,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: _showTimerSettings,
-                        icon: const Icon(Icons.timer, color: Colors.black87),
-                      ),
-                    ],
+            // Blue Header
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: 60,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE0F4FF),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(15),
+                    bottomRight: Radius.circular(15),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                // Drawing Canvas
-                Expanded(
-                  child: Center(
-                    child: Container(
-                      width: canvasWidth,
-                      height: canvasHeight,
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios,
+                          color: Colors.black87),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        border: Border.all(color: Colors.black12),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: GestureDetector(
-                          onTapDown: currentTool == DrawingTool.fill
-                              ? _handleCanvasTap
-                              : null,
-                          onPanStart: (details) {
-                            if (currentTool != DrawingTool.fill) {
-                              // Save state before new stroke
-                              undoCanvasPixels.add(_copyCanvasPixels());
-                              redoCanvasPixels.clear();
-
-                              setState(() {
-                                points.add(DrawingPoint(
-                                  offset: details.localPosition,
-                                  paint: _getPaintForTool(),
-                                  type: DrawingPointType.start,
-                                ));
-                              });
-                            }
-                          },
-                          onPanUpdate: (details) {
-                            if (currentTool != DrawingTool.fill) {
-                              setState(() {
-                                points.add(DrawingPoint(
-                                  offset: details.localPosition,
-                                  paint: _getPaintForTool(),
-                                  type: DrawingPointType.update,
-                                ));
-                              });
-                            }
-                          },
-                          onPanEnd: (_) {
-                            if (currentTool != DrawingTool.fill) {
-                              setState(() {
-                                points.add(null);
-                              });
-                            }
-                          },
-                          child: CustomPaint(
-                            painter: DrawingPainter(
-                              points: points,
-                              canvasPixels: canvasPixels,
-                              scaleFactor: scaleFactor,
-                            ),
-                            size: Size(canvasWidth, canvasHeight),
-                          ),
+                      child: Text(
+                        '${_remainingSeconds ~/ 60}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _isTimerRunning ? _stopTimer : _startTimer,
+                      icon: Icon(
+                        _isTimerRunning ? Icons.pause : Icons.play_arrow,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: _showTimerSettings,
+                      icon: const Icon(Icons.timer, color: Colors.black87),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // Drawing Canvas
+            Positioned(
+              top: 60,
+              left: 0,
+              right: 0,
+              bottom: 200, // Space for toolbar
+              child: Center(
+                child: Container(
+                  width: 800,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: GestureDetector(
+                      onTapDown: currentTool == DrawingTool.fill
+                          ? _handleCanvasTap
+                          : null,
+                      onPanStart: (details) {
+                        if (currentTool != DrawingTool.fill) {
+                          // Save state before new stroke
+                          undoCanvasPixels.add(_copyCanvasPixels());
+                          redoCanvasPixels.clear();
+
+                          setState(() {
+                            points.add(DrawingPoint(
+                              offset: details.localPosition,
+                              paint: _getPaintForTool(),
+                              type: DrawingPointType.start,
+                            ));
+                          });
+                        }
+                      },
+                      onPanUpdate: (details) {
+                        if (currentTool != DrawingTool.fill) {
+                          setState(() {
+                            points.add(DrawingPoint(
+                              offset: details.localPosition,
+                              paint: _getPaintForTool(),
+                              type: DrawingPointType.update,
+                            ));
+                          });
+                        }
+                      },
+                      onPanEnd: (_) {
+                        if (currentTool != DrawingTool.fill) {
+                          setState(() {
+                            points.add(null);
+                          });
+                        }
+                      },
+                      child: CustomPaint(
+                        painter: DrawingPainter(
+                          points: points,
+                          canvasPixels: canvasPixels,
+                          scaleFactor: scaleFactor,
+                        ),
+                        size: Size(800, canvasHeight),
                       ),
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
             // Bottom Toolbar
             Positioned(
@@ -573,11 +587,9 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
       onPressed: () {
         setState(() {
           currentTool = tool;
-          if (tool == DrawingTool.eraser) {
-            isEraser = true;
-          } else {
-            isEraser = false;
-          }
+          isEraser = tool == DrawingTool.eraser;
+          // Reset stroke width based on tool
+          strokeWidth = _getDefaultStrokeWidth(tool);
         });
       },
       icon: Icon(
@@ -585,6 +597,21 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
         color: isSelected ? Colors.blue : Colors.black54,
       ),
     );
+  }
+
+  double _getDefaultStrokeWidth(DrawingTool tool) {
+    switch (tool) {
+      case DrawingTool.pen:
+        return 2.0;
+      case DrawingTool.pencil:
+        return 1.0;
+      case DrawingTool.brush:
+        return 5.0;
+      case DrawingTool.eraser:
+        return 20.0;
+      case DrawingTool.fill:
+        return strokeWidth; // Keep current width for fill tool
+    }
   }
 
   Paint _getPaintForTool() {
