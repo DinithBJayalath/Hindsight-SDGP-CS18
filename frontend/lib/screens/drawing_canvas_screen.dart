@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:async';
+import 'dart:math';
 
 class DrawingCanvasScreen extends StatefulWidget {
   const DrawingCanvasScreen({super.key});
@@ -12,6 +13,8 @@ class DrawingCanvasScreen extends StatefulWidget {
 class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   final List<DrawingPoint?> points = [];
   final List<DrawingPoint?> redoPoints = [];
+  final List<List<List<Color>>> undoCanvasPixels = [];
+  final List<List<List<Color>>> redoCanvasPixels = [];
   Color selectedColor = Colors.black;
   double strokeWidth = 3.0;
   bool isEraser = false;
@@ -20,6 +23,108 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   bool _isTimerRunning = false;
   final TextEditingController _journalController = TextEditingController();
   DrawingTool currentTool = DrawingTool.pen;
+  List<List<Color>> canvasPixels = [];
+  double canvasWidth = 0;
+  double canvasHeight = 0;
+  double scaleFactor = 2.0; // Added scale factor
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final size = MediaQuery.of(context).size;
+      final availableHeight =
+          size.height - 300; // Account for header and toolbar
+
+      // Set a maximum size for better performance
+      canvasWidth = size.width;
+      canvasHeight = availableHeight;
+
+      if (canvasWidth > 800) canvasWidth = 800;
+      if (canvasHeight > 1000) canvasHeight = 1000;
+
+      _initializeCanvas();
+    });
+  }
+
+  void _initializeCanvas() {
+    final width = (canvasWidth / scaleFactor).ceil();
+    final height = (canvasHeight / scaleFactor).ceil();
+    canvasPixels = List.generate(
+      height,
+      (y) => List.generate(width, (x) => Colors.white),
+    );
+    // Save initial state for undo
+    undoCanvasPixels.add(_copyCanvasPixels());
+  }
+
+  List<List<Color>> _copyCanvasPixels() {
+    return List.generate(
+      canvasPixels.length,
+      (y) => List.from(canvasPixels[y]),
+    );
+  }
+
+  void _floodFill(Offset startPoint) {
+    if (canvasPixels.isEmpty) return;
+
+    // Save state before fill for undo
+    undoCanvasPixels.add(_copyCanvasPixels());
+    redoCanvasPixels.clear();
+
+    final targetColor = Colors.white;
+    final replacementColor = selectedColor;
+
+    final scaledX =
+        ((startPoint.dx / canvasWidth) * canvasPixels[0].length).floor();
+    final scaledY =
+        ((startPoint.dy / canvasHeight) * canvasPixels.length).floor();
+
+    if (scaledX < 0 ||
+        scaledX >= canvasPixels[0].length ||
+        scaledY < 0 ||
+        scaledY >= canvasPixels.length) {
+      return;
+    }
+
+    if (canvasPixels[scaledY][scaledX] == replacementColor) return;
+
+    final queue = <Point<int>>[];
+    queue.add(Point(scaledX, scaledY));
+
+    while (queue.isNotEmpty) {
+      final point = queue.removeAt(0);
+      final x = point.x;
+      final y = point.y;
+
+      if (x < 0 ||
+          x >= canvasPixels[0].length ||
+          y < 0 ||
+          y >= canvasPixels.length) continue;
+      if (canvasPixels[y][x] != targetColor) continue;
+
+      canvasPixels[y][x] = replacementColor;
+
+      if (x + 1 < canvasPixels[0].length) queue.add(Point(x + 1, y));
+      if (x - 1 >= 0) queue.add(Point(x - 1, y));
+      if (y + 1 < canvasPixels.length) queue.add(Point(x, y + 1));
+      if (y - 1 >= 0) queue.add(Point(x, y - 1));
+    }
+
+    setState(() {
+      points.add(DrawingPoint(
+        offset: startPoint,
+        paint: _getPaintForTool(),
+        type: DrawingPointType.fill,
+      ));
+    });
+  }
+
+  void _handleCanvasTap(TapDownDetails details) {
+    if (currentTool == DrawingTool.fill) {
+      _floodFill(details.localPosition);
+    }
+  }
 
   @override
   void dispose() {
@@ -100,17 +205,29 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   }
 
   void _undo() {
-    if (points.isNotEmpty) {
+    if (points.isNotEmpty || undoCanvasPixels.length > 1) {
       setState(() {
-        redoPoints.add(points.removeLast());
+        if (points.isNotEmpty) {
+          redoPoints.add(points.removeLast());
+        }
+        if (undoCanvasPixels.length > 1) {
+          redoCanvasPixels.add(_copyCanvasPixels());
+          canvasPixels = undoCanvasPixels.removeLast();
+        }
       });
     }
   }
 
   void _redo() {
-    if (redoPoints.isNotEmpty) {
+    if (redoPoints.isNotEmpty || redoCanvasPixels.isNotEmpty) {
       setState(() {
-        points.add(redoPoints.removeLast());
+        if (redoPoints.isNotEmpty) {
+          points.add(redoPoints.removeLast());
+        }
+        if (redoCanvasPixels.isNotEmpty) {
+          undoCanvasPixels.add(_copyCanvasPixels());
+          canvasPixels = redoCanvasPixels.removeLast();
+        }
       });
     }
   }
@@ -129,8 +246,14 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
           TextButton(
             onPressed: () {
               setState(() {
+                // Save current state for undo
+                undoCanvasPixels.add(_copyCanvasPixels());
+                redoCanvasPixels.clear();
+
+                // Clear everything
                 points.clear();
                 redoPoints.clear();
+                _initializeCanvas();
               });
               Navigator.pop(context);
             },
@@ -262,39 +385,62 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
                 ),
                 // Drawing Canvas
                 Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child: ClipRect(
-                      child: GestureDetector(
-                        onPanStart: (details) {
-                          setState(() {
-                            points.add(
-                              DrawingPoint(
-                                offset: details.localPosition,
-                                paint: _getPaintForTool(),
-                              ),
-                            );
-                            redoPoints.clear();
-                          });
-                        },
-                        onPanUpdate: (details) {
-                          setState(() {
-                            points.add(
-                              DrawingPoint(
-                                offset: details.localPosition,
-                                paint: _getPaintForTool(),
-                              ),
-                            );
-                          });
-                        },
-                        onPanEnd: (details) {
-                          setState(() {
-                            points.add(null);
-                          });
-                        },
-                        child: CustomPaint(
-                          painter: DrawingPainter(points: points),
-                          child: Container(),
+                  child: Center(
+                    child: Container(
+                      width: canvasWidth,
+                      height: canvasHeight,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: GestureDetector(
+                          onTapDown: currentTool == DrawingTool.fill
+                              ? _handleCanvasTap
+                              : null,
+                          onPanStart: (details) {
+                            if (currentTool != DrawingTool.fill) {
+                              // Save state before new stroke
+                              undoCanvasPixels.add(_copyCanvasPixels());
+                              redoCanvasPixels.clear();
+
+                              setState(() {
+                                points.add(DrawingPoint(
+                                  offset: details.localPosition,
+                                  paint: _getPaintForTool(),
+                                  type: DrawingPointType.start,
+                                ));
+                              });
+                            }
+                          },
+                          onPanUpdate: (details) {
+                            if (currentTool != DrawingTool.fill) {
+                              setState(() {
+                                points.add(DrawingPoint(
+                                  offset: details.localPosition,
+                                  paint: _getPaintForTool(),
+                                  type: DrawingPointType.update,
+                                ));
+                              });
+                            }
+                          },
+                          onPanEnd: (_) {
+                            if (currentTool != DrawingTool.fill) {
+                              setState(() {
+                                points.add(null);
+                              });
+                            }
+                          },
+                          child: CustomPaint(
+                            painter: DrawingPainter(
+                              points: points,
+                              canvasPixels: canvasPixels,
+                              scaleFactor: scaleFactor,
+                            ),
+                            size: Size(canvasWidth, canvasHeight),
+                          ),
                         ),
                       ),
                     ),
@@ -333,6 +479,8 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
                         _buildToolButton(DrawingTool.pen, Icons.edit),
                         _buildToolButton(DrawingTool.pencil, Icons.create),
                         _buildToolButton(DrawingTool.brush, Icons.brush),
+                        _buildToolButton(
+                            DrawingTool.fill, Icons.format_color_fill),
                         _buildToolButton(
                             DrawingTool.eraser, Icons.auto_fix_high),
                       ],
@@ -442,53 +590,59 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   Paint _getPaintForTool() {
     final paint = Paint()
       ..color = isEraser ? Colors.white : selectedColor
+      ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
+      ..style = PaintingStyle.stroke;
 
     switch (currentTool) {
       case DrawingTool.pen:
-        paint
-          ..strokeWidth = isEraser ? strokeWidth * 2 : strokeWidth
-          ..style = PaintingStyle.stroke;
+        paint.strokeWidth = 2.0;
         break;
       case DrawingTool.pencil:
-        paint
-          ..strokeWidth = isEraser ? strokeWidth * 2 : strokeWidth * 0.5
-          ..style = PaintingStyle.stroke;
+        paint.strokeWidth = 1.0;
         break;
       case DrawingTool.brush:
-        paint
-          ..strokeWidth = isEraser ? strokeWidth * 2 : strokeWidth * 2
-          ..style = PaintingStyle.stroke;
+        paint.strokeWidth = 5.0;
         break;
       case DrawingTool.eraser:
-        paint
-          ..strokeWidth = strokeWidth * 2
-          ..style = PaintingStyle.stroke;
+        paint.color = Colors.white;
+        paint.strokeWidth = 20.0;
+        break;
+      case DrawingTool.fill:
+        paint.style = PaintingStyle.fill;
         break;
     }
     return paint;
   }
 
   void _showColorPicker() {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Choose Color'),
-        content: SizedBox(
-          width: 300,
-          height: 300,
-          child: ColorPicker(
-            pickerColor: selectedColor,
-            onColorChanged: (color) {
-              setState(() {
-                selectedColor = color;
-                isEraser = false;
-                currentTool = DrawingTool.pen;
-              });
-              Navigator.pop(context);
-            },
-          ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Choose Color',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ColorPicker(
+              pickerColor: selectedColor,
+              onColorChanged: (color) {
+                setState(() {
+                  selectedColor = color;
+                  isEraser = false;
+                  currentTool = DrawingTool.pen;
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -500,35 +654,88 @@ enum DrawingTool {
   pencil,
   brush,
   eraser,
+  fill,
+}
+
+enum DrawingPointType {
+  start,
+  update,
+  end,
+  fill,
 }
 
 class DrawingPoint {
   final Offset offset;
   final Paint paint;
+  final DrawingPointType type;
 
   DrawingPoint({
     required this.offset,
     required this.paint,
+    required this.type,
   });
 }
 
 class DrawingPainter extends CustomPainter {
   final List<DrawingPoint?> points;
+  final List<List<Color>> canvasPixels;
+  final double scaleFactor;
 
-  DrawingPainter({required this.points});
+  DrawingPainter({
+    required this.points,
+    required this.canvasPixels,
+    required this.scaleFactor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Draw the filled pixels
+    if (canvasPixels.isNotEmpty) {
+      final pixelWidth = size.width / canvasPixels[0].length;
+      final pixelHeight = size.height / canvasPixels.length;
+
+      for (int y = 0; y < canvasPixels.length; y++) {
+        for (int x = 0; x < canvasPixels[y].length; x++) {
+          if (canvasPixels[y][x] != Colors.white) {
+            canvas.drawRect(
+              Rect.fromLTWH(
+                x * pixelWidth,
+                y * pixelHeight,
+                pixelWidth,
+                pixelHeight,
+              ),
+              Paint()..color = canvasPixels[y][x],
+            );
+          }
+        }
+      }
+    }
+
+    // Draw the strokes
     for (int i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
+        if (points[i]!.type == DrawingPointType.fill) {
+          continue;
+        }
         canvas.drawLine(
-            points[i]!.offset, points[i + 1]!.offset, points[i]!.paint);
+          points[i]!.offset,
+          points[i + 1]!.offset,
+          points[i]!.paint,
+        );
+      } else if (points[i] != null && points[i + 1] == null) {
+        canvas.drawPoints(
+          PointMode.points,
+          [points[i]!.offset],
+          points[i]!.paint,
+        );
       }
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant DrawingPainter oldDelegate) {
+    return true;
+  }
 }
 
 class ColorPicker extends StatelessWidget {
