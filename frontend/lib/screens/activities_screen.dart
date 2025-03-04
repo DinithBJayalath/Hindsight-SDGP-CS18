@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'breathing_exercises_screen.dart';
+import 'expressive_art_screen.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -68,6 +69,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
         context,
         MaterialPageRoute(
           builder: (context) => const BreathingExercisesScreen(),
+        ),
+      );
+    } else if (activity == 'Expressive Art') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const ExpressiveArtScreen(),
         ),
       );
     } else {
