@@ -32,7 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       body: Container(
-        color: const Color(0xFF8CD3FF),
+        color: const Color.fromARGB(255, 255, 255, 255),
         child: SingleChildScrollView(
           child: Column(
             children: [

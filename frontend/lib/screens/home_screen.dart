@@ -83,7 +83,8 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF8CD3FF), // Updated color
+      color: const Color.fromARGB(
+          255, 245, 250, 252), // Light blue background like in the image
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -105,7 +106,7 @@ class _HomeContentState extends State<HomeContent> {
                             'Good Morning,',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: const Color.fromARGB(255, 0, 0, 0),
                             ),
                           ),
                           Text(
@@ -113,6 +114,7 @@ class _HomeContentState extends State<HomeContent> {
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 157, 255),
                             ),
                           ),
                         ],
@@ -121,7 +123,8 @@ class _HomeContentState extends State<HomeContent> {
                         onTap: _navigateToProfile,
                         child: CircleAvatar(
                           radius: 20, // Placeholder icon
-                          backgroundColor: Colors.grey,
+                          backgroundColor:
+                              const Color.fromARGB(255, 68, 183, 255),
                           child: Icon(Icons.person, color: Colors.white),
                         ),
                       ),
@@ -196,7 +199,7 @@ class _HomeContentState extends State<HomeContent> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 190, 230, 255),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -221,7 +224,7 @@ class _HomeContentState extends State<HomeContent> {
             '- Mental Health Journal',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
         ],
@@ -237,7 +240,7 @@ class _HomeContentState extends State<HomeContent> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 190, 230, 255),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -356,7 +359,7 @@ class _HomeContentState extends State<HomeContent> {
       margin: const EdgeInsets.symmetric(vertical: 20),
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 190, 230, 255),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -456,7 +459,7 @@ class MoodTrackingWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color.fromARGB(255, 190, 230, 255),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
