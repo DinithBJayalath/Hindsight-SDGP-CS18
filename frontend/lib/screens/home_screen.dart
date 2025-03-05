@@ -3,6 +3,7 @@ import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,8 +83,7 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(
-          255, 245, 250, 252), // Light blue background like in the image
+      color: const Color(0xFF8CD3FF), // Updated color
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -158,9 +158,11 @@ class _HomeContentState extends State<HomeContent> {
 
                   MoodTrackingWidget(
                     moodData: [
-                      MoodData('Good', 3, Colors.green, '😊'),
-                      MoodData('Great', 2, Colors.red, '😄'),
-                      // Add more moods as needed
+                      MoodData('Awful', 1, const Color(0xFFB668D2), '😫'),
+                      MoodData('Bad', 1, const Color(0xFF6B88E8), '😢'),
+                      MoodData('Neutral', 1, const Color(0xFF5ECCE6), '😐'),
+                      MoodData('Good', 2, const Color(0xFF5ED48C), '😊'),
+                      MoodData('Great', 2, const Color(0xFFF87D7D), '😄'),
                     ],
                   ),
 
@@ -180,6 +182,17 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Widget _buildDailyQuote() {
+    final quotes = [
+      "Take a deep breath and start again.",
+      "Your mind is a powerful thing. When you fill it with positive thoughts, your life will start to change.",
+      "Mental health is not a destination, but a process. It's about how you drive, not where you're going.",
+      "You don't have to control your thoughts. You just have to stop letting them control you.",
+      "Happiness can be found even in the darkest of times, if one only remembers to turn on the light."
+    ];
+
+    final today = DateTime.now().day;
+    final quote = quotes[today % quotes.length];
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -195,17 +208,17 @@ class _HomeContentState extends State<HomeContent> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
-            '"The only way to do great work is to love what you do."',
-            style: TextStyle(
+            '"$quote"',
+            style: const TextStyle(
               fontSize: 16,
               fontStyle: FontStyle.italic,
             ),
           ),
-          SizedBox(height: 8),
-          Text(
-            '- Steve Jobs',
+          const SizedBox(height: 8),
+          const Text(
+            '- Mental Health Journal',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey,
@@ -259,7 +272,6 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 4),
                   GestureDetector(
                     onTap: () {
-                      // Show popup with larger MoodJar
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -278,7 +290,6 @@ class _HomeContentState extends State<HomeContent> {
                             children: [
                               MoodJar(
                                 onJarTap: () {},
-                                // Add any additional properties if needed
                               ),
                               const SizedBox(height: 10),
                               Text(
@@ -300,7 +311,7 @@ class _HomeContentState extends State<HomeContent> {
                       );
                     },
                     child: Container(
-                      width: 30, // Adjusted jar size
+                      width: 30,
                       height: 30,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
@@ -435,27 +446,10 @@ class MoodDashboardScreen extends StatelessWidget {
   }
 }
 
-// Placeholder profile screen
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: const Center(
-        child: Text('Profile Screen'),
-      ),
-    );
-  }
-}
-
 class MoodTrackingWidget extends StatelessWidget {
   final List<MoodData> moodData;
 
-  MoodTrackingWidget({required this.moodData});
+  const MoodTrackingWidget({super.key, required this.moodData});
 
   @override
   Widget build(BuildContext context) {
@@ -504,8 +498,9 @@ class MoodTrackingWidget extends StatelessWidget {
                 return PieChartSectionData(
                   color: data.color,
                   value: data.count.toDouble(),
-                  title:
-                      '${(data.count / totalMoods * 100).toStringAsFixed(1)}%',
+                  title: data.count > 0
+                      ? '${(data.count / totalMoods * 100).toStringAsFixed(1)}%'
+                      : '',
                   radius: 50,
                   titleStyle: const TextStyle(
                     fontSize: 12,
@@ -537,10 +532,10 @@ class MoodTrackingWidget extends StatelessWidget {
   }
 
   Widget _buildLegend() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Column(
       children: moodData.map((data) {
-        return Column(
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
@@ -550,14 +545,13 @@ class MoodTrackingWidget extends StatelessWidget {
                   color: data.color,
                 ),
                 const SizedBox(width: 4),
-                Text(data.emoji),
+                Text(data.emoji, style: const TextStyle(fontSize: 20)),
               ],
             ),
             Text(
-              data.mood,
+              '${data.mood} (${data.count})',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            Text('${data.count}'),
           ],
         );
       }).toList(),
