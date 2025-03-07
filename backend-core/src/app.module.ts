@@ -17,7 +17,7 @@ import { EmailVerificationModule } from './email-verification/email-verification
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI', 'mongodb+srv://Achintha:lenovo132@hindsight.icqd9.mongodb.net/?retryWrites=true&w=majority&appName=Hindsight'),
+        uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
     AuthModule,

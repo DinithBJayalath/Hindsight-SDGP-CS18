@@ -16,6 +16,9 @@ export class User extends Document {
   @Prop({ nullable: true })
   picture: string;
 
+  @Prop({ default: false })  // Add isVerified field, default is false
+  isVerified: boolean;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 

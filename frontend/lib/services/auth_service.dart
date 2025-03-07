@@ -10,8 +10,7 @@ class AuthService {
   final String auth0Domain = "dev-hindsight.uk.auth0.com";
   final String clientId = "FFAKXDh8vl0RHvZcSp2em9UABrI3a746";
   final String audience = "https://dev-hindsight.uk.auth0.com/api/v2/";
-  final String backendUrl =
-      "http://localhost:3000"; // Update with your backend URL
+  final String backendUrl = "http://10.0.2.2:3000";
 
   final _storage = const FlutterSecureStorage();
 
