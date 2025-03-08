@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/welcome_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const HindsightApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HindsightApp extends StatelessWidget {
+  const HindsightApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Login Screen",
+      title: 'HindSight',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue,
+        ),
       ),
-      home: const WelcomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }
