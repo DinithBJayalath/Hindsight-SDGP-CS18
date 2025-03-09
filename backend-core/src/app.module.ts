@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
+import { ProfileModule } from './profile/profile.module'; 
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EmailVerificationModule } from './email-verification/email-verification
     AuthModule,
     UserModule,
     EmailVerificationModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

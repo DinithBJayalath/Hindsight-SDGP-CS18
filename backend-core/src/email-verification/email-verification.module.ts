@@ -3,15 +3,18 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { EmailVerificationController } from './email-verification.controller';
 import { EmailVerificationService } from './email-verification.service';
 import { VerificationCodeSchema } from './verification-code.schema';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User, UserSchema } from '../user/entities/user.entity';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'VerificationCode', schema: VerificationCodeSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
