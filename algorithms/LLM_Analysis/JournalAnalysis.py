@@ -1,4 +1,6 @@
 import json
+from dotenv import load_dotenv
+import os
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
@@ -6,13 +8,17 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema import Document
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
+# Loading the environment variables
+load_dotenv(override=True)
+# Setting the OpenAI API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
 # Loading the dataset and creating the vector store
 with open('Emotions_dataset_cardiff_oai.json') as file:
     data = json.load(file)
 # Creating a list of documents from the dataset
 documents = [Document(page_content=entry['journal_entry']) for entry in data]
 # Setting  up the embeddings model
-emb_model = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key="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")
+emb_model = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key=openai_api_key)
 # Creating the vector store and saving it locally
 vector_store = FAISS.from_documents(documents=documents, embedding=emb_model)
 vector_store.save_local('emotions_vector_store')
