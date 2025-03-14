@@ -13,20 +13,23 @@ from langchain_core.runnables import RunnablePassthrough
 DIMENSIONS = 384
 INDEX = faiss.IndexFlatL2(DIMENSIONS)
 EMB_MODEL = SentenceTransformer('sentence-transformers/all-miniLM-L6-v2')
-with open('./algorithms/LLM_Analysis/tests/Emotions_dataset.json') as file:
+with open('./algorithms/LLM_Analysis/tests/Emotions_dataset_vader_am.json') as file:
     data = json.load(file)
 embeddings = np.array([entry['embedding'] for entry in data])
 INDEX.add(embeddings)
 # List of emotions to choose from
-EMOTIONAL_STATES = ["Hopeful",
-                     "Anxious", 
-                     "Inspired", 
-                     "Overwhelmed", 
-                     "Peaceful", 
-                     "Frustrated", 
-                     "Curious", 
-                     "Uncertain", 
-                     "Hopelessness"]
+EMOTIONAL_STATES = ["enthusiasm",
+                     "love",
+                     "fun",
+                     "happiness",
+                     "relief",
+                     "surprise",
+                     "neutral",
+                     "boredom",
+                     "sadness",
+                     "anger",
+                     "worry",
+                     "hate"]
 # Template for the prompt
 TEMPLATE = """Give the most relevant emotion to the following journal entry based on the sentiment score,
 and the mapped emotions from the given context.

@@ -1,6 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 
 const PROTO_PATH = '../proto/algorithms/algorithms.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);

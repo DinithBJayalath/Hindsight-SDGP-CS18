@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import the intl package
+import '../services/API_Service.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(int, String, String, String, String) addJournalEntry;
@@ -30,6 +31,10 @@ class JournalWritingScreen extends StatefulWidget {
 class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _entryController = TextEditingController();
+  // The following 3 are variables to handel the backend requests and responses
+  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.195:3000');
+  bool _isLoading = false;
+  String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
   bool isBold = false; // Flag for bold text
   bool isItalic = false; // Flag for italic text
@@ -142,37 +147,39 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {
-                // Proceed with the save or update
-                widget.addJournalEntry(
-                  widget.entryIndex, // Use the index for update or -1 for new
-                  _titleController.text,
-                  selectedEmoji,
-                  widget.isEditMode
-                      ? widget.date
-                      : getCurrentDate(), // Update date only for edit mode
-                  _entryController.text,
-                );
+              onPressed: () async {
+                if (!_isLoading) {
+                  await _sendRequest(); // Correctly calling the function
+                  print('status code: $_responseMessage');
+                  // Proceed with saving or updating the journal entry
+                  widget.addJournalEntry(
+                    widget.entryIndex, // Use the index for update or -1 for new
+                    _titleController.text,
+                    selectedEmoji,
+                    widget.isEditMode ? widget.date : getCurrentDate(), // Update date only for edit mode
+                    _entryController.text,
+                  );
 
-                Navigator.pop(context); // Close the confirmation dialog
-                Navigator.pop(context); // Go back to JournalScreen
+                  Navigator.pop(context); // Close the confirmation dialog
+                  Navigator.pop(context); // Go back to JournalScreen
 
-                // Show the confirmation message in the JournalScreen
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Color(0xFFBFE6FF),
-                    content: Text(
-                      widget.isEditMode
-                          ? 'Your entry has been updated!'
-                          : 'Your entry has been saved!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                  // Show the confirmation message in the JournalScreen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Color(0xFFBFE6FF),
+                      content: Text(
+                        widget.isEditMode
+                            ? 'Your entry has been updated!'
+                            : 'Your entry has been saved!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                );
+                  );
+                }
               },
               child: Text(
                 widget.isEditMode ? "Update" : "Save",
@@ -242,6 +249,33 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
         );
       },
     );
+  }
+
+  // This method handles sending requests to the backend
+  Future<void> _sendRequest() async {
+    // query from the user's journal entry
+    final query = _entryController.text.trim();
+    setState(() {
+      _isLoading = true;
+      _responseMessage = '';
+    });
+
+    try {
+      // Send the request to the backend
+      final response = await _apiService.getData('algorithms/analyze', queryParams: {'query': query});
+
+      setState(() {
+        _responseMessage = 'Response: ${response['result']}';
+      });
+    } catch (e) {
+      setState(() {
+        _responseMessage = 'Error: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
