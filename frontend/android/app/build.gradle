@@ -17,19 +17,18 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0
 
 
 android {
-
     compileSdkVersion 34
     namespace "com.frontend"
 
-    ndkVersion localProperties.getProperty('ndkVersion', '23.1.7779620') // Ensure a default NDK version
+    ndkVersion localProperties.getProperty('ndkVersion', '25.1.8937393') // Ensure a default NDK version
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 
     sourceSets {
@@ -42,7 +41,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode
         versionName flutterVersionName
 

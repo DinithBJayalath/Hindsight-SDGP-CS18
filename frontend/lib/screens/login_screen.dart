@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Social login for Apple
-  void loginWithApple() async {
+  /*void loginWithApple() async {
     final result = await _authService.loginWithApple();
     if (!mounted) return;
     if (result != null) {
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       PopupMessage.show(context, "Twitter Login failed.", isSuccess: false);
     }
-  }
+  }*/
 
   @override
   void initState() {
@@ -238,14 +238,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(width: 60),
                     // Apple button
                     GestureDetector(
-                      onTap: loginWithApple,
+                      //onTap: loginWithApple,
                       child:
                           const LogoTile(imagePath: 'assets/images/apple.png'),
                     ),
                     const SizedBox(width: 60),
                     // Twitter button
                     GestureDetector(
-                      onTap: loginWithTwitter,
+                      //onTap: loginWithTwitter,
                       child: const LogoTile(imagePath: 'assets/images/x.png'),
                     ),
                   ],

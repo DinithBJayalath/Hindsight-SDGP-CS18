@@ -368,12 +368,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(width: 60),
                 GestureDetector(
-                  onTap: () => _authService.loginWithApple(),
+                  //onTap: () => _authService.loginWithApple(),
                   child: const LogoTile(imagePath: 'assets/images/apple.png'),
                 ),
                 const SizedBox(width: 60),
                 GestureDetector(
-                  onTap: () => _authService.loginWithTwitter(),
+                  //onTap: () => _authService.loginWithTwitter(),
                   child: const LogoTile(imagePath: 'assets/images/x.png'),
                 ),
               ],

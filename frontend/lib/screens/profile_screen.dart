@@ -48,27 +48,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Fetch the complete user profile from our backend
   Future<void> _loadUserProfile() async {
+    if (!mounted) return;
+
     setState(() => _isLoading = true);
 
     try {
-      final email = widget.userInfo['email'];
+      final email = widget.userInfo['email'] as String?;
+      if (email == null) {
+        throw Exception('Email not found in user info');
+      }
+
       final profile = await ProfileService.getProfile(email);
+
+      if (!mounted) return;
 
       if (profile != null) {
         setState(() {
           _userProfile = profile;
-          _nameController.text = profile['name'] ?? '';
-          _bioController.text = profile['bio'] ?? '';
-          _countryController.text = profile['country'] ?? '';
-          _cityController.text = profile['city'] ?? '';
-          _languageController.text = profile['language'] ?? 'en';
+          _nameController.text = profile['name']?.toString() ?? '';
+          _bioController.text = profile['bio']?.toString() ?? '';
+          _countryController.text = profile['country']?.toString() ?? '';
+          _cityController.text = profile['city']?.toString() ?? '';
+          _languageController.text = profile['language']?.toString() ?? 'en';
         });
       } else {
         // Create a new profile if one doesn't exist
         final newProfile = {
           'email': email,
-          'name': widget.userInfo['name'] ?? '',
-          'picture': widget.userInfo['picture'] ?? '',
+          'name': widget.userInfo['name']?.toString() ?? '',
+          'picture': widget.userInfo['picture']?.toString() ?? '',
           'language': 'en',
           'country': '',
           'city': '',
@@ -77,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         };
 
         final created = await ProfileService.createProfile(newProfile);
-        if (created) {
+        if (created && mounted) {
           _loadUserProfile(); // Reload to get the created profile
         }
       }
@@ -98,9 +106,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
+    if (!mounted) return;
+
     setState(() => _isLoading = true);
 
     try {
+      final email = widget.userInfo['email'] as String?;
+      if (email == null) {
+        throw Exception('Email not found in user info');
+      }
+
       final updatedProfile = {
         'name': _nameController.text,
         'bio': _bioController.text,
@@ -109,23 +124,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'language': _languageController.text,
       };
 
-      final success = await ProfileService.updateProfile(
-        widget.userInfo['email'],
-        updatedProfile,
-      );
+      final success = await ProfileService.updateProfile(email, updatedProfile);
 
-      if (mounted) {
-        if (success) {
-          PopupMessage.show(context, "Profile updated successfully");
-          setState(() => _isEditing = false);
-          _loadUserProfile();
-        } else {
-          PopupMessage.show(
-            context,
-            "Failed to update profile. Please try again.",
-            isSuccess: false,
-          );
-        }
+      if (!mounted) return;
+
+      if (success) {
+        PopupMessage.show(context, "Profile updated successfully");
+        setState(() => _isEditing = false);
+        _loadUserProfile();
+      } else {
+        PopupMessage.show(
+          context,
+          "Failed to update profile. Please try again.",
+          isSuccess: false,
+        );
       }
     } catch (e) {
       print("Error updating profile: $e");
@@ -149,15 +161,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  Widget _buildProfileField(String label, TextEditingController controller) {
+  Widget _buildProfileField(String label, TextEditingController controller,
+      {bool readOnly = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: _isEditing
+      child: _isEditing && !readOnly
           ? TextField(
               controller: controller,
+              readOnly: readOnly,
               decoration: InputDecoration(
                 labelText: label,
                 border: const OutlineInputBorder(),
+                enabled: !readOnly,
               ),
             )
           : Column(
@@ -172,8 +187,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  controller.text,
-                  style: const TextStyle(fontSize: 16),
+                  controller.text.isNotEmpty ? controller.text : 'Not set',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color:
+                        controller.text.isNotEmpty ? Colors.black : Colors.grey,
+                  ),
                 ),
                 const Divider(),
               ],
@@ -207,11 +226,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 50,
                     backgroundImage: NetworkImage(
-                      _userProfile['picture'] ??
+                      _userProfile['picture']?.toString() ??
                           'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // Show email as non-editable field
+                  _buildProfileField(
+                      'Email',
+                      TextEditingController(
+                          text: widget.userInfo['email'] ?? ''),
+                      readOnly: true),
                   _buildProfileField('Name', _nameController),
                   _buildProfileField('Bio', _bioController),
                   _buildProfileField('Country', _countryController),

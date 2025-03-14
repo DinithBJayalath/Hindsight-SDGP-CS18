@@ -3,8 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:twitter_login/twitter_login.dart';
 
 class AuthService {
   final String auth0Domain = "dev-hindsight.uk.auth0.com";
@@ -110,6 +108,7 @@ class AuthService {
     }
   }
 
+/*
   // Social Login: Apple
   Future<Map<String, dynamic>?> loginWithApple() async {
     try {
@@ -209,7 +208,7 @@ class AuthService {
       return null;
     }
   }
-
+*/
   // Validate token with our Nest.js backend
   Future<bool> _validateTokenWithBackend(String token) async {
     try {
