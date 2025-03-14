@@ -1,22 +1,21 @@
-import numpy as np
 import json
-from sentence_transformers import SentenceTransformer
-import faiss
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+from langchain.schema import Document
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 
-# TODO: Try to implement a different vector database 
-# and implement a rag chain instead of a normal chain.
-
-DIMENSIONS = 384
-INDEX = faiss.IndexFlatL2(DIMENSIONS)
-EMB_MODEL = SentenceTransformer('sentence-transformers/all-miniLM-L6-v2')
-with open('./algorithms/LLM_Analysis/tests/Emotions_dataset_vader_am.json') as file:
+# Loading the dataset and creating the vector store
+with open('Emotions_dataset_cardiff_oai.json') as file:
     data = json.load(file)
-embeddings = np.array([entry['embedding'] for entry in data])
-INDEX.add(embeddings)
+# Creating a list of documents from the dataset
+documents = [Document(page_content=entry['journal_entry']) for entry in data]
+# Setting  up the embeddings model
+emb_model = OpenAIEmbeddings(model="text-embedding-3-small", openai_api_key="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")
+# Creating the vector store and saving it locally
+vector_store = FAISS.from_documents(documents=documents, embedding=emb_model)
+vector_store.save_local('emotions_vector_store')
 # List of emotions to choose from
 EMOTIONAL_STATES = ["enthusiasm",
                      "love",
@@ -38,20 +37,29 @@ journal entry: {journal_entry}
 Note: only choose from the following emotions and only output that emotion: {EMOTIONAL_STATES}, 
 and give the sentiment score of the journal entry."""
 
-def retrieve_similar(query, k=10):
-    '''This function takes the user's query and returns the top k journal entries that are similar to the query.'''
-    query_embedding = np.array(EMB_MODEL.encode(query)).reshape(1, -1)
-    _, indices = INDEX.search(query_embedding, k)
-    results = [{'journal_entry':data[i]['journal_entry'], 'emotion': data[i]['emotion'], 'sentiment_score':data[i]['sentiment_score']} for i in indices[0]]
-    return results
-
-def Generate(query, context):
-    '''This function takes the user's query and context and generates the most relevant emotion.'''
-    # The following 3 lines of code sets the template for the prompt, 
-    # initializes the LLM model, 
-    # and chains the template and LLM model together with LangChain syntax.
-    PROMPT = ChatPromptTemplate.from_template(TEMPLATE)
-    LLM = ChatOpenAI(model_name = "gpt-4o-mini", temperature=0)
-    CHAIN = PROMPT | LLM
-    response = CHAIN.invoke({"context":context, "journal_entry":query, "EMOTIONAL_STATES":EMOTIONAL_STATES})
-    return response.content
+def Generate(query):
+    '''This function takes the user's query and context and generates the most relevant emotion.  
+    Args:
+    query: str: The user's journal entry.  
+    returns:
+    str: The most relevant emotion to the user's journal entry and the sentiment score of the journal entry.
+    separated by a comma.
+    '''
+    # Setting up the prompt for the chain
+    prompt = ChatPromptTemplate.from_template(TEMPLATE)
+    # Loading the vector store and setting up the retriever
+    loaded_vectors = FAISS.load_local('emotions_vector_store', embeddings=emb_model, allow_dangerous_deserialization=True)
+    retriever = loaded_vectors.as_retriever(k=7)
+    # Setting up the the LLM
+    llm = ChatOpenAI(model_name = "gpt-4o-mini", temperature = 0)
+    rag_chain = (  
+    retriever 
+    # The lambda function is used to pass the context and the query to the next step in the chain
+    | (lambda docs: {'context': docs, 'journal_entry': query, 'EMOTIONAL_STATES': EMOTIONAL_STATES})  
+    | prompt
+    | llm
+    # The output parser is used to parse the output and format it as a string
+    | StrOutputParser()
+    )
+    response = rag_chain.invoke(query)
+    return response

@@ -6,8 +6,7 @@ from LLM_Analysis.JournalAnalysis import retrieve_similar, Generate
 
 class JournalAnalyzer(algorithms_pb2_grpc.JournalAnalyzerServicer):
     def analyze(self, request, context):
-        results = retrieve_similar(request.query)
-        emotion = Generate(request.query, results)
+        emotion = Generate(request.query)
         print(f"Emotional analysis of journal entry is: {emotion}")
         return algorithms_pb2.AnalyzeResponse(response = emotion)
 
