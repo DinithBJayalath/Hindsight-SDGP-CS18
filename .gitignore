@@ -143,3 +143,6 @@ backend-core/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 algorithms/LLM_Analysis/tests/Emotions_dataset_vader_am.json
 algorithms/LLM_Analysis/tests/Emotions_dataset_cardiff_oai.json
 algorithms/LLM_Analysis/tests/Emotions_dataset_distil_oai.json
+
+# Local vector index
+algorithms/LLM_Analysis/tests/emotions_vector_Store
