@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AlgorithmsController } from './algorithms/algorithms.controller';
 import { AppService } from './app.service';
-import { MoodcheckController } from './moodcheck/moodcheck.controller';
-import { MoodcheckService } from './moodcheck/moodcheck.service';
-import { MoodcheckModule } from './moodcheck/moodcheck.module';
+import { MoodCheckController } from './mood-check/mood-check.controller';
+import { MoodCheckService } from './mood-check/mood-check.service';
 
 @Module({
-  imports: [MoodcheckModule],
-  controllers: [AppController, AlgorithmsController, MoodcheckController],
-  providers: [AppService, MoodcheckService],
+  imports: [],
+  controllers: [AppController, AlgorithmsController, MoodCheckController],
+  providers: [AppService, MoodCheckService],
 })
 export class AppModule {}
