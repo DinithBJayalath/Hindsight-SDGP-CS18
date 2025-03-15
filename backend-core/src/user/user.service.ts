@@ -1,13 +1,16 @@
 // src/user/user.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './entities/user.entity';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    @Inject(forwardRef(() => ProfileService))
+    private readonly profileService: ProfileService,
   ) {}
 
   async findById(id: string): Promise<User | null> {
@@ -28,12 +31,35 @@ export class UserService {
         name: userProfile.name || '',
         picture: userProfile.picture || '',
       });
+
+      // Create profile for new user
+      await this.profileService.createProfile({
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      });
     } else {
       // Update user information if needed
       user.email = userProfile.email;
       user.name = userProfile.name || user.name;
       user.picture = userProfile.picture || user.picture;
       await user.save();
+
+      // Update profile if it exists
+      const profile = await this.profileService.getProfileByEmail(user.email);
+      if (profile) {
+        await this.profileService.updateProfile(user.email, {
+          name: user.name,
+          picture: user.picture,
+        });
+      } else {
+        // Create profile if it doesn't exist
+        await this.profileService.createProfile({
+          email: user.email,
+          name: user.name,
+          picture: user.picture,
+        });
+      }
     }
 
     return user;

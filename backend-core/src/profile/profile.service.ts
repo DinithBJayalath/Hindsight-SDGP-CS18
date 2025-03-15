@@ -9,7 +9,7 @@ import { User } from '../user/entities/user.entity';
 export class ProfileService {
   constructor(
     @InjectModel('Profile') private readonly profileModel: Model<ProfileDocument>,
-    @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
   async getProfileByEmail(email: string): Promise<Profile | null> {
@@ -18,6 +18,10 @@ export class ProfileService {
   }
 
   async createProfile(profileData: Partial<Profile>): Promise<Profile> {
+    if (!profileData.email) {
+      throw new Error('Email is required to create a profile');
+    }
+
     // Check if user exists first
     const user = await this.userModel.findOne({ email: profileData.email }).exec();
     
@@ -25,9 +29,14 @@ export class ProfileService {
       throw new NotFoundException(`User with email ${profileData.email} not found`);
     }
 
+    // Check if profile already exists
+    const existingProfile = await this.profileModel.findOne({ email: profileData.email }).exec();
+    if (existingProfile) {
+      return this.updateProfile(profileData.email, profileData);
+    }
+
     // Create profile with data from user
     const newProfile = new this.profileModel({
-      _id: profileData.email, // Use email as the profile ID
       email: profileData.email,
       name: user.name,
       picture: user.picture || '',
@@ -42,7 +51,7 @@ export class ProfileService {
     const updatedProfile = await this.profileModel.findOneAndUpdate(
       { email },
       { ...profileData },
-      { new: true }
+      { new: true, upsert: true }
     ).exec();
 
     if (!updatedProfile) {

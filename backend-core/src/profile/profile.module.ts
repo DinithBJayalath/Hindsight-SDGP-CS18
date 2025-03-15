@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Profile, ProfileSchema } from './entities/profile.entity';
 import { User, UserSchema } from '../user/entities/user.entity';
@@ -12,7 +12,7 @@ import { UserModule } from '../user/user.module';
       { name: 'Profile', schema: ProfileSchema },
       { name: 'User', schema: UserSchema },
     ]),
-    UserModule,
+    forwardRef(() => UserModule),
   ],
   providers: [ProfileService],
   controllers: [ProfileController],

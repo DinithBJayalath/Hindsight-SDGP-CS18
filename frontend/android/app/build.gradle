@@ -20,7 +20,7 @@ android {
     compileSdkVersion 34
     namespace "com.frontend"
 
-    ndkVersion localProperties.getProperty('ndkVersion', '25.1.8937393') // Ensure a default NDK version
+    ndkVersion "25.1.8937393"  // Updated to match plugin requirements
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_21
