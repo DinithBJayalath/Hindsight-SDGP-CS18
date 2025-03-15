@@ -36,12 +36,24 @@ EMOTIONAL_STATES = ["enthusiasm",
                      "worry",
                      "hate"]
 # Template for the prompt
-TEMPLATE = """Give the most relevant emotion to the following journal entry based on the sentiment score,
-and the mapped emotions from the given context.
-context: {context}
-journal entry: {journal_entry}
-Note: only choose from the following emotions and only output that emotion: {EMOTIONAL_STATES}, 
-and give the sentiment score of the journal entry."""
+TEMPLATE = """Analyze the emotional content of the following journal entry by comparing it with similar past entries:
+
+Context entries: {retrieved_journal_entries}
+New journal entry: {user_journal_entry}
+Available emotion categories: {emotion_categories}
+
+Instructions:
+1. Compare the new entry with the retrieved similar entries
+2. Identify the most relevant emotion from the provided categories only
+3. Calculate a sentiment score (-1.0 to 1.0) based on the emotional tone
+
+Return your analysis in valid JSON format with the following structure:
+{{
+  "emotion": "selected_emotion",
+  "sentiment_score": numerical_score
+}}
+
+Note: Ensure you only select an emotion from the provided emotion_categories list. The sentiment_score should be a number between -1.0 and 1.0, not a string."""
 
 def Generate(query):
     '''This function takes the user's query and context and generates the most relevant emotion.  
@@ -61,11 +73,11 @@ def Generate(query):
     rag_chain = (  
     retriever 
     # The lambda function is used to pass the context and the query to the next step in the chain
-    | (lambda docs: {'context': docs, 'journal_entry': query, 'EMOTIONAL_STATES': EMOTIONAL_STATES})  
+    | (lambda docs: {'retrieved_journal_entries': docs, 'user_journal_entry': query, 'emotion_categories': EMOTIONAL_STATES})  
     | prompt
     | llm
     # The output parser is used to parse the output and format it as a string
-    | StrOutputParser()
+    | JsonOutputParser()
     )
     response = rag_chain.invoke(query)
     return response
