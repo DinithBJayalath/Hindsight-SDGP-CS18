@@ -1,68 +1,100 @@
 // src/user/user.service.ts
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User } from './entities/user.entity';
+import { Model, Types } from 'mongoose';
+import { User, UserDocument } from './entities/user.entity';
 import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => ProfileService))
     private readonly profileService: ProfileService,
   ) {}
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ auth0Id: id }).exec();
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async findOrCreateUser(userProfile: any): Promise<User> {
+  async findOrCreateUser(userProfile: any): Promise<UserDocument> {
     let user = await this.findById(userProfile.sub);
 
     if (!user) {
-      user = await this.userModel.create({
+      // Create new user
+      const newUser = await this.userModel.create({
         auth0Id: userProfile.sub,
         email: userProfile.email,
         name: userProfile.name || '',
         picture: userProfile.picture || '',
+        isVerified: false
       });
 
-      // Create profile for new user
-      await this.profileService.createProfile({
-        email: user.email,
-        name: user.name,
-        picture: user.picture,
+      // Create a new profile and link it using ObjectId
+      const profile = await this.profileService.createProfile({
+        user: newUser._id,
+        email: newUser.email,
+        name: newUser.name,
+        picture: newUser.picture
       });
+
+      // Update user with profile reference
+      await this.userModel.findByIdAndUpdate(newUser._id, {
+        profile: profile._id
+      });
+
+      const updatedNewUser = await this.userModel.findById(newUser._id).exec();
+      if (!updatedNewUser) {
+        throw new NotFoundException(`User not found after creation`);
+      }
+      return updatedNewUser;
     } else {
-      // Update user information if needed
-      user.email = userProfile.email;
-      user.name = userProfile.name || user.name;
-      user.picture = userProfile.picture || user.picture;
-      await user.save();
+      // Update existing user
+      const updates = {
+        email: userProfile.email,
+        name: userProfile.name || user.name,
+        picture: userProfile.picture || user.picture,
+      };
+      
+      const updatedUser = await this.userModel.findByIdAndUpdate(
+        user._id,
+        { $set: updates },
+        { new: true }
+      ).exec();
 
-      // Update profile if it exists
-      const profile = await this.profileService.getProfileByEmail(user.email);
-      if (profile) {
-        await this.profileService.updateProfile(user.email, {
-          name: user.name,
-          picture: user.picture,
+      if (!updatedUser) {
+        throw new Error('Failed to update user');
+      }
+
+      // Update or create profile
+      if (updatedUser.profile) {
+        await this.profileService.updateProfile(updatedUser.profile, {
+          name: updatedUser.name,
+          picture: updatedUser.picture,
         });
       } else {
-        // Create profile if it doesn't exist
-        await this.profileService.createProfile({
-          email: user.email,
-          name: user.name,
-          picture: user.picture,
+        const newProfile = await this.profileService.createProfile({
+          user: updatedUser._id,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          picture: updatedUser.picture
+        });
+
+        await this.userModel.findByIdAndUpdate(updatedUser._id, {
+          profile: newProfile._id
         });
       }
-    }
 
-    return user;
+      const finalUser = await this.userModel.findById(updatedUser._id).exec();
+      if (!finalUser) {
+        throw new NotFoundException(`User not found after update`);
+      }
+      return finalUser;
+    }
   }
 }
 

@@ -84,9 +84,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'dateOfBirth': DateTime.now().toIso8601String(),
         };
 
-        final created = await ProfileService.createProfile(newProfile);
-        if (created && mounted) {
-          _loadUserProfile(); // Reload to get the created profile
+        final createdProfile = await ProfileService.createProfile(newProfile);
+        if (createdProfile != null && mounted) {
+          setState(() {
+            _userProfile = createdProfile;
+            _nameController.text = createdProfile['name']?.toString() ?? '';
+            _bioController.text = createdProfile['bio']?.toString() ?? '';
+            _countryController.text =
+                createdProfile['country']?.toString() ?? '';
+            _cityController.text = createdProfile['city']?.toString() ?? '';
+            _languageController.text =
+                createdProfile['language']?.toString() ?? 'en';
+          });
         }
       }
     } catch (e) {
@@ -111,11 +120,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final email = widget.userInfo['email'] as String?;
-      if (email == null) {
-        throw Exception('Email not found in user info');
-      }
-
       final updatedProfile = {
         'name': _nameController.text,
         'bio': _bioController.text,
@@ -124,14 +128,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'language': _languageController.text,
       };
 
-      final success = await ProfileService.updateProfile(email, updatedProfile);
+      final result = await ProfileService.updateProfile(
+          _userProfile['_id'], updatedProfile);
 
       if (!mounted) return;
 
-      if (success) {
+      if (result != null) {
+        setState(() {
+          _userProfile = result;
+          _isEditing = false;
+        });
         PopupMessage.show(context, "Profile updated successfully");
-        setState(() => _isEditing = false);
-        _loadUserProfile();
       } else {
         PopupMessage.show(
           context,
@@ -144,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         PopupMessage.show(
           context,
-          "An error occurred while updating profile",
+          e.toString(),
           isSuccess: false,
         );
       }

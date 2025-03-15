@@ -1,71 +1,70 @@
 // src/profile/profile.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Profile, ProfileDocument } from './entities/profile.entity';
-import { User } from '../user/entities/user.entity';
+import { User, UserDocument } from '../user/entities/user.entity';
 
 @Injectable()
 export class ProfileService {
   constructor(
     @InjectModel('Profile') private readonly profileModel: Model<ProfileDocument>,
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async getProfileByEmail(email: string): Promise<Profile | null> {
-    const profile = await this.profileModel.findOne({ email }).exec();
-    return profile;
+  async getProfileByUserId(userId: Types.ObjectId): Promise<ProfileDocument | null> {
+    return this.profileModel.findOne({ user: userId }).exec();
   }
 
-  async createProfile(profileData: Partial<Profile>): Promise<Profile> {
-    if (!profileData.email) {
-      throw new Error('Email is required to create a profile');
-    }
+  async getProfileByEmail(email: string): Promise<ProfileDocument | null> {
+    return this.profileModel.findOne({ email }).exec();
+  }
 
-    // Check if user exists first
-    const user = await this.userModel.findOne({ email: profileData.email }).exec();
-    
+  async createProfile(data: { user: Types.ObjectId; name: string; email: string; picture?: string }): Promise<ProfileDocument> {
+    // Check if user exists
+    const user = await this.userModel.findById(data.user).exec();
     if (!user) {
-      throw new NotFoundException(`User with email ${profileData.email} not found`);
+      throw new NotFoundException(`User with id ${data.user} not found`);
     }
 
     // Check if profile already exists
-    const existingProfile = await this.profileModel.findOne({ email: profileData.email }).exec();
+    const existingProfile = await this.getProfileByUserId(data.user);
     if (existingProfile) {
-      return this.updateProfile(profileData.email, profileData);
+      return this.updateProfile(existingProfile._id, data);
     }
 
-    // Create profile with data from user
+    // Create new profile
     const newProfile = new this.profileModel({
-      email: profileData.email,
-      name: user.name,
-      picture: user.picture || '',
-      isVerified: user.isVerified,
-      ...profileData
+      user: data.user,
+      email: data.email,
+      name: data.name,
+      picture: data.picture,
+      isVerified: user.isVerified
     });
 
     return newProfile.save();
   }
 
-  async updateProfile(email: string, profileData: Partial<Profile>): Promise<Profile> {
-    const updatedProfile = await this.profileModel.findOneAndUpdate(
-      { email },
-      { ...profileData },
-      { new: true, upsert: true }
-    ).exec();
+  async updateProfile(
+    profileId: Types.ObjectId,
+    data: Partial<Profile>
+  ): Promise<ProfileDocument> {
+    const updatedProfile = await this.profileModel
+      .findByIdAndUpdate(profileId, { $set: data }, { new: true })
+      .exec();
 
     if (!updatedProfile) {
-      throw new NotFoundException(`Profile with email ${email} not found`);
+      throw new NotFoundException(`Profile with id ${profileId} not found`);
     }
 
     return updatedProfile;
   }
 
-  async deleteProfile(email: string): Promise<void> {
-    const result = await this.profileModel.deleteOne({ email }).exec();
+  async deleteProfile(profileId: Types.ObjectId): Promise<void> {
+    const result = await this.profileModel.findByIdAndDelete(profileId).exec();
     
-    if (result.deletedCount === 0) {
-      throw new NotFoundException(`Profile with email ${email} not found`);
+    if (!result) {
+      throw new NotFoundException(`Profile with id ${profileId} not found`);
     }
   }
 }

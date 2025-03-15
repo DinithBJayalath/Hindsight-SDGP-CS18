@@ -1,12 +1,24 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, HydratedDocument } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { User } from '../../user/entities/user.entity';
 
-export type ProfileDocument = HydratedDocument<Profile>;
+export type ProfileDocument = Document & Profile;
 
 @Schema({ timestamps: true })
 export class Profile {
-  @Prop({ required: true, unique: true, ref: 'User' })
-  email: string;  // Foreign key referencing User.email
+  _id: Types.ObjectId;
+
+  @Prop({ 
+    type: Types.ObjectId, 
+    ref: 'User', 
+    required: true, 
+    unique: true,
+    index: true 
+  })
+  user: Types.ObjectId;
+
+  @Prop({ required: true, unique: true, index: true })
+  email: string;
 
   @Prop({ required: true })
   name: string;
