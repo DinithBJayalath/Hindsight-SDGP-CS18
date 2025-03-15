@@ -4,7 +4,7 @@ import { Controller,Get} from '@nestjs/common';
 export class MoodcheckController {
     @Get()
     moodCheck(){
-        return "hello world";
-        
+        return "Hello world";
+
     }
 }
