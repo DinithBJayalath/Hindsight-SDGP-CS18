@@ -5,6 +5,7 @@ import 'package:frontend/services/reset_password.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
 import 'package:frontend/widgets/signin_botton.dart';
+import 'package:email_validator/email_validator.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -21,6 +22,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please enter your email")),
+      );
+      return;
+    }
+
+    if (!EmailValidator.validate(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid email address")),
       );
       return;
     }
@@ -77,8 +85,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             Center(
               // Center the image
               child: Container(
-                height: 220,
-                width: 220,
+                height: 230,
+                width: 230,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: const Color.fromARGB(0, 224, 224, 224),

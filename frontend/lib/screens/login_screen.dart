@@ -9,6 +9,7 @@ import 'package:frontend/widgets/signin_botton.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,15 +20,22 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   final AuthService _authService = AuthService();
 
   void signUserIn() async {
-    String username = usernameController.text;
+    String username = usernameController.text.trim();
     String password = passwordController.text;
 
     if (username.isEmpty || password.isEmpty) {
       PopupMessage.show(context, "Please fill in both username and password",
+          isSuccess: false);
+      return;
+    }
+
+    if (!EmailValidator.validate(username)) {
+      PopupMessage.show(context, "Please enter a valid email address",
           isSuccess: false);
       return;
     }
@@ -154,10 +162,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: false,
                 ),
                 const SizedBox(height: 10),
-                LoginTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
+                // Password field with visibility toggle
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    LoginTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: !_isPasswordVisible,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 25.0),
+                      child: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: const Color.fromARGB(255, 137, 137, 137),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 // Sign in button for username/password login
@@ -256,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Don’t have an account? ',
+                      "Don't have an account? ",
                       style: TextStyle(
                         color: Color.fromARGB(159, 21, 18, 18),
                       ),

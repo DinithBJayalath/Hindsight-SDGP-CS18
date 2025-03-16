@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/signup_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/services/reset_password.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/signin_botton.dart';
@@ -89,7 +89,7 @@ class _ResetEmailSentScreenState extends State<ResetEmailSentScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignUpScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               }, // Navigate to the SignUpScreen
             ),

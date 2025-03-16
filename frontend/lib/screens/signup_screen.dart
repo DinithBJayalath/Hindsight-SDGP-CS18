@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/services/email_verification_service.dart';
 import 'package:frontend/widgets/agreements_popup.dart';
@@ -10,6 +11,7 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
 import 'package:frontend/widgets/verification_code_input.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -26,6 +28,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       TextEditingController();
   bool agreedToTerms = false;
   bool isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   final AuthService _authService = AuthService();
 
@@ -159,7 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
 
     String fullName = fullNameController.text;
-    String email = emailController.text;
+    String email = emailController.text.trim();
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
 
@@ -168,6 +172,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password.isEmpty ||
         confirmPassword.isEmpty) {
       PopupMessage.show(context, "Please fill in all fields", isSuccess: false);
+      return;
+    }
+
+    if (!EmailValidator.validate(email)) {
+      PopupMessage.show(context, "Please enter a valid email address",
+          isSuccess: false);
       return;
     }
 
@@ -280,16 +290,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
               obscureText: false,
             ),
             const SizedBox(height: 10),
-            LoginTextField(
-              controller: passwordController,
-              hintText: 'Password',
-              obscureText: true,
+            // Password field with visibility toggle
+            Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                LoginTextField(
+                  controller: passwordController,
+                  hintText: 'Password',
+                  obscureText: !_isPasswordVisible,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 25.0),
+                  child: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color.fromARGB(255, 137, 137, 137),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
-            LoginTextField(
-              controller: confirmPasswordController,
-              hintText: 'Confirm Password',
-              obscureText: true,
+            // Confirm Password field with visibility toggle
+            Stack(
+              alignment: Alignment.centerRight,
+              children: [
+                LoginTextField(
+                  controller: confirmPasswordController,
+                  hintText: 'Confirm Password',
+                  obscureText: !_isConfirmPasswordVisible,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 25.0),
+                  child: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color.fromARGB(255, 137, 137, 137),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [
@@ -375,6 +429,36 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 GestureDetector(
                   //onTap: () => _authService.loginWithTwitter(),
                   child: const LogoTile(imagePath: 'assets/images/x.png'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Do you have an account? ',
+                  style: TextStyle(
+                    color: Color.fromARGB(159, 21, 18, 18),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Sign in',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Color.fromARGB(159, 21, 18, 18),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
