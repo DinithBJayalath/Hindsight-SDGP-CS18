@@ -308,6 +308,19 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     }
   }
 
+  final Gradient jarLidGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFE0E0E0), // Light Silver
+      Color(0xFFBDBDBD), // Medium Gray
+      Color(0xFF9E9E9E), // Darker Gray
+      Color(0xFFE0E0E0), // Light Silver
+      Color(0xFF757575), // Deep reflection
+    ],
+    stops: [0.0, 0.3, 0.5, 0.7, 1.0], // Adjust for a metallic look
+  );
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -407,19 +420,11 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
       width: jarWidth,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.black87,
         borderRadius: BorderRadius.circular(10),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.black87,
-            Colors.black54,
-          ],
-        ),
+        gradient: jarLidGradient, // moved the creation of the gradient outside and made it a final variable for performance
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.grey.shade900,
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

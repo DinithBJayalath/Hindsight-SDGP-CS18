@@ -43,7 +43,25 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   double fontSize = 16.0; // Initial font size
   TextAlign textAlign = TextAlign.left; // Default text alignment
   TextStyle currentTextStyle = TextStyle(fontSize: 16.0, color: Colors.black);
+  final Map<String, List<String>> emojiMapping = {
+    '😄': ["enthusiasm", "love"],
+    '😊': ["fun", "happiness"],
+    '😐': ["relief", "surprise", "neutral", "boredom"],
+    '😢': ["sadness", "anger"],
+    '😫': ["worry", "hate"]
+  };
 
+  String getEmojiForEmotion(String emotion) {
+    final normalizedEmotion = emotion.toLowerCase();
+    print(normalizedEmotion);
+    for (final entry in emojiMapping.entries) {
+      if (entry.value.contains(normalizedEmotion)) {
+        return entry.key;
+      }
+    }
+    return '🤔'; // Fallback emoji if not found
+  }
+  
   String getCurrentDate() {
     final now = DateTime.now();
     final formatter = DateFormat('dd MMM yyyy');
@@ -149,13 +167,13 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
             TextButton(
               onPressed: () async {
                 if (!_isLoading) {
-                  await _sendRequest(); // Correctly calling the function
+                  String response = await _sendRequest(); // Correctly calling the function
                   print('status code: $_responseMessage');
                   // Proceed with saving or updating the journal entry
                   widget.addJournalEntry(
                     widget.entryIndex, // Use the index for update or -1 for new
                     _titleController.text,
-                    selectedEmoji,
+                    selectedEmoji = getEmojiForEmotion(response!),
                     widget.isEditMode ? widget.date : getCurrentDate(), // Update date only for edit mode
                     _entryController.text,
                   );
@@ -252,7 +270,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   }
 
   // This method handles sending requests to the backend
-  Future<void> _sendRequest() async {
+  Future<String> _sendRequest() async {
     // query from the user's journal entry
     final query = _entryController.text.trim();
     setState(() {
@@ -267,6 +285,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
       setState(() {
         _responseMessage = 'Response: ${response['result']}';
       });
+      return response['result'];
     } catch (e) {
       setState(() {
         _responseMessage = 'Error: $e';
@@ -276,6 +295,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
         _isLoading = false;
       });
     }
+    return "error";
   }
 
   @override
