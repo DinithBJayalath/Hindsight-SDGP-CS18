@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import '../services/API_Service.dart';
+import 'package:provider/provider.dart';
+import '../services/Emotions_Provider.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(int, String, String, String, String) addJournalEntry;
@@ -170,10 +172,12 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
                   String response = await _sendRequest(); // Correctly calling the function
                   print('status code: $_responseMessage');
                   // Proceed with saving or updating the journal entry
+                  final emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
+                  emotionsProvider.addEmotion(response, getEmojiForEmotion(response));
                   widget.addJournalEntry(
                     widget.entryIndex, // Use the index for update or -1 for new
                     _titleController.text,
-                    selectedEmoji = getEmojiForEmotion(response!),
+                    selectedEmoji = getEmojiForEmotion(response),
                     widget.isEditMode ? widget.date : getCurrentDate(), // Update date only for edit mode
                     _entryController.text,
                   );

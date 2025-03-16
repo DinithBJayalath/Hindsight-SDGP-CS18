@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Core/Models/Emotion.dart';
+import 'package:frontend/services/Emotions_Provider.dart';
+import 'package:provider/provider.dart';
 import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
@@ -27,6 +30,34 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  late EmotionsProvider _emotionsProvider;
+  List<Emotion> _uniqueEmotions = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize the provider
+    _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
+    // Get the initial emotions
+    _updateEmotions();
+
+    // If you want to listen for changes, you can add a listener
+    _emotionsProvider.addListener(_updateEmotions);
+  }
+
+  void _updateEmotions() {
+    setState(() {
+      _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener when the widget is disposed
+    _emotionsProvider.removeListener(_updateEmotions);
+    super.dispose();
   }
 
   @override

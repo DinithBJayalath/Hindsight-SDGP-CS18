@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/Journal_Provider.dart';
 import 'package:intl/intl.dart'; // Import the intl package
+import 'package:provider/provider.dart';
 import '../widgets/journal_container.dart';
 import '../widgets/journal_entry_widget.dart';
 import 'journal_writing_screen.dart';
@@ -13,26 +15,26 @@ class JournalingScreen extends StatefulWidget {
 
 class _JournalingScreenState extends State<JournalingScreen> {
   final String userName = "John"; // Replace with dynamic username
-  List<Map<String, String>> journalEntries = [
-    {
-      'title': 'My first journal entry',
-      'emoji': '😊',
-      'date': '15 Feb 2025',
-      'entryContent': 'Today was a great day!',
-    },
-    {
-      'title': 'Feeling happy',
-      'emoji': '😊',
-      'date': '14 Feb 2025',
-      'entryContent': 'Had a lovely dinner with friends.',
-    },
-    {
-      'title': 'Tough day',
-      'emoji': '😞',
-      'date': '12 Feb 2025',
-      'entryContent': 'A rough day at work, but I learned a lot.',
-    }
-  ];
+  late JournalProvider _journalProvider;
+  List<Map<String, String>> _journalEntries = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize the provider
+    _journalProvider = Provider.of<JournalProvider>(context, listen: false);
+    // Get the initial emotions
+    _updateJournal();
+
+    // If you want to listen for changes, you can add a listener
+    _journalProvider.addListener(_updateJournal);
+  }
+
+  void _updateJournal() {
+    setState(() {
+      _journalEntries = _journalProvider.journalEntries;
+    });
+  }
 
   String searchQuery = '';
 
@@ -45,7 +47,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
 
   // Method to filter entries based on the search query
   List<Map<String, String>> getFilteredEntries() {
-    return journalEntries
+    return _journalEntries
         .where((entry) =>
             entry['title']!.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
@@ -57,7 +59,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
     if (index == -1) {
       // Add new entry at the top (index 0)
       setState(() {
-        journalEntries.insert(0, {
+        _journalEntries.insert(0, {
           // insert at the beginning
           'title': title,
           'emoji': emoji,
@@ -68,7 +70,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
     } else {
       // Update existing entry
       setState(() {
-        journalEntries[index] = {
+        _journalEntries[index] = {
           'title': title,
           'emoji': emoji,
           'date': date,
@@ -81,7 +83,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
   // Delete journal entry function
   void deleteJournalEntry(int index) {
     setState(() {
-      journalEntries.removeAt(index); // Removes entry at the specified index
+      _journalEntries.removeAt(index); // Removes entry at the specified index
     });
   }
 

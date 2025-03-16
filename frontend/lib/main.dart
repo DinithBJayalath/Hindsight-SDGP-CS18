@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/Journal_Provider.dart';
 import 'screens/home_screen.dart';
+import 'services/Emotions_Provider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const HindsightApp());
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => EmotionsProvider()),
+            ChangeNotifierProvider(create: (_) => JournalProvider())
+          ],
+          child: const HindsightApp()
+      )
+  );
 }
 
 class HindsightApp extends StatelessWidget {

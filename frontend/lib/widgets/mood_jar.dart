@@ -19,27 +19,27 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     "awful": {
       "color": Color(0xFFB668D2), // Purple
       "emoji": "😫",
-      "keywords": ["awful", "terrible", "horrible", "worst"]
+      "keywords": ["worry", "hate"]
     },
     "bad": {
       "color": Color(0xFF6B88E8), // Blue
       "emoji": "😢",
-      "keywords": ["bad", "sad", "unhappy", "depressed", "disappointed"]
+      "keywords": ["sadness", "anger"]
     },
     "neutral": {
       "color": Color(0xFF5ECCE6), // Cyan
       "emoji": "😐",
-      "keywords": ["neutral", "okay", "fine", "alright"]
+      "keywords": ["relief", "surprise", "neutral", "boredom"]
     },
     "good": {
       "color": Color(0xFF5ED48C), // Green
       "emoji": "😊",
-      "keywords": ["good", "happy", "pleased", "content"]
+      "keywords": ["fun", "happiness"]
     },
     "great": {
       "color": Color(0xFFF87D7D), // Red/Pink
       "emoji": "😄",
-      "keywords": ["great", "amazing", "excellent", "awesome", "fantastic"]
+      "keywords": ["enthusiasm", "love"]
     }
   };
 
