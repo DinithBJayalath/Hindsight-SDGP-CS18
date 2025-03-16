@@ -27,6 +27,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return this.authService.validateUser(payload);
+    // Ensure the payload contains a valid sub claim (Auth0 user ID)
+    if (!payload || !payload.sub) {
+      throw new UnauthorizedException('Invalid token: missing user identifier');
+    }
+    
+    // First, validate the user with our service
+    const user = await this.authService.validateUser(payload);
+    
+    // Ensure we always return the Auth0 user ID (sub) with the user object
+    return {
+      ...user,
+      sub: payload.sub // Ensure sub is always included in the request.user object
+    };
   }
 }

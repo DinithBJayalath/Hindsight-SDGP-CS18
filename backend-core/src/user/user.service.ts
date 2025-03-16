@@ -1,5 +1,5 @@
 // src/user/user.service.ts
-import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './entities/user.entity';
@@ -7,6 +7,8 @@ import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @Inject(forwardRef(() => ProfileService))
@@ -96,5 +98,41 @@ export class UserService {
       return finalUser;
     }
   }
-}
 
+  async deleteUser(auth0Id: string): Promise<void> {
+    try {
+      this.logger.log(`Attempting to delete user with Auth0 ID: ${auth0Id}`);
+      
+      if (!auth0Id) {
+        this.logger.error('Cannot delete user with undefined Auth0 ID');
+        return;
+      }
+      
+      // Find the user by Auth0 ID
+      const user = await this.userModel.findOne({ auth0Id }).exec();
+      
+      if (!user) {
+        this.logger.warn(`User not found for deletion with ID: ${auth0Id}`);
+        return; // Continue with deletion process even if user not found in our DB
+      }
+      
+      this.logger.log(`Found user in database: ${user._id}`);
+      
+      // If user has a profile, delete it first
+      if (user.profile) {
+        this.logger.log(`Deleting associated profile: ${user.profile}`);
+        await this.profileService.deleteProfile(user.profile);
+      }
+      
+      // Delete any other associated data here (e.g., posts, comments, etc.)
+      // This depends on your application's data model
+      
+      // Delete the user
+      await this.userModel.findByIdAndDelete(user._id).exec();
+      this.logger.log(`Successfully deleted user from database: ${auth0Id}`);
+    } catch (error) {
+      this.logger.error(`Error deleting user from database: ${error.message}`);
+      throw error;
+    }
+  }
+}

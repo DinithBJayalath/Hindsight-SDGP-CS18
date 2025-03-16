@@ -373,58 +373,68 @@ class AuthService {
   Future<bool> deleteAccount() async {
     try {
       String? token = await _storage.read(key: "access_token");
-      if (token == null) return false;
-
-      // Get Management API Token first
-      final tokenResponse = await http.post(
-        Uri.parse("https://$auth0Domain/oauth/token"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "client_id": clientId,
-          "client_secret": clientSecret,
-          "audience": audience,
-          "grant_type": "client_credentials"
-        }),
-      );
-
-      if (tokenResponse.statusCode != 200) {
-        print("Failed to get management token: ${tokenResponse.body}");
+      if (token == null) {
+        print("Cannot delete account: No access token found");
         return false;
       }
 
-      final managementToken = jsonDecode(tokenResponse.body)['access_token'];
-      final userId = Jwt.parseJwt(token)['sub'];
-
-      // Delete user from Auth0
-      final auth0Response = await http.delete(
-        Uri.parse("https://$auth0Domain/api/v2/users/$userId"),
-        headers: {
-          "Authorization": "Bearer $managementToken",
-          "Content-Type": "application/json"
-        },
-      );
-
-      if (auth0Response.statusCode != 204) {
-        print("Failed to delete account from Auth0: ${auth0Response.body}");
-        return false;
-      }
-
-      // Delete profile from backend
-      final backendResponse = await http.delete(
-        Uri.parse("$backendUrl/profile"),
+      // Call backend endpoint to delete user
+      final response = await http.delete(
+        Uri.parse("$backendUrl/auth/delete-account"),
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json"
         },
       );
 
-      if (backendResponse.statusCode != 200) {
-        print("Failed to delete profile from backend: ${backendResponse.body}");
-      }
+      if (response.statusCode == 200) {
+        print("Account deleted successfully");
+        // Clear local storage
+        await logout();
+        return true;
+      } else if (response.statusCode == 401) {
+        // Token might be expired, try refreshing and retrying
+        print("Token expired, attempting to refresh");
+        final refreshed = await refreshToken();
 
-      // Clear local storage
-      await logout();
-      return true;
+        if (refreshed != null) {
+          // Get new token and retry deletion
+          token = await _storage.read(key: "access_token");
+          if (token != null) {
+            print("Retrying account deletion with refreshed token");
+            final retryResponse = await http.delete(
+              Uri.parse("$backendUrl/auth/delete-account"),
+              headers: {
+                "Authorization": "Bearer $token",
+                "Content-Type": "application/json"
+              },
+            );
+
+            print(
+                "Retry response: ${retryResponse.statusCode} ${retryResponse.body}");
+
+            if (retryResponse.statusCode == 200) {
+              print("Account deleted successfully after token refresh");
+              await logout();
+              return true;
+            }
+          }
+        }
+        print("Failed to delete account after token refresh");
+        return false;
+      } else {
+        print(
+            "Failed to delete account: ${response.statusCode} ${response.body}");
+
+        // Always clear local storage for these errors - user can't fix them
+        if (response.statusCode >= 500) {
+          print("Backend error encountered, logging out user anyway");
+          await logout();
+          return false;
+        }
+
+        return false;
+      }
     } catch (e) {
       print("Delete account exception: $e");
       return false;
