@@ -2,12 +2,17 @@ import grpc
 from concurrent import futures
 import algorithms_pb2 as algorithms_pb2
 import algorithms_pb2_grpc as algorithms_pb2_grpc
-from LLM_Analysis.JournalAnalysis import retrieve_similar, Generate
+from LLM_Analysis.JournalAnalysis import Generate
 
 class JournalAnalyzer(algorithms_pb2_grpc.JournalAnalyzerServicer):
     def analyze(self, request, context):
-        emotion = Generate(request.query)
-        print(f"Emotional analysis of journal entry is: {emotion}")
+        result = Generate(request.query)
+        print(result)
+        emotion, sentiment_score = result.split("," , 1)
+        if ":" in emotion:
+            emotion = emotion.split(":", 1)[1].strip()
+            sentiment_score = sentiment_score.split(":", 1)[1].strip()
+        print(f"Emotional analysis of journal entry is: {emotion}, Sentiment score is: {sentiment_score}")
         return algorithms_pb2.AnalyzeResponse(response = emotion)
 
 # SSL/TLS, uncomment to enable
