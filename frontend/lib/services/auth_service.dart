@@ -3,12 +3,14 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService {
-  final String auth0Domain = "dev-hindsight.uk.auth0.com";
-  final String clientId = "FFAKXDh8vl0RHvZcSp2em9UABrI3a746";
-  final String audience = "https://dev-hindsight.uk.auth0.com/api/v2/";
-  final String backendUrl = "http://10.0.2.2:3000";
+  final String auth0Domain = dotenv.env['AUTH0_DOMAIN'] ?? "";
+  final String clientId = dotenv.env['AUTH0_CLIENT_ID'] ?? "";
+  final String audience = dotenv.env['AUTH0_AUDIENCE'] ?? "";
+  final String backendUrl = dotenv.env['API_URL'] ?? "";
+  final String clientSecret = dotenv.env['AUTH0_CLIENT_SECRET'] ?? "";
 
   final _storage = const FlutterSecureStorage();
 
@@ -365,5 +367,67 @@ class AuthService {
     await _storage.delete(key: "refresh_token");
     await _storage.delete(key: "user_data");
     print("User logged out.");
+  }
+
+  // Delete account from Auth0 and backend
+  Future<bool> deleteAccount() async {
+    try {
+      String? token = await _storage.read(key: "access_token");
+      if (token == null) return false;
+
+      // Get Management API Token first
+      final tokenResponse = await http.post(
+        Uri.parse("https://$auth0Domain/oauth/token"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "client_id": clientId,
+          "client_secret": clientSecret,
+          "audience": audience,
+          "grant_type": "client_credentials"
+        }),
+      );
+
+      if (tokenResponse.statusCode != 200) {
+        print("Failed to get management token: ${tokenResponse.body}");
+        return false;
+      }
+
+      final managementToken = jsonDecode(tokenResponse.body)['access_token'];
+      final userId = Jwt.parseJwt(token)['sub'];
+
+      // Delete user from Auth0
+      final auth0Response = await http.delete(
+        Uri.parse("https://$auth0Domain/api/v2/users/$userId"),
+        headers: {
+          "Authorization": "Bearer $managementToken",
+          "Content-Type": "application/json"
+        },
+      );
+
+      if (auth0Response.statusCode != 204) {
+        print("Failed to delete account from Auth0: ${auth0Response.body}");
+        return false;
+      }
+
+      // Delete profile from backend
+      final backendResponse = await http.delete(
+        Uri.parse("$backendUrl/profile"),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json"
+        },
+      );
+
+      if (backendResponse.statusCode != 200) {
+        print("Failed to delete profile from backend: ${backendResponse.body}");
+      }
+
+      // Clear local storage
+      await logout();
+      return true;
+    } catch (e) {
+      print("Delete account exception: $e");
+      return false;
+    }
   }
 }

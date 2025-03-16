@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ProfileService {
-  static const String baseUrl = 'http://10.0.2.2:3000';
+  static final String baseUrl = dotenv.env['API_URL'] ?? '';
   static const _storage = FlutterSecureStorage();
 
   // Get profile by email (uses the new email endpoint)
@@ -152,6 +153,24 @@ class ProfileService {
     } catch (e) {
       print('Error deleting profile: $e');
       rethrow;
+    }
+  }
+
+  static Future<bool> checkEmailExists(String email) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/profile/check-email/$email'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        return data['exists'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('Error checking email existence: $e');
+      return false;
     }
   }
 }

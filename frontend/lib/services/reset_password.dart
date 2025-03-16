@@ -1,15 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ResetPasswordService {
-  static const String auth0Domain =
-      'dev-hindsight.uk.auth0.com'; // Example: 'dev-xyz.auth0.com'
-  static const String clientId =
-      'FFAKXDh8vl0RHvZcSp2em9UABrI3a746'; // Found in Auth0 Dashboard
+  static String get auth0Domain => dotenv.env['AUTH0_DOMAIN'] ?? '';
+  static String get clientId => dotenv.env['AUTH0_CLIENT_ID'] ?? '';
 
   /// Function to send a password reset email
   static Future<bool> sendPasswordResetEmail(String email) async {
-    const String url = 'https://$auth0Domain/dbconnections/change_password';
+    final String url = 'https://$auth0Domain/dbconnections/change_password';
 
     final Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -18,8 +17,7 @@ class ResetPasswordService {
     final Map<String, dynamic> body = {
       'client_id': clientId,
       'email': email,
-      'connection':
-          'Username-Password-Authentication', // Default database connection
+      'connection': 'Username-Password-Authentication',
     };
 
     try {

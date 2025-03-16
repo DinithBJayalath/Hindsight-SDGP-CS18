@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EmailVerificationService {
-  static final String baseUrl = dotenv.env['API_URL'] ?? 'http://10.0.2.2:3000';
+  static final String baseUrl = dotenv.env['API_URL'] ?? '';
 
   /// Send verification email and get a 6-digit code
   static Future<String?> sendVerificationEmail(String email) async {
