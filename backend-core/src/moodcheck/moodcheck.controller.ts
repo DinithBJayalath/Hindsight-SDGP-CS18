@@ -1,4 +1,4 @@
-import { Controller, Get} from '@nestjs/common';
+import { Controller,Get,Post} from '@nestjs/common';
 
 @Controller('moodcheck')
 export class MoodcheckController {
@@ -7,4 +7,11 @@ export class MoodcheckController {
         return "Hello world";
 
     }
+    @Post()
+    saveMood(){
+        return"post method";
+    }
+
+
+    
 }

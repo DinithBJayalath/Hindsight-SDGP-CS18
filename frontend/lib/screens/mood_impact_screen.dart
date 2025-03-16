@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import '../services/API_Service.dart';
+
 
 class MoodImpactScreen extends StatefulWidget {
   final String mood;
@@ -15,6 +17,10 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   late String emoji;
   late String text;
   final String? emotion;
+  // The following 3 are variables to handel the backend requests and responses
+  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.195:3000');
+  bool _isLoading = false;
+  String _responseMessage = '';
   MoodImpactScreenState({required this.mood, required this.emotion}) {
     final parts = mood.split(' ');
     emoji = parts[0];
@@ -28,6 +34,30 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   ];
 
   List<String> selectedFactors = [];
+  Future<void> _sendRequest() async {
+    final data = {"Mood": mood , "Emotion": emotion};
+    setState(() {
+      _isLoading = true;
+      _responseMessage = '';
+    });
+
+    try {
+      // Send the request to the backend
+      final response = await _apiService.postData('moodcheck',data);
+
+      setState(() {
+        _responseMessage = 'Response: ${response['result']}';
+      });
+    } catch (e) {
+      setState(() {
+        _responseMessage = 'Error: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

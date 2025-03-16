@@ -99,7 +99,7 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: emotions.map((emotion) {
+                children:(emotions[mood]??[]).map((emotion) {
                   bool isSelected = selectedEmotion == emotion;
                   return GestureDetector(
                     onTap: () {
