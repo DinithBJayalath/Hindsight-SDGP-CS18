@@ -6,6 +6,7 @@ import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
 import 'package:frontend/widgets/signin_botton.dart';
+import 'package:frontend/widgets/popup_message.dart';
 import 'package:email_validator/email_validator.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -22,15 +23,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void sendPasswordReset() async {
     String email = emailController.text.trim();
     if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter your email")),
+      PopupMessage.show(
+        context,
+        "Please enter your email",
+        isSuccess: false,
       );
       return;
     }
 
     if (!EmailValidator.validate(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid email address")),
+      PopupMessage.show(
+        context,
+        "Please enter a valid email address",
+        isSuccess: false,
       );
       return;
     }
@@ -44,11 +49,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
 
       if (!emailExists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("No account found with this email address"),
-            backgroundColor: Colors.red,
-          ),
+        PopupMessage.show(
+          context,
+          "No account found with this email address",
+          isSuccess: false,
         );
         setState(() => _isLoading = false);
         return;
@@ -59,25 +63,29 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (!mounted) return;
 
       if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Password reset email sent successfully"),
+          ),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => ResetEmailSentScreen(email: email)),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text(
-                  "Failed to send password reset email. Please try again.")),
+        PopupMessage.show(
+          context,
+          "Failed to send password reset email. Please try again.",
+          isSuccess: false,
         );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("An error occurred. Please try again later."),
-          backgroundColor: Colors.red,
-        ),
+      PopupMessage.show(
+        context,
+        "An error occurred. Please try again later.",
+        isSuccess: false,
       );
     } finally {
       if (mounted) {

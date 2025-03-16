@@ -183,7 +183,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _userProfile = result;
           _isEditing = false;
         });
-        PopupMessage.show(context, "Profile updated successfully");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Account deleted successfully"),
+          ),
+        );
       } else {
         PopupMessage.show(
           context,
@@ -235,7 +239,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               onPressed: () async {
                 Navigator.of(context).pop();
-                //await _deleteAccount();
+                setState(() => _isLoading = true);
+
+                final success = await _authService.deleteAccount();
+
+                if (!mounted) return;
+                setState(() => _isLoading = false);
+
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Account deleted successfully"),
+                    ),
+                  );
+
+                  // Redirect to login screen
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false, // Clear all routes
+                  );
+                } else {
+                  PopupMessage.show(
+                    context,
+                    "Failed to delete account. Please try again.",
+                    isSuccess: false,
+                  );
+                }
               },
             ),
           ],

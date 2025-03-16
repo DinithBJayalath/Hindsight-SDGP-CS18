@@ -128,34 +128,6 @@ class ProfileService {
     }
   }
 
-  // Delete profile using profile ID
-  static Future<bool> deleteProfile(String profileId) async {
-    try {
-      final token = await _storage.read(key: 'access_token');
-      if (token == null) {
-        throw Exception('No access token found');
-      }
-
-      final response = await http.delete(
-        Uri.parse('$baseUrl/profile/$profileId'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode != 200) {
-        final errorBody = json.decode(response.body);
-        throw Exception(errorBody['message'] ?? 'Failed to delete profile');
-      }
-
-      return true;
-    } catch (e) {
-      print('Error deleting profile: $e');
-      rethrow;
-    }
-  }
-
   static Future<bool> checkEmailExists(String email) async {
     try {
       final response = await http.get(

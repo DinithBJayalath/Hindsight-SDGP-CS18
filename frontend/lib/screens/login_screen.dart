@@ -44,7 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      PopupMessage.show(context, "Login successful", isSuccess: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login successful")),
+      );
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
       Map<String, dynamic> userInfo = {};
@@ -68,7 +70,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final result = await _authService.loginWithGoogle();
     if (!mounted) return;
     if (result != null) {
-      PopupMessage.show(context, "Google Login successful", isSuccess: true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Google Login successful")),
+      );
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
       Map<String, dynamic> userInfo = {};

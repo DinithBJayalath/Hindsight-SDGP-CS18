@@ -80,10 +80,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               dialogIsLoading = false;
                             });
 
-                            PopupMessage.show(
-                              dialogContext,
-                              "Verification code resent to your email",
-                              isSuccess: true,
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Verification code resent to your email"),
+                              ),
                             );
                           }
                         },
@@ -125,8 +126,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                           if (verified) {
                             Navigator.of(dialogContext).pop();
-                            PopupMessage.show(
-                                dialogContext, "Verification successful");
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
+                              const SnackBar(
+                                  content: Text("Verification successful")),
+                            );
                           } else {
                             PopupMessage.show(
                               dialogContext,
@@ -214,7 +217,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       if (!mounted) return;
 
-      // Show the verification popup
+      // Show verification dialog and get result
       bool codeVerified = await showVerificationDialog(email);
 
       if (!mounted) return;
@@ -232,6 +235,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
 
       if (result != null) {
+        // Since the signup method no longer automatically logs in the user,
+        // we need to explicitly call login after successful signup
+
+        // Add a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Sign up successful! Logging you in..."),
+          ),
+        );
+
         // After successful signup, log the user in
         final loginResult = await _authService.login(email, password);
 
