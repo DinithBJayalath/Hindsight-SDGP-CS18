@@ -67,4 +67,8 @@ export class ProfileService {
       throw new NotFoundException(`Profile with id ${profileId} not found`);
     }
   }
+
+  async findByEmail(email: string): Promise<Profile | null> {
+    return this.profileModel.findOne({ email }).exec();
+  }
 }

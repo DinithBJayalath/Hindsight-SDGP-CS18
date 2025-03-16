@@ -21,18 +21,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Controllers for editable fields
   late TextEditingController _nameController;
   late TextEditingController _bioController;
-  late TextEditingController _countryController;
   late TextEditingController _cityController;
-  late TextEditingController _languageController;
+  String _selectedCountry = 'Sri Lanka';
+  String _selectedLanguage = 'English';
+
+  // Lists for dropdowns
+  final List<String> _countries = [
+    'Sri Lanka',
+    'United States',
+    'United Kingdom',
+    'Canada',
+    'Australia',
+    'Germany',
+    'France',
+    'Japan',
+    'India',
+    'Brazil',
+    // Add more countries as needed
+  ];
+
+  final List<String> _languages = [
+    'English',
+    'Sinhala',
+    'Spanish',
+    'French',
+    'German',
+    'Japanese',
+    'Chinese',
+    'Hindi',
+    'Arabic',
+    'Portuguese',
+    // Add more languages as needed
+  ];
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController();
     _bioController = TextEditingController();
-    _countryController = TextEditingController();
     _cityController = TextEditingController();
-    _languageController = TextEditingController();
+    // Set default values for dropdowns
+    _selectedCountry = _countries[0]; // Default to first country
+    _selectedLanguage = _languages[0]; // Default to first language
     _loadUserProfile();
   }
 
@@ -40,9 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _bioController.dispose();
-    _countryController.dispose();
     _cityController.dispose();
-    _languageController.dispose();
     super.dispose();
   }
 
@@ -67,9 +95,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _userProfile = profile;
           _nameController.text = profile['name']?.toString() ?? '';
           _bioController.text = profile['bio']?.toString() ?? '';
-          _countryController.text = profile['country']?.toString() ?? '';
           _cityController.text = profile['city']?.toString() ?? '';
-          _languageController.text = profile['language']?.toString() ?? 'en';
+
+          // Safely set country value
+          final countryValue = profile['country']?.toString();
+          _selectedCountry =
+              _countries.contains(countryValue) ? countryValue! : _countries[0];
+
+          // Safely set language value
+          final languageValue = profile['language']?.toString();
+          _selectedLanguage = _languages.contains(languageValue)
+              ? languageValue!
+              : _languages[0];
         });
       } else {
         // Create a new profile if one doesn't exist
@@ -77,8 +114,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'email': email,
           'name': widget.userInfo['name']?.toString() ?? '',
           'picture': widget.userInfo['picture']?.toString() ?? '',
-          'language': 'en',
-          'country': '',
+          'language': _languages[0], // Default to first language
+          'country': _countries[0], // Default to first country
           'city': '',
           'bio': '',
           'dateOfBirth': DateTime.now().toIso8601String(),
@@ -90,11 +127,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _userProfile = createdProfile;
             _nameController.text = createdProfile['name']?.toString() ?? '';
             _bioController.text = createdProfile['bio']?.toString() ?? '';
-            _countryController.text =
-                createdProfile['country']?.toString() ?? '';
             _cityController.text = createdProfile['city']?.toString() ?? '';
-            _languageController.text =
-                createdProfile['language']?.toString() ?? 'en';
+
+            // Safely set country value
+            final countryValue = createdProfile['country']?.toString();
+            _selectedCountry = _countries.contains(countryValue)
+                ? countryValue!
+                : _countries[0];
+
+            // Safely set language value
+            final languageValue = createdProfile['language']?.toString();
+            _selectedLanguage = _languages.contains(languageValue)
+                ? languageValue!
+                : _languages[0];
           });
         }
       }
@@ -123,9 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final updatedProfile = {
         'name': _nameController.text,
         'bio': _bioController.text,
-        'country': _countryController.text,
+        'country': _selectedCountry,
         'city': _cityController.text,
-        'language': _languageController.text,
+        'language': _selectedLanguage,
       };
 
       final result = await ProfileService.updateProfile(
@@ -168,20 +213,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
-  Widget _buildProfileField(String label, TextEditingController controller,
-      {bool readOnly = false}) {
+  // Show delete account confirmation dialog
+  Future<void> _showDeleteAccountDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text(
+            'Are you sure you want to delete your account? This action cannot be undone.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                //await _deleteAccount();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildProfileField(String label, TextEditingController? controller,
+      {bool readOnly = false,
+      bool isDropdown = false,
+      String? value,
+      List<String>? items,
+      Function(String?)? onChanged}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: _isEditing && !readOnly
-          ? TextField(
-              controller: controller,
-              readOnly: readOnly,
-              decoration: InputDecoration(
-                labelText: label,
-                border: const OutlineInputBorder(),
-                enabled: !readOnly,
-              ),
-            )
+          ? isDropdown
+              ? DropdownButtonFormField<String>(
+                  value: value,
+                  decoration: InputDecoration(
+                    labelText: label,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: items?.map((String item) {
+                        return DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item),
+                        );
+                      }).toList() ??
+                      [],
+                  onChanged: onChanged,
+                )
+              : TextField(
+                  controller: controller,
+                  readOnly: readOnly,
+                  decoration: InputDecoration(
+                    labelText: label,
+                    border: const OutlineInputBorder(),
+                    enabled: !readOnly,
+                  ),
+                )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -194,11 +290,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  controller.text.isNotEmpty ? controller.text : 'Not set',
+                  isDropdown
+                      ? value ?? 'Not set'
+                      : controller?.text.isNotEmpty == true
+                          ? controller!.text
+                          : 'Not set',
                   style: TextStyle(
                     fontSize: 16,
-                    color:
-                        controller.text.isNotEmpty ? Colors.black : Colors.grey,
+                    color: (isDropdown ? value : controller?.text)
+                            .toString()
+                            .isNotEmpty
+                        ? Colors.black
+                        : Colors.grey,
                   ),
                 ),
                 const Divider(),
@@ -238,7 +341,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  // Show email as non-editable field
                   _buildProfileField(
                       'Email',
                       TextEditingController(
@@ -246,9 +348,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       readOnly: true),
                   _buildProfileField('Name', _nameController),
                   _buildProfileField('Bio', _bioController),
-                  _buildProfileField('Country', _countryController),
+                  _buildProfileField(
+                    'Country',
+                    null,
+                    isDropdown: true,
+                    value: _selectedCountry,
+                    items: _countries,
+                    onChanged: _isEditing
+                        ? (value) {
+                            setState(() => _selectedCountry = value!);
+                          }
+                        : null,
+                  ),
                   _buildProfileField('City', _cityController),
-                  _buildProfileField('Language', _languageController),
+                  _buildProfileField(
+                    'Language',
+                    null,
+                    isDropdown: true,
+                    value: _selectedLanguage,
+                    items: _languages,
+                    onChanged: _isEditing
+                        ? (value) {
+                            setState(() => _selectedLanguage = value!);
+                          }
+                        : null,
+                  ),
                   if (_isEditing) ...[
                     const SizedBox(height: 20),
                     Row(
@@ -269,6 +393,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 20),
                   ],
+                  // Delete Account Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: TextButton(
+                      onPressed: _showDeleteAccountDialog,
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
+                      ),
+                      child: const Text(
+                        'Delete Account',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

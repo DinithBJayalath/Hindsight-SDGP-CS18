@@ -105,4 +105,13 @@ export class ProfileController {
     
     return profile;
   }
+
+  @Get('check-email/:email')
+  async checkEmailExists(@Param('email') email: string) {
+    const exists = await this.profileService.findByEmail(email);
+    if (exists) {
+      return { exists: true };
+    }
+    return { exists: false };
+  }
 }

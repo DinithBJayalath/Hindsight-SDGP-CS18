@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/services/email_verification_service.dart';
+import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/agreements_popup.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
@@ -191,6 +192,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
 
     try {
+      // Check if email already exists
+      bool emailExists = await ProfileService.checkEmailExists(email);
+
+      if (!mounted) return;
+
+      if (emailExists) {
+        PopupMessage.show(
+          context,
+          "An account with this email already exists. Please use a different email or try logging in.",
+          isSuccess: false,
+        );
+        setState(() {
+          isLoading = false;
+        });
+        return;
+      }
+
       // First, send verification email
       await EmailVerificationService.sendVerificationEmail(email);
 
