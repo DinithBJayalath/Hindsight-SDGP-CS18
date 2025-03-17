@@ -62,6 +62,7 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final GlobalKey<MoodJarState> _moodJarKey = GlobalKey<MoodJarState>();
   final AuthService _authService = AuthService();
+  final _userName = "Ramudi";
   // This is the shared instance of the provider
   late EmotionsProvider _emotionsProvider;
   List<Emotion> _uniqueEmotions = [];

@@ -34,7 +34,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _entryController = TextEditingController();
   // The following 3 are variables to handel the backend requests and responses
-  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.195:3000');
+  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.153:3000');
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
