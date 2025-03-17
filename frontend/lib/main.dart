@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/Journal_Provider.dart';
 import 'screens/home_screen.dart';
+import 'services/Emotions_Provider.dart';
+import 'package:provider/provider.dart';
 import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
@@ -8,7 +11,15 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  runApp(const HindsightApp());
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => EmotionsProvider()),
+            ChangeNotifierProvider(create: (_) => JournalProvider())
+          ],
+          child: const HindsightApp()
+      )
+  );
 }
 
 class HindsightApp extends StatelessWidget {

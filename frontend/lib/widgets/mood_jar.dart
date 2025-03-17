@@ -19,28 +19,36 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     "awful": {
       "color": Color(0xFFB668D2), // Purple
       "emoji": "😫",
-      "keywords": ["awful", "terrible", "horrible", "worst"]
+      "keywords": ["worry", "hate"]
     },
     "bad": {
       "color": Color(0xFF6B88E8), // Blue
       "emoji": "😢",
-      "keywords": ["bad", "sad", "unhappy", "depressed", "disappointed"]
+      "keywords": ["sadness", "anger"]
     },
     "neutral": {
       "color": Color(0xFF5ECCE6), // Cyan
       "emoji": "😐",
-      "keywords": ["neutral", "okay", "fine", "alright"]
+      "keywords": ["relief", "surprise", "neutral", "boredom"]
     },
     "good": {
       "color": Color(0xFF5ED48C), // Green
       "emoji": "😊",
-      "keywords": ["good", "happy", "pleased", "content"]
+      "keywords": ["fun", "happiness"]
     },
     "great": {
       "color": Color(0xFFF87D7D), // Red/Pink
       "emoji": "😄",
-      "keywords": ["great", "amazing", "excellent", "awesome", "fantastic"]
+      "keywords": ["enthusiasm", "love"]
     }
+  };
+
+  final Map<String, List<String>> emojiMapping = {
+    'great': ["enthusiasm", "love"],
+    'good': ["fun", "happiness"],
+    'neutral': ["relief", "surprise", "neutral", "boredom"],
+    'bad': ["sadness", "anger"],
+    'awful': ["worry", "hate"]
   };
 
   final List<Emoji> _emojis = [];
@@ -96,7 +104,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     );
 
     // Add some initial emojis
-    _addInitialEmojis();
+    // _addInitialEmojis();
   }
 
   void _addInitialEmojis() {
@@ -122,25 +130,22 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
   String detectMood(String text) {
     text = text.toLowerCase();
-    for (var mood in moodData.keys) {
-      for (var keyword in moodData[mood]!["keywords"]) {
-        if (text.contains(keyword)) {
-          return mood;
-        }
+    for (final entry in emojiMapping.entries) {
+      if (entry.value.contains(text)) {
+        return entry.key;
       }
     }
     return "neutral";
   }
 
-  void addMoodFromText(String text) {
-    if (_isAnimating) return;
-
+  Future<void> addMoodFromText(String text) async {
     final mood = detectMood(text);
-    addSpecificEmoji(mood);
+    print(mood);
+    await addSpecificEmoji(mood);
   }
 
   // Method to add a specific mood (for testing)
-  void addSpecificEmoji(String mood) async {
+  Future<void> addSpecificEmoji(String mood) async {
     if (_isAnimating) return;
     _isAnimating = true;
 
@@ -158,7 +163,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
       final emojiSymbol = moodData[mood]?["emoji"] as String? ?? "😐";
       final emojiColor = moodData[mood]?["color"] as Color? ?? Colors.grey;
-
+      print(emojiSymbol);
       final newEmoji = Emoji(emojiSymbol, emojiColor, startPosition, mood);
 
       setState(() {
@@ -308,6 +313,19 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     }
   }
 
+  final Gradient jarLidGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFE0E0E0), // Light Silver
+      Color(0xFFBDBDBD), // Medium Gray
+      Color(0xFF9E9E9E), // Darker Gray
+      Color(0xFFE0E0E0), // Light Silver
+      Color(0xFF757575), // Deep reflection
+    ],
+    stops: [0.0, 0.3, 0.5, 0.7, 1.0], // Adjust for a metallic look
+  );
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -407,19 +425,11 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
       width: jarWidth,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.black87,
         borderRadius: BorderRadius.circular(10),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.black87,
-            Colors.black54,
-          ],
-        ),
+        gradient: jarLidGradient, // moved the creation of the gradient outside and made it a final variable for performance
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: Colors.grey.shade900,
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

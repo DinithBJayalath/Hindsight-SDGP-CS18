@@ -4,21 +4,21 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 
-// Comment out HTTPS options to use HTTP instead
-/*
-const httpsOptions = {
-  key: fs.readFileSync("../resources/server.key"),
-  cert: fs.readFileSync("../resources/server.crt"),
-};
-*/
+// const httpsOptions = {
+//   key: fs.readFileSync("../resources/server.key"),
+//   cert: fs.readFileSync("../resources/server.crt"),
+// };
 
 async function bootstrap() {
-  // Use HTTP instead of HTTPS for development
   const app = await NestFactory.create(AppModule);
-  
-  // Global middleware
-  //app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: '*', // During development, you can use '*' to accept requests from anywhere
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true,
+    allowedHeaders: 'Origin,X-Requested-With,Content-Type,Accept,Authorization',
+  });
   
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
@@ -27,7 +27,6 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
   
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();
-
