@@ -1,4 +1,5 @@
-import { Controller,Get,Post} from '@nestjs/common';
+import { Body, Controller,Get,Post} from '@nestjs/common';
+import { MoodCheckDto } from './moodcheck.dto';
 
 @Controller('moodcheck')
 export class MoodcheckController {
@@ -8,8 +9,9 @@ export class MoodcheckController {
 
     }
     @Post()
-    saveMood(){
-        return"post method";
+    saveMood(@Body() data:MoodCheckDto){
+        console.log(data)
+        return data;
     }
 
 

@@ -23,14 +23,17 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
   String selectedMood = "Happy"; // Default mood
   String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
   Map<String,List<String>> emotions = {
-    "Negative": ["Sadness", "Anger", "Worry", "Hate"],
-    "Neutral": ["relief", "Surprise", "Neutral", "Boredom"],
-    "Positive": ["Happiness", "Fun", "Love", "Enthusiasm"]
+    "very sad": ["Sadness", "Anger", "Worry", "Hate"],
+    "sad": ["Sadness", "Anger", "Worry", "Hate"],
+    "neutral": ["relief", "Surprise", "Neutral", "Boredom"],
+    "happy": ["Happiness", "Fun", "Love", "Enthusiasm"],
+    "very happy": ["Happiness", "Fun", "Love", "Enthusiasm"]
   };
   String? selectedEmotion; // Track selected emotion
 
   @override
   Widget build(BuildContext context) {
+    print(text);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -99,32 +102,32 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children:(emotions[mood]??[]).map((emotion) {
-                  bool isSelected = selectedEmotion == emotion;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedEmotion = emotion; // Select emotion
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue  : Colors.lightBlue.shade200,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
-                      ),
-                      child: Text(
-                        emotion,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected ? Colors.white : Colors.black,
+                  children: (emotions[text.toLowerCase()] ?? []).map((emotion) {
+                    bool isSelected = selectedEmotion == emotion;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedEmotion = emotion; // Select emotion
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.blue : Colors.lightBlue.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
+                        ),
+                        child: Text(
+                          emotion,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }).toList(),
+                    );
+                  }).toList(),
               ),
               const SizedBox(height: 40),
 

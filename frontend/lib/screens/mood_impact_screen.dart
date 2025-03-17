@@ -18,7 +18,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   late String text;
   final String? emotion;
   // The following 3 are variables to handel the backend requests and responses
-  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.195:3000');
+  final ApiService _apiService = ApiService(baseUrl: 'http://10.31.6.238:3000');
   bool _isLoading = false;
   String _responseMessage = '';
   MoodImpactScreenState({required this.mood, required this.emotion}) {
@@ -34,8 +34,13 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   ];
 
   List<String> selectedFactors = [];
+
   Future<void> _sendRequest() async {
-    final data = {"Mood": mood , "Emotion": emotion};
+    final data = {
+      "Mood": mood ,
+      "Emotion": emotion,
+      "Factors": selectedFactors
+    };
     setState(() {
       _isLoading = true;
       _responseMessage = '';
@@ -155,10 +160,10 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Selected: ${selectedFactors.join(", ")}")),
-                  );
+                onPressed: () async {
+                  await _sendRequest(); // Call the API request instead of showing a popup
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
                 child: const Text(
                   "Done",
