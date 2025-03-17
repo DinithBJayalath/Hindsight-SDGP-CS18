@@ -1,0 +1,50 @@
+import 'package:flutter/material.dart';
+<<<<<<< HEAD
+import 'screens/home_screen.dart';
+
+void main() {
+  runApp(const HindsightApp());
+=======
+import 'package:frontend/screens/profile_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  runApp(const MyApp());
+>>>>>>> feature/login-page-v2
+}
+
+class HindsightApp extends StatelessWidget {
+  const HindsightApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+<<<<<<< HEAD
+      title: 'HindSight',
+=======
+      title: "Hindsight",
+>>>>>>> feature/login-page-v2
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          primary: Colors.blue,
+        ),
+      ),
+<<<<<<< HEAD
+      home: const HomeScreen(),
+=======
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/profile': (context) => const ProfileScreen(userInfo: {}),
+      },
+      home: const SplashScreen(),
+>>>>>>> feature/login-page-v2
+    );
+  }
+}

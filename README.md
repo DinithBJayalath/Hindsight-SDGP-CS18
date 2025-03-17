@@ -20,8 +20,15 @@ This is a NestJS project that contains the code for the REST APIs in the backend
 In the src folder create a new package for your feature and put the controller, service and the model related to that feature in that package.  
 
 ## frontend
-this directory is the flutter project for the frontend of the application.  
+This directory is the flutter project for the frontend of the application.  
+
+## landing_page
+This folder contains all the code and resources that is related to the landing page of the application  
+This is a React project. The landing page is currently hosted with Vercel and this folder is the root and the entry point to that.
 
 ## proto
 This directory contains the proto files for the gRPC services.  
 make a new sub-directory for your feature and make the proto files related to that service in that sub-directory.  
+
+## resources
+This directory contains the SSL certificates used in the node server and the python server
