@@ -35,114 +35,122 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.blue.shade900, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  formattedDate,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Hey, $userName!",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black ),
-                ),
-                Text(
-                  "How are you feeling today?",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-                SizedBox(height: 30),
-
-                // Animated Mood Emoji
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  height: 140,
-                  width: 140,
-                  decoration: BoxDecoration(
-                    color: moodColors[moodIndex].withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      moods[moodIndex].split(" ")[0], // Emoji only
-                      style: TextStyle(fontSize: 60),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 20),
-
-                Text(
-                  "I'm Feeling",
-                  style: TextStyle(fontSize: 18, color: Colors.black),
-                ),
-                Text(
-                  moods[moodIndex].split(" ").sublist(1).join(" "), // Text only
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-
-                SizedBox(height: 20),
-
-                // Mood Slider
-                Slider(
-                  value: moodValue,
-                  min: 0,
-                  max: 4,
-                  divisions: 4,
-                  activeColor: moodColors[moodIndex],
-                  thumbColor: Colors.white,
-                  onChanged: (value) {
-                    setState(() {
-                      moodValue = value;
-                    });
-                  },
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("😢 Very Sad", style: TextStyle(color: Colors.black)),
-                    Text("😄 Very Happy", style: TextStyle(color: Colors.black)),
-                  ],
-                ),
-
-                SizedBox(height: 30),
-
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  ),
-                  onPressed: () {
-                    // Navigate to the MoodDescribeScreen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MoodDescribeScreen(mood: moods[moodIndex]),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Next",
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                moodColors[moodIndex].withOpacity(0.3),  // Change the bottom color dynamically
+                Colors.white,                            // Keep the top color white
               ],
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
             ),
           ),
-        ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center ,
+                children: [
+                  Text(
+                    formattedDate,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black ),
+                  ),
+                  SizedBox(height: 60),
+                  Text(
+                    "Hey, $userName!",
+                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.black ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    "How are you feeling today?",
+                    style: TextStyle(fontSize: 24, color: Colors.black),
+                  ),
+                  SizedBox(height: 60),
+
+                  // Animated Mood Emoji
+                  AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    height: 200,
+                    width: 200,
+                    decoration: BoxDecoration(
+                      color: moodColors[moodIndex].withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        moods[moodIndex].split(" ")[0], // Emoji only
+                        style: TextStyle(fontSize: 120),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  Text(
+                    "I'm Feeling",
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                  Text(
+                    moods[moodIndex].split(" ").sublist(1).join(" "), // Text only
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
+                  ),
+
+                  SizedBox(height: 20),
+
+                  // Mood Slider
+                  Slider(
+                    value: moodValue,
+                    min: 0,
+                    max: 4,
+                    divisions: 4,
+                    activeColor: moodColors[moodIndex],
+                    thumbColor: Colors.white,
+                    onChanged: (value) {
+                      setState(() {
+                        moodValue = value;
+                      });
+                    },
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("😢 Very Sad", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      Text("😄 Very Happy", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+
+                  SizedBox(height: 50),
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    ),
+                    onPressed: () {
+                      // Navigate to the MoodDescribeScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MoodDescribeScreen(mood: moods[moodIndex]),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Next",
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ),
+      )
     );
   }
 }
