@@ -25,11 +25,11 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
   String selectedMood = "Happy"; // Default mood
   String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
   Map<String,List<String>> emotions = {
-    "very sad": ["Sadness", "Anger", "Worry", "Hate"],
-    "sad": ["Sadness", "Anger", "Worry", "Hate"],
-    "neutral": ["relief", "Surprise", "Neutral", "Boredom"],
-    "happy": ["Happiness", "Fun", "Love", "Enthusiasm"],
-    "very happy": ["Happiness", "Fun", "Love", "Enthusiasm"]
+    "very sad": ["Sadness", "Anger", "Worry", "Hate", "Hopeless", "Lonely", "Depressed", "Anxious", "Guilty", "Hurt"],
+    "sad": ["Disappointed", "Frustrated", "Stressed", "Tired", "Overwhelmed", "Insecure", "Confused", "Regretful"],
+    "neutral": ["Relief", "Surprise", "Calm", "Boredom", "Content", "Focused", "Peaceful", "Mindful", "Balanced"],
+    "happy": ["Joy", "Fun", "Love", "Enthusiasm", "Grateful", "Inspired", "Proud", "Confident", "Creative"],
+    "very happy": ["Ecstatic", "Excited", "Blissful", "Energetic", "Passionate", "Optimistic", "Motivated", "Thrilled"]
   };
   String? selectedEmotion; // Track selected emotion
 
