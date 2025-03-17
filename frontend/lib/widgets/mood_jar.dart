@@ -43,6 +43,14 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     }
   };
 
+  final Map<String, List<String>> emojiMapping = {
+    'great': ["enthusiasm", "love"],
+    'good': ["fun", "happiness"],
+    'neutral': ["relief", "surprise", "neutral", "boredom"],
+    'bad': ["sadness", "anger"],
+    'awful': ["worry", "hate"]
+  };
+
   final List<Emoji> _emojis = [];
   final Random _random = Random();
   late AnimationController _lidController;
@@ -96,7 +104,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
     );
 
     // Add some initial emojis
-    _addInitialEmojis();
+    // _addInitialEmojis();
   }
 
   void _addInitialEmojis() {
@@ -122,25 +130,22 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
   String detectMood(String text) {
     text = text.toLowerCase();
-    for (var mood in moodData.keys) {
-      for (var keyword in moodData[mood]!["keywords"]) {
-        if (text.contains(keyword)) {
-          return mood;
-        }
+    for (final entry in emojiMapping.entries) {
+      if (entry.value.contains(text)) {
+        return entry.key;
       }
     }
     return "neutral";
   }
 
-  void addMoodFromText(String text) {
-    if (_isAnimating) return;
-
+  Future<void> addMoodFromText(String text) async {
     final mood = detectMood(text);
-    addSpecificEmoji(mood);
+    print(mood);
+    await addSpecificEmoji(mood);
   }
 
   // Method to add a specific mood (for testing)
-  void addSpecificEmoji(String mood) async {
+  Future<void> addSpecificEmoji(String mood) async {
     if (_isAnimating) return;
     _isAnimating = true;
 
@@ -158,7 +163,7 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
 
       final emojiSymbol = moodData[mood]?["emoji"] as String? ?? "😐";
       final emojiColor = moodData[mood]?["color"] as Color? ?? Colors.grey;
-
+      print(emojiSymbol);
       final newEmoji = Emoji(emojiSymbol, emojiColor, startPosition, mood);
 
       setState(() {

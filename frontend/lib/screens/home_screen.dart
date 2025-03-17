@@ -17,6 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  final GlobalKey<_HomeContentState> _homeContentKey = GlobalKey();
 
   final List<Widget> _screens = [
     const HomeContent(),
@@ -27,37 +28,13 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _onItemTapped(int index) {
+    if (_selectedIndex == 1 && index == 0) {
+      // Update the emotions jar when returning to home
+      _homeContentKey.currentState?.updateEmotions();
+    }
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  late EmotionsProvider _emotionsProvider;
-  List<Emotion> _uniqueEmotions = [];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Initialize the provider
-    _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
-    // Get the initial emotions
-    _updateEmotions();
-
-    // If you want to listen for changes, you can add a listener
-    _emotionsProvider.addListener(_updateEmotions);
-  }
-
-  void _updateEmotions() {
-    setState(() {
-      _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
-    });
-  }
-
-  @override
-  void dispose() {
-    // Remove the listener when the widget is disposed
-    _emotionsProvider.removeListener(_updateEmotions);
-    super.dispose();
   }
 
   @override
@@ -84,6 +61,50 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final GlobalKey<MoodJarState> _moodJarKey = GlobalKey<MoodJarState>();
   final String _userName = "John"; // This would come from user data
+  // This is the shared instance of the provider
+  late EmotionsProvider _emotionsProvider;
+  List<Emotion> _uniqueEmotions = [];
+  bool _isAddingEmotions = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize the provider
+    _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
+    // Get the initial emotions
+    updateEmotions();
+
+    // If you want to listen for changes, you can add a listener
+    _emotionsProvider.addListener(updateEmotions);
+  }
+
+  void updateEmotions() {
+    setState(() {
+      _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
+      for (var emotion in _uniqueEmotions) {
+      }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _addEmotionsToJar();
+      });
+    });
+  }
+
+  Future<void> _addEmotionsToJar() async{
+    // if (_isAddingEmotions) return;
+    // _isAddingEmotions = true;
+    // Add each emotion to the jar
+    for (var emotion in _uniqueEmotions) {
+      await _moodJarKey.currentState?.addMoodFromText(emotion.name);
+    }
+  }
+
+  @override
+  void dispose() {
+    // Remove the listener when the widget is disposed
+    _emotionsProvider.removeListener(updateEmotions);
+    super.dispose();
+  }
 
   // Sample emotions for testing
   final List<String> _testEmotions = [
