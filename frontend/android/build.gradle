@@ -1,3 +1,18 @@
+    ext.kotlin_version = '1.9.22'  // Latest stable Kotlin version
+    ext.gradle_version = '8.2.1'   // Required version to fix the Java 21 issue
+    ext.java_version = JavaVersion.VERSION_21
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:$gradle_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -6,13 +21,29 @@ allprojects {
 }
 
 rootProject.buildDir = "../build"
+
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
-}
 
+    project.afterEvaluate {
+        if (project.hasProperty('android')) {
+            android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_21
+                    targetCompatibility JavaVersion.VERSION_21
+                }
+            }
+        }
+    }
+
+    // Ensure Kotlin compiles to the correct JVM target
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = "21"
+        }
+    }
+}
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

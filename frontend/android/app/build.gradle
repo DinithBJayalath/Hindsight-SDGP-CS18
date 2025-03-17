@@ -5,18 +5,26 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode', '1').toInteger()
+def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
 android {
-    namespace = "com.example.helloworld"
+    compileSdkVersion 34
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    namespace "com.frontend"
+
+    ndkVersion "25.1.8937393"  // Updated to match plugin requirements
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = '21'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
@@ -24,11 +32,17 @@ android {
         applicationId = "com.example.helloworld"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        minSdkVersion 21
+        targetSdkVersion 35
+        versionCode flutterVersionCode
+        versionName flutterVersionName
+
+        manifestPlaceholders = [
+            auth0Domain: "dev-hindsight.uk.auth0.com",
+            auth0Scheme: "com.frontend",
+        ]
     }
+    
 
     buildTypes {
         release {
@@ -41,4 +55,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
 }
