@@ -2,18 +2,23 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+<<<<<<< HEAD
 import * as fs from 'fs';
 
-// Comment out HTTPS options to use HTTP instead
-/*
 const httpsOptions = {
   key: fs.readFileSync("../resources/server.key"),
   cert: fs.readFileSync("../resources/server.crt"),
 };
-*/
 
 async function bootstrap() {
-  // Use HTTP instead of HTTPS for development
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
+  await app.listen(process.env.PORT ?? 3000);
+=======
+//import * as helmet from 'helmet';
+
+async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // Global middleware
@@ -28,6 +33,7 @@ async function bootstrap() {
   }));
   
   await app.listen(process.env.PORT || 3000);
+>>>>>>> feature/login-page-v2
 }
 bootstrap();
 

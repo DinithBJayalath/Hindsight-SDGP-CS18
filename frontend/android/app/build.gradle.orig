@@ -5,6 +5,20 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+<<<<<<< HEAD
+android {
+    namespace = "com.example.helloworld"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+=======
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -16,30 +30,39 @@ if (localPropertiesFile.exists()) {
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode', '1').toInteger()
 def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
 
+
 android {
-    compileSdkVersion 35
-    compileSdk = 35
+    compileSdkVersion 34
     namespace "com.frontend"
 
     ndkVersion "25.1.8937393"  // Updated to match plugin requirements
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+>>>>>>> feature/login-page-v2
     }
 
     defaultConfig {
-        applicationId "com.frontend"
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId = "com.example.helloworld"
         // You can update the following values to match your application needs.
+<<<<<<< HEAD
         // For more information, see: https://flutter.dev/to/review-gradle-config.
+        minSdk = flutter.minSdkVersion
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+=======
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
         targetSdkVersion 35
         versionCode flutterVersionCode
@@ -49,6 +72,7 @@ android {
             auth0Domain: "dev-hindsight.uk.auth0.com",
             auth0Scheme: "com.frontend",
         ]
+>>>>>>> feature/login-page-v2
     }
     
 
@@ -56,7 +80,7 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig = signingConfigs.debug
         }
     }
 }
@@ -64,7 +88,10 @@ android {
 flutter {
     source = "../.."
 }
+<<<<<<< HEAD
+=======
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.22"
 }
+>>>>>>> feature/login-page-v2

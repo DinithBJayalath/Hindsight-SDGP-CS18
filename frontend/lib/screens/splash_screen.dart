@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/services/auth_service.dart';
@@ -43,7 +44,8 @@ class _SplashScreenState extends State<SplashScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => isLoggedIn
-            ? ProfileScreen(userInfo: userInfo)
+            ? HomeScreen()
+            //? ProfileScreen(userInfo: userInfo)
             : const LoginScreen(),
       ),
     );
