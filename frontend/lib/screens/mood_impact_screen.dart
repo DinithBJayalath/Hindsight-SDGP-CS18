@@ -6,14 +6,16 @@ import '../services/API_Service.dart';
 
 class MoodImpactScreen extends StatefulWidget {
   final String mood;
+  final Color moodColor;
   final String? emotion;
-  const MoodImpactScreen({Key? key, required this.mood, required this.emotion}): super(key: key);
+  const MoodImpactScreen({Key? key, required this.mood, required this.emotion, required this.moodColor}): super(key: key);
   @override
-  MoodImpactScreenState createState() => MoodImpactScreenState(mood: mood, emotion: emotion);
+  MoodImpactScreenState createState() => MoodImpactScreenState(mood: mood, emotion: emotion, moodColor: moodColor);
 }
 
 class MoodImpactScreenState extends State<MoodImpactScreen> {
   final String mood;
+  final Color moodColor;
   late String emoji;
   late String text;
   final String? emotion;
@@ -21,7 +23,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   final ApiService _apiService = ApiService(baseUrl: 'http://10.31.6.238:3000');
   bool _isLoading = false;
   String _responseMessage = '';
-  MoodImpactScreenState({required this.mood, required this.emotion}) {
+  MoodImpactScreenState({required this.mood, required this.emotion, required this.moodColor}) {
     final parts = mood.split(' ');
     emoji = parts[0];
     text = parts.sublist(1).join(' ');
@@ -98,9 +100,22 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
             // Mood Emoji & Text
             Column(
               children: [
-                Text(
-                  emoji,
-                  style: TextStyle(fontSize: 60),
+                // Animated Mood Emoji
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  height: 120,
+                  width: 120,
+                  decoration: BoxDecoration(
+                    color: moodColor.withAlpha(120),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 60),
+                    ),
+                  ),
                 ),
                 SizedBox(height: 5),
                 Text(
@@ -155,10 +170,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: selectedFactors != null? Color.fromARGB(255, 68, 183, 255): Colors.grey,
+                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
                 ),
                 onPressed: () async {
                   await _sendRequest(); // Call the API request instead of showing a popup

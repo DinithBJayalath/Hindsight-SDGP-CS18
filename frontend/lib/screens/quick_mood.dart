@@ -128,21 +128,21 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      backgroundColor: Color.fromARGB(255, 68, 183, 255),
+                      padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
                     ),
                     onPressed: () {
                       // Navigate to the MoodDescribeScreen
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MoodDescribeScreen(mood: moods[moodIndex]),
+                          builder: (context) => MoodDescribeScreen(mood: moods[moodIndex], moodColor: moodColors[moodIndex]),
                         ),
                       );
                     },
                     child: Text(
                       "Next",
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                   ),
                 ],

@@ -6,16 +6,18 @@ import 'mood_impact_screen.dart';
 
 class MoodDescribeScreen extends StatefulWidget {
   final String mood;
-  const MoodDescribeScreen({Key? key, required this.mood}): super(key: key);
+  final Color moodColor;
+  const MoodDescribeScreen({Key? key, required this.mood, required this.moodColor}): super(key: key);
   @override
-  MoodDescribeScreenState createState() => MoodDescribeScreenState(mood: this.mood);
+  MoodDescribeScreenState createState() => MoodDescribeScreenState(mood: this.mood, moodColor: this.moodColor);
 }
 
 class MoodDescribeScreenState extends State<MoodDescribeScreen> {
   final String mood;
+  final Color moodColor;
   late String emoji;
   late String text;
-  MoodDescribeScreenState({required this.mood}) {
+  MoodDescribeScreenState({required this.mood, required this.moodColor}) {
     final parts = mood.split(' ');
     emoji = parts[0];
     text = parts.sublist(1).join(' ');
@@ -69,7 +71,7 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                 height: 120,
                 width: 120,
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade100,
+                  color: moodColor.withAlpha(120),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -134,24 +136,23 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
               // "Next" Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: selectedEmotion != null ? Colors.blueAccent : Colors.grey,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  backgroundColor: selectedEmotion != null? Color.fromARGB(255, 68, 183, 255): Colors.grey,
+                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
                 ),
                 onPressed: () {
-                  // Navigate to the MoodDescribeScreen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MoodImpactScreen(mood: mood, emotion: selectedEmotion),
-                    ),
-                  );
+                  if (selectedEmotion != null) {
+                    // Navigate to the MoodDescribeScreen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MoodImpactScreen(mood: mood, emotion: selectedEmotion, moodColor: moodColor),
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
                   "Next",
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ],
