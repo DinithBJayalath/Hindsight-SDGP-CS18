@@ -3,8 +3,14 @@ import 'package:frontend/services/Journal_Provider.dart';
 import 'screens/home_screen.dart';
 import 'services/Emotions_Provider.dart';
 import 'package:provider/provider.dart';
+import 'package:frontend/screens/profile_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   runApp(
       MultiProvider(
           providers: [
@@ -19,6 +25,7 @@ void main() {
 class HindsightApp extends StatelessWidget {
   const HindsightApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,7 +38,12 @@ class HindsightApp extends StatelessWidget {
           primary: Colors.blue,
         ),
       ),
-      home: const HomeScreen(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/profile': (context) => const ProfileScreen(userInfo: {}),
+        '/home': (context) => const HomeScreen(),
+      },
+      home: const SplashScreen(),
     );
   }
 }

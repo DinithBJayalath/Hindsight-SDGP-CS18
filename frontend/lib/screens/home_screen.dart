@@ -7,6 +7,7 @@ import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'profile_screen.dart';
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,7 +61,7 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   final GlobalKey<MoodJarState> _moodJarKey = GlobalKey<MoodJarState>();
-  final String _userName = "John"; // This would come from user data
+  final AuthService _authService = AuthService();
   // This is the shared instance of the provider
   late EmotionsProvider _emotionsProvider;
   List<Emotion> _uniqueEmotions = [];
@@ -125,11 +126,19 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  void _navigateToProfile() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
-    );
+  void _navigateToProfile() async {
+    final userInfo = await _authService.getUserProfile();
+    if (userInfo.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProfileScreen(userInfo: userInfo)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to load user profile')),
+      );
+    }
   }
 
   @override

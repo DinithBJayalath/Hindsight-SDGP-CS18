@@ -1,5 +1,6 @@
 # Content in the base of the repository
 .env
+.idea/
 
 # Content in the landing_page directory
 # Node.js dependencies
@@ -37,6 +38,7 @@ landing_page/.env
 
 # Content in th frontend directory
 # Miscellaneous
+frontend/.env
 frontend/*.class
 frontend/*.log
 frontend/*.pyc
