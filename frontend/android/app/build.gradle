@@ -17,7 +17,8 @@ def flutterVersionCode = localProperties.getProperty('flutter.versionCode', '1')
 def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
 
 android {
-    compileSdkVersion 34
+    namespace "com.frontend"
+    compileSdkVersion 35
     defaultConfig {
         applicationId "com.frontend"
         minSdkVersion 21

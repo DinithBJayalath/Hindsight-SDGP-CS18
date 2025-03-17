@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Core/Models/Emotion.dart';
+import 'package:frontend/screens/quick_mood.dart';
 import 'package:frontend/services/Emotions_Provider.dart';
 import 'package:provider/provider.dart';
 import 'journaling_screen.dart';
@@ -21,11 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<_HomeContentState> _homeContentKey = GlobalKey();
 
   final List<Widget> _screens = [
-    const HomeContent(),
-    const JournalingScreen(),
-    const MoodCheckInScreen(),
-    const ActivityRecommendationsScreen(),
-    const MoodDashboardScreen(),
+    HomeContent(),
+    JournalingScreen(),
+    MoodTrackerScreen(),
+    ActivityRecommendationsScreen(),
+    MoodDashboardScreen(),
   ];
 
   void _onItemTapped(int index) {

@@ -53,22 +53,23 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center ,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     formattedDate,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black ),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 40),
                   Text(
                     "Hey, $userName!",
-                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.black ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black ),
                   ),
                   SizedBox(height: 20),
                   Text(
                     "How are you feeling today?",
-                    style: TextStyle(fontSize: 24, color: Colors.black),
+                    style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 50),
 
                   // Animated Mood Emoji
                   AnimatedContainer(
@@ -83,7 +84,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
                     child: Center(
                       child: Text(
                         moods[moodIndex].split(" ")[0], // Emoji only
-                        style: TextStyle(fontSize: 120),
+                        style: TextStyle(fontSize: 100),
                       ),
                     ),
                   ),
@@ -96,7 +97,7 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
                   ),
                   Text(
                     moods[moodIndex].split(" ").sublist(1).join(" "), // Text only
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.black),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                   ),
 
                   SizedBox(height: 20),
