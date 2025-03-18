@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AuthService {
@@ -56,161 +55,6 @@ class AuthService {
     }
   }
 
-  // Social Login: Google
-  Future<Map<String, dynamic>?> loginWithGoogle() async {
-    try {
-      final GoogleSignIn googleSignIn =
-          GoogleSignIn(scopes: ['openid', 'email', 'profile']);
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) return null; // User cancelled
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      if (googleAuth.idToken == null) {
-        print(
-            "Google idToken is null. Please check your GoogleSignIn configuration.");
-        return null;
-      }
-
-      // Exchange with Auth0
-      final auth0Response = await http.post(
-        Uri.parse("https://$auth0Domain/oauth/token"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
-          "client_id": clientId,
-          "subject_token": googleAuth.idToken!,
-          "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
-          "scope": "openid profile email offline_access",
-        }),
-      );
-
-      if (auth0Response.statusCode == 200) {
-        final data = jsonDecode(auth0Response.body);
-
-        // Store tokens securely
-        await _storage.write(key: "access_token", value: data['access_token']);
-        if (data.containsKey('refresh_token')) {
-          await _storage.write(
-              key: "refresh_token", value: data['refresh_token']);
-        }
-
-        // Validate the token with our backend
-        await _validateTokenWithBackend(data['access_token']);
-
-        return data;
-      } else {
-        print("Google login failed: ${auth0Response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Google login exception: $e");
-      return null;
-    }
-  }
-
-/*
-  // Social Login: Apple
-  Future<Map<String, dynamic>?> loginWithApple() async {
-    try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final auth0Response = await http.post(
-        Uri.parse("https://$auth0Domain/oauth/token"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
-          "client_id": clientId,
-          "subject_token": credential.identityToken,
-          "subject_token_type": "urn:ietf:params:oauth:token-type:id_token",
-          "scope": "openid profile email offline_access",
-        }),
-      );
-
-      if (auth0Response.statusCode == 200) {
-        final data = jsonDecode(auth0Response.body);
-
-        // Store tokens securely
-        await _storage.write(key: "access_token", value: data['access_token']);
-        if (data.containsKey('refresh_token')) {
-          await _storage.write(
-              key: "refresh_token", value: data['refresh_token']);
-        }
-
-        // Validate the token with our backend
-        await _validateTokenWithBackend(data['access_token']);
-
-        return data;
-      } else {
-        print("Apple login failed: ${auth0Response.body}");
-        return null;
-      }
-    } catch (e) {
-      print("Apple login exception: $e");
-      return null;
-    }
-  }
-
-  // Social Login: Twitter
-  Future<Map<String, dynamic>?> loginWithTwitter() async {
-    try {
-      final twitterLogin = TwitterLogin(
-        apiKey: 'YOUR_TWITTER_API_KEY',
-        apiSecretKey: 'YOUR_TWITTER_API_SECRET_KEY',
-        redirectURI:
-            'com.frontend://dev-hindsight.uk.auth0.com/android/com.frontend/callback',
-      );
-
-      final authResult = await twitterLogin.login();
-      if (authResult.status == TwitterLoginStatus.loggedIn) {
-        final auth0Response = await http.post(
-          Uri.parse("https://$auth0Domain/oauth/token"),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
-            "client_id": clientId,
-            "subject_token": authResult.authToken,
-            "subject_token_type":
-                "urn:ietf:params:oauth:token-type:access_token",
-            "scope": "openid profile email offline_access",
-          }),
-        );
-
-        if (auth0Response.statusCode == 200) {
-          final data = jsonDecode(auth0Response.body);
-
-          // Store tokens securely
-          await _storage.write(
-              key: "access_token", value: data['access_token']);
-          if (data.containsKey('refresh_token')) {
-            await _storage.write(
-                key: "refresh_token", value: data['refresh_token']);
-          }
-
-          // Validate the token with our backend
-          await _validateTokenWithBackend(data['access_token']);
-
-          return data;
-        } else {
-          print("Twitter login failed: ${auth0Response.body}");
-          return null;
-        }
-      } else {
-        print("Twitter login canceled or failed: ${authResult.status}");
-        return null;
-      }
-    } catch (e) {
-      print("Twitter login exception: $e");
-      return null;
-    }
-  }
-*/
   // Validate token with our Nest.js backend
   Future<bool> _validateTokenWithBackend(String token) async {
     try {
@@ -242,8 +86,14 @@ class AuthService {
   Future<Map<String, dynamic>> getUserProfile() async {
     try {
       String? token = await _storage.read(key: "access_token");
-      if (token == null) return {};
+      String? storedEmail = await _storage.read(key: "user_email");
 
+      if (token == null) {
+        print("No access token found");
+        return {};
+      }
+
+      // First try getting profile from backend
       final response = await http.get(
         Uri.parse("$backendUrl/auth/profile"),
         headers: {
@@ -252,20 +102,82 @@ class AuthService {
         },
       );
 
+      Map<String, dynamic> profileData = {};
+
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        print("Failed to get user profile: ${response.body}");
-        if (response.statusCode == 401) {
-          // Token expired, try to refresh
-          final refreshed = await refreshToken();
-          if (refreshed != null) {
-            // Retry with new token
-            return await getUserProfile();
+        final rawData = jsonDecode(response.body);
+
+        // Extract data from response
+        profileData = {
+          'id': rawData['id'] ?? rawData['_id'],
+          'email': rawData['email'],
+          'name': rawData['name'],
+          'picture': rawData['picture'],
+          'isVerified': rawData['isVerified'],
+          'profile': rawData['profile'],
+          'auth0Id': rawData['auth0Id'] ?? rawData['sub'],
+        };
+      } else if (response.statusCode == 401) {
+        print("Token expired, attempting refresh...");
+        // Token expired, try to refresh
+        final refreshed = await refreshToken();
+        if (refreshed != null) {
+          // Retry with new token
+          return await getUserProfile();
+        }
+      }
+
+      // If email is missing, try to get it from various sources
+      if (!profileData.containsKey('email') || profileData['email'] == null) {
+        // Try stored email first
+        if (storedEmail != null) {
+          profileData['email'] = storedEmail;
+        } else {
+          // Try to get from token
+          try {
+            final decodedToken = Jwt.parseJwt(token);
+            if (decodedToken.containsKey('email')) {
+              final tokenEmail = decodedToken['email'];
+              profileData['email'] = tokenEmail;
+              // Store for future use
+              await _storage.write(key: "user_email", value: tokenEmail);
+            }
+          } catch (e) {
+            print("Error decoding token: $e");
           }
         }
-        return {};
       }
+
+      // If we still don't have an email, try getting it from Auth0 directly
+      if (!profileData.containsKey('email') || profileData['email'] == null) {
+        print("Still no email, trying Auth0 userinfo endpoint...");
+        try {
+          final auth0Response = await http.get(
+            Uri.parse("https://$auth0Domain/userinfo"),
+            headers: {
+              "Authorization": "Bearer $token",
+            },
+          );
+
+          if (auth0Response.statusCode == 200) {
+            final auth0Data = jsonDecode(auth0Response.body);
+            if (auth0Data['email'] != null) {
+              profileData['email'] = auth0Data['email'];
+              await _storage.write(
+                  key: "user_email", value: auth0Data['email']);
+
+              // Update other missing fields if available
+              profileData['name'] ??= auth0Data['name'];
+              profileData['picture'] ??= auth0Data['picture'];
+            }
+          }
+        } catch (e) {
+          print("Error extracting data from token: $e");
+        }
+      }
+
+      // Debug logging
+      return profileData;
     } catch (e) {
       print("Get profile exception: $e");
       return {};

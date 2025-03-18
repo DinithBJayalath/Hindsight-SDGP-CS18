@@ -45,7 +45,6 @@ dependencies:
   auth0_flutter: ^1.8.0
   flutter_secure_storage: ^9.2.4
   path_provider: ^2.1.2
-  google_sign_in: ^6.1.1
   flutter_dotenv: ^5.2.1
   intl: ^0.17.0
   flutter_svg: ^2.0.9

@@ -63,7 +63,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Set default values for dropdowns
     _selectedCountry = _countries[0]; // Default to first country
     _selectedLanguage = _languages[0]; // Default to first language
-    _loadUserProfile();
+
+    // Defer loading user profile to after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserProfile();
+    });
   }
 
   @override
@@ -81,9 +85,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final email = widget.userInfo['email'] as String?;
+      // First try to get email from userInfo
+      String? email = widget.userInfo['email'] as String?;
+
       if (email == null) {
-        throw Exception('Email not found in user info');
+        if (!mounted) return;
+        PopupMessage.show(
+          context,
+          "Could not retrieve user email. Please try logging in again.",
+          isSuccess: false,
+        );
+        return;
       }
 
       final profile = await ProfileService.getProfile(email);
@@ -109,20 +121,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               : _languages[0];
         });
       } else {
-        // Create a new profile if one doesn't exist
+        print("No existing profile found, creating new profile...");
+        // Create a new profile with basic info
+        final userProfile = await _authService.getUserProfile();
         final newProfile = {
           'email': email,
-          'name': widget.userInfo['name']?.toString() ?? '',
-          'picture': widget.userInfo['picture']?.toString() ?? '',
-          'language': _languages[0], // Default to first language
-          'country': _countries[0], // Default to first country
+          'name':
+              userProfile['name'] ?? widget.userInfo['name']?.toString() ?? '',
+          'picture': userProfile['picture'] ??
+              widget.userInfo['picture']?.toString() ??
+              '',
+          'language': _languages[0],
+          'country': _countries[0],
           'city': '',
           'bio': '',
           'dateOfBirth': DateTime.now().toIso8601String(),
         };
 
         final createdProfile = await ProfileService.createProfile(newProfile);
-        if (createdProfile != null && mounted) {
+        if (!mounted) return;
+
+        if (createdProfile != null) {
           setState(() {
             _userProfile = createdProfile;
             _nameController.text = createdProfile['name']?.toString() ?? '';
@@ -141,6 +160,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ? languageValue!
                 : _languages[0];
           });
+        } else {
+          PopupMessage.show(
+            context,
+            "Failed to create profile. Please try again.",
+            isSuccess: false,
+          );
         }
       }
     } catch (e) {
@@ -148,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         PopupMessage.show(
           context,
-          "Failed to load profile. Please try again.",
+          "Failed to load profile. Please try again later.",
           isSuccess: false,
         );
       }
