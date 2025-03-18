@@ -127,7 +127,7 @@ class AuthService {
         }
       }
 
-      // If email is missing, try to get it from various sources
+      // If email is missing, try to get it from jwt token
       if (!profileData.containsKey('email') || profileData['email'] == null) {
         // Try stored email first
         if (storedEmail != null) {
