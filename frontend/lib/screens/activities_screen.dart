@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'breathing_exercises_screen.dart';
 import 'expressive_art_screen.dart';
 import 'future_letters_list_screen.dart';
+import '../models/activity.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -64,32 +65,36 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     super.dispose();
   }
 
-  void _handleActivityTap(String activity) {
-    if (activity == 'Deep Breathing') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const BreathingExercisesScreen(),
-        ),
-      );
-    } else if (activity == 'Expressive Art') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ExpressiveArtScreen(),
-        ),
-      );
-    } else if (activity == 'Letter to Future Self') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const FutureLettersListScreen(),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Opening $activity...')),
-      );
+  void _handleActivityTap(Activity activity) {
+    switch (activity.id) {
+      case 'breathing':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const BreathingExercisesScreen(),
+          ),
+        );
+        break;
+      case 'art':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ExpressiveArtScreen(),
+          ),
+        );
+        break;
+      case 'letter':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const FutureLettersListScreen(),
+          ),
+        );
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Opening ${activity.title}...')),
+        );
     }
   }
 
@@ -212,30 +217,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ActivityCard(
-                          title: 'Deep Breathing',
-                          description:
-                              'A guided breathing activity that helps you reduce stress, improve focus, and calm your mind.',
-                          icon: Icons.self_improvement,
-                          onTap: () => _handleActivityTap('Deep Breathing'),
-                        ),
-                        const SizedBox(height: 16),
-                        ActivityCard(
-                          title: 'Expressive Art',
-                          description:
-                              'A digital canvas for you to draw or doodle your emotions.',
-                          icon: Icons.palette,
-                          onTap: () => _handleActivityTap('Expressive Art'),
-                        ),
-                        const SizedBox(height: 16),
-                        ActivityCard(
-                          title: 'Letter to Future Self',
-                          description:
-                              'Write a letter to yourself, set a future date, and receive the letter as a reminder.',
-                          icon: Icons.mail,
-                          onTap: () =>
-                              _handleActivityTap('Letter to Future Self'),
-                        ),
+                        ...activities.map((activity) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: ActivityCard(
+                                title: activity.title,
+                                description: activity.description,
+                                icon: activity.icon,
+                                onTap: () => _handleActivityTap(activity),
+                              ),
+                            )),
                         const SizedBox(height: 20),
                       ],
                     ),
