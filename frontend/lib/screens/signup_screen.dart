@@ -444,11 +444,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // Social sign-up icons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Apple button
                 GestureDetector(
-                  onTap: () => _authService.loginWithGoogle(),
+                  //onTap: () => _authService.loginWithGoogle(),
                   child: const LogoTile(imagePath: 'assets/images/google.png'),
                 ),
                 const SizedBox(width: 60),
@@ -457,6 +459,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: const LogoTile(imagePath: 'assets/images/apple.png'),
                 ),
                 const SizedBox(width: 60),
+                // Twitter button
                 GestureDetector(
                   //onTap: () => _authService.loginWithTwitter(),
                   child: const LogoTile(imagePath: 'assets/images/x.png'),

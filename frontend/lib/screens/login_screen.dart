@@ -66,31 +66,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Social login for Google
-  void loginWithGoogle() async {
-    final result = await _authService.loginWithGoogle();
-    if (!mounted) return;
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Google Login successful")),
-      );
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-      Map<String, dynamic> userInfo = {};
-      if (result.containsKey('id_token')) {
-        userInfo = Jwt.parseJwt(result['id_token']);
-      }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileScreen(userInfo: userInfo),
-        ),
-      );
-    } else {
-      PopupMessage.show(context, "Google Login failed.", isSuccess: false);
-    }
-  }
-
   // Social login for Apple
   /*void loginWithApple() async {
     final result = await _authService.loginWithApple();
@@ -266,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     // Google button
                     GestureDetector(
-                      onTap: loginWithGoogle,
+                      //onTap: loginWithGoogle,
                       child:
                           const LogoTile(imagePath: 'assets/images/google.png'),
                     ),
