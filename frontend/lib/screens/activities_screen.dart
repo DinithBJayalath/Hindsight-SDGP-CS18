@@ -4,6 +4,7 @@ import 'breathing_exercises_screen.dart';
 import 'expressive_art_screen.dart';
 import 'future_letters_list_screen.dart';
 import '../models/activity.dart';
+import '../services/activity_service.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -19,10 +20,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _slideAnimation;
+  final ActivityService _activityService = ActivityService();
+  List<Activity> _activities = [];
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
+    _loadActivities();
     _scrollController = ScrollController()
       ..addListener(() {
         setState(() {
@@ -56,6 +62,31 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
       ),
     );
     _animationController.forward();
+  }
+
+  Future<void> _loadActivities() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      final activities = await _activityService.getActivities();
+      setState(() {
+        _activities = activities;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading activities: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -217,15 +248,36 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ...activities.map((activity) => Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: ActivityCard(
-                                title: activity.title,
-                                description: activity.description,
-                                icon: activity.icon,
-                                onTap: () => _handleActivityTap(activity),
-                              ),
-                            )),
+                        if (_isLoading)
+                          const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        else if (_error != null)
+                          Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _error!,
+                                  style: const TextStyle(color: Colors.red),
+                                ),
+                                const SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: _loadActivities,
+                                  child: const Text('Retry'),
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          ..._activities.map((activity) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: ActivityCard(
+                                  title: activity.title,
+                                  description: activity.description,
+                                  icon: activity.icon,
+                                  onTap: () => _handleActivityTap(activity),
+                                ),
+                              )),
                         const SizedBox(height: 20),
                       ],
                     ),
@@ -280,7 +332,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 class ActivityCard extends StatelessWidget {
   final String title;
   final String description;
-  final IconData icon;
+  final String icon;
   final VoidCallback onTap;
 
   const ActivityCard({
@@ -332,20 +384,10 @@ class ActivityCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Icon(
-                            icon,
-                            size: 32,
-                            color: Colors.black87,
+                        Text(
+                          icon,
+                          style: const TextStyle(
+                            fontSize: 24,
                           ),
                         ),
                         const Spacer(),

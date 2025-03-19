@@ -1,16 +1,20 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import * as fs from 'fs';
-
-const httpsOptions = {
-  key: fs.readFileSync("../resources/server.key"),
-  cert: fs.readFileSync("../resources/server.crt"),
-};
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "src/app.module";
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    httpsOptions,
+  const app = await NestFactory.create(AppModule);
+
+  // Enable CORS with specific options
+  app.enableCors({
+    origin: true, // Allow all origins in development
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
+
+  // Enable validation pipes
+  app.useGlobalPipes(new ValidationPipe());
+
+  await app.listen(3000);
 }
 bootstrap();
