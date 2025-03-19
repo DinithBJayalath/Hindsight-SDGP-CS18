@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
@@ -14,9 +16,11 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
+  final ProfileService _profileService = ProfileService();
   Map<String, dynamic> _userProfile = {};
   bool _isLoading = true;
-  bool _isEditing = false;
+  bool _hasUnsavedChanges = false;
+  File? _profileImage;
 
   // Controllers for editable fields
   late TextEditingController _nameController;
@@ -24,6 +28,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _cityController;
   String _selectedCountry = 'Sri Lanka';
   String _selectedLanguage = 'English';
+
+  // UI enhancement settings
+  bool isDarkMode = false;
+  bool isBiometricEnabled = false;
+  bool isCloudBackupEnabled = false;
+  bool isNotificationsEnabled = true;
 
   // Lists for dropdowns
   final List<String> _countries = [
@@ -119,6 +129,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _selectedLanguage = _languages.contains(languageValue)
               ? languageValue!
               : _languages[0];
+
+          // Load boolean settings
+          isDarkMode = profile['darkMode'] == true;
+          isBiometricEnabled = profile['biometricAuthentication'] == true;
+          isCloudBackupEnabled = profile['cloudBackup'] == true;
+          isNotificationsEnabled =
+              profile['pushNotifications'] != false; // Default to true
         });
       } else {
         print("No existing profile found, creating new profile...");
@@ -136,6 +153,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'city': '',
           'bio': '',
           'dateOfBirth': DateTime.now().toIso8601String(),
+          'darkMode': false,
+          'biometricAuthentication': false,
+          'cloudBackup': false,
+          'pushNotifications': true,
         };
 
         final createdProfile = await ProfileService.createProfile(newProfile);
@@ -159,6 +180,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _selectedLanguage = _languages.contains(languageValue)
                 ? languageValue!
                 : _languages[0];
+
+            // Initialize switch values
+            isDarkMode = false;
+            isBiometricEnabled = false;
+            isCloudBackupEnabled = false;
+            isNotificationsEnabled = true;
           });
         } else {
           PopupMessage.show(
@@ -196,6 +223,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         'country': _selectedCountry,
         'city': _cityController.text,
         'language': _selectedLanguage,
+        'darkMode': isDarkMode,
+        'biometricAuthentication': isBiometricEnabled,
+        'cloudBackup': isCloudBackupEnabled,
+        'pushNotifications': isNotificationsEnabled,
       };
 
       final result = await ProfileService.updateProfile(
@@ -206,11 +237,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (result != null) {
         setState(() {
           _userProfile = result;
-          _isEditing = false;
+          _hasUnsavedChanges = false;
         });
+
+        // Show a SnackBar for success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Account deleted successfully"),
+            content: Text("Profile updated successfully!"),
+            duration: Duration(seconds: 2),
           ),
         );
       } else {
@@ -234,6 +268,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  // Method to handle field changes and trigger update
+  void _handleFieldChange(Function() updateField) {
+    updateField();
+    setState(() => _hasUnsavedChanges = true);
+    // Automatically update profile after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (_hasUnsavedChanges) {
+        _updateProfile();
+      }
+    });
+  }
+
+  Future<void> _updateProfileImage() async {
+    // TODO: Implement image upload to backend
+    // This is a placeholder for future implementation
+    setState(() => _hasUnsavedChanges = true);
+    _updateProfile();
   }
 
   void _logout() async {
@@ -299,69 +352,343 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileField(String label, TextEditingController? controller,
-      {bool readOnly = false,
-      bool isDropdown = false,
-      String? value,
-      List<String>? items,
-      Function(String?)? onChanged}) {
+  // UI enhancement methods
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _profileImage = File(image.path);
+      });
+      // Update profile image
+      _updateProfileImage();
+    }
+  }
+
+  void _showEditDialog(
+      String label, String currentValue, Function(String) onSave) {
+    final TextEditingController controller =
+        TextEditingController(text: currentValue);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit $label'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              onSave(controller.text);
+              Navigator.pop(context);
+              _updateProfile();
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: _profileImage != null
+                    ? FileImage(_profileImage!)
+                    : NetworkImage(
+                        _userProfile['picture']?.toString() ??
+                            'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                      ) as ImageProvider,
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  radius: 18,
+                  child: IconButton(
+                    icon: const Icon(Icons.camera_alt, size: 18),
+                    onPressed: _pickImage,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _nameController.text.isNotEmpty
+                ? _nameController.text
+                : 'Your Name',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          Text(
+            widget.userInfo['email'] ?? 'email@example.com',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileSections() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: _isEditing && !readOnly
-          ? isDropdown
-              ? DropdownButtonFormField<String>(
-                  value: value,
-                  decoration: InputDecoration(
-                    labelText: label,
-                    border: const OutlineInputBorder(),
-                  ),
-                  items: items?.map((String item) {
-                        return DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item),
-                        );
-                      }).toList() ??
-                      [],
-                  onChanged: onChanged,
-                )
-              : TextField(
-                  controller: controller,
-                  readOnly: readOnly,
-                  decoration: InputDecoration(
-                    labelText: label,
-                    border: const OutlineInputBorder(),
-                    enabled: !readOnly,
-                  ),
-                )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          _buildSection(
+            'Personal Information',
+            Icons.person_outline,
+            [
+              _buildEditableField('Name', _nameController.text, (value) {
+                setState(() => _nameController.text = value);
+              }),
+              _buildEditableField('Bio', _bioController.text, (value) {
+                setState(() => _bioController.text = value);
+              }),
+              _buildCountryField(),
+              _buildEditableField('City', _cityController.text, (value) {
+                setState(() => _cityController.text = value);
+              }),
+            ],
+          ),
+          _buildSection(
+            'Language & Accessibility',
+            Icons.language_outlined,
+            [
+              ListTile(
+                title: const Text('Language'),
+                trailing: DropdownButton<String>(
+                  value: _selectedLanguage,
+                  items: _languages
+                      .map((String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      _handleFieldChange(() {
+                        _selectedLanguage = newValue;
+                      });
+                    }
+                  },
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  isDropdown
-                      ? value ?? 'Not set'
-                      : controller?.text.isNotEmpty == true
-                          ? controller!.text
-                          : 'Not set',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: (isDropdown ? value : controller?.text)
-                            .toString()
-                            .isNotEmpty
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-                const Divider(),
-              ],
+              ),
+            ],
+          ),
+          _buildSection(
+            'Appearance',
+            Icons.palette_outlined,
+            [
+              SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: isDarkMode,
+                onChanged: (value) {
+                  _handleFieldChange(() {
+                    setState(() => isDarkMode = value);
+                  });
+                },
+              ),
+            ],
+          ),
+          _buildSection(
+            'Privacy & Security',
+            Icons.security_outlined,
+            [
+              SwitchListTile(
+                title: const Text('Biometric Authentication'),
+                value: isBiometricEnabled,
+                onChanged: (value) {
+                  _handleFieldChange(() {
+                    setState(() => isBiometricEnabled = value);
+                  });
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Cloud Backup'),
+                value: isCloudBackupEnabled,
+                onChanged: (value) {
+                  _handleFieldChange(() {
+                    setState(() => isCloudBackupEnabled = value);
+                  });
+                },
+              ),
+            ],
+          ),
+          _buildSection(
+            'Notifications',
+            Icons.notifications_outlined,
+            [
+              SwitchListTile(
+                title: const Text('Push Notifications'),
+                value: isNotificationsEnabled,
+                onChanged: (value) {
+                  _handleFieldChange(() {
+                    setState(() => isNotificationsEnabled = value);
+                  });
+                },
+              ),
+            ],
+          ),
+          _buildSection(
+            'Help & Support',
+            Icons.help_outline,
+            [
+              ListTile(
+                title: const Text('FAQs'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  // Navigate to FAQs
+                },
+              ),
+              ListTile(
+                title: const Text('Contact Support'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  // Navigate to Support
+                },
+              ),
+              ListTile(
+                title: const Text('App Version'),
+                trailing: const Text('1.0.0'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Show indicator when changes are being saved
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _showDeleteAccountDialog,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete Account'),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(icon, color: Theme.of(context).primaryColor),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableField(
+      String label, String value, Function(String) onSave) {
+    return ListTile(
+      title: Text(label),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value.isNotEmpty ? value : 'Not set',
+            style: TextStyle(
+              color: value.isNotEmpty ? Colors.grey : Colors.grey.shade400,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.edit, size: 16),
+        ],
+      ),
+      onTap: () {
+        _showEditDialog(label, value, onSave);
+      },
+    );
+  }
+
+  Widget _buildCountryField() {
+    return ListTile(
+      title: const Text('Country'),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _selectedCountry,
+            style: const TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.arrow_drop_down, size: 16),
+        ],
+      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Select Country'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _countries.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_countries[index]),
+                    onTap: () {
+                      setState(() {
+                        _selectedCountry = _countries[index];
+                      });
+                      Navigator.pop(context);
+                      _updateProfile();
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -371,100 +698,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          if (!_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => setState(() => _isEditing = true),
-            ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                      _userProfile['picture']?.toString() ??
-                          'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildProfileField(
-                      'Email',
-                      TextEditingController(
-                          text: widget.userInfo['email'] ?? ''),
-                      readOnly: true),
-                  _buildProfileField('Name', _nameController),
-                  _buildProfileField('Bio', _bioController),
-                  _buildProfileField(
-                    'Country',
-                    null,
-                    isDropdown: true,
-                    value: _selectedCountry,
-                    items: _countries,
-                    onChanged: _isEditing
-                        ? (value) {
-                            setState(() => _selectedCountry = value!);
-                          }
-                        : null,
-                  ),
-                  _buildProfileField('City', _cityController),
-                  _buildProfileField(
-                    'Language',
-                    null,
-                    isDropdown: true,
-                    value: _selectedLanguage,
-                    items: _languages,
-                    onChanged: _isEditing
-                        ? (value) {
-                            setState(() => _selectedLanguage = value!);
-                          }
-                        : null,
-                  ),
-                  if (_isEditing) ...[
+      body: Container(
+        color: const Color.fromARGB(255, 255, 255, 255),
+        child: _isLoading && _userProfile.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildProfileHeader(),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() => _isEditing = false);
-                            _loadUserProfile(); // Reset to original values
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: _updateProfile,
-                          child: const Text('Save Changes'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                    _buildProfileSections(),
                   ],
-                  // Delete Account Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: TextButton(
-                      onPressed: _showDeleteAccountDialog,
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                      child: const Text(
-                        'Delete Account',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

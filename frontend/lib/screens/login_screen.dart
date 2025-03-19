@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/forgot_password_screen.dart';
 import 'package:frontend/screens/home_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/signup_screen.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
@@ -45,23 +44,37 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login successful")),
-      );
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-      Map<String, dynamic> userInfo = {};
-      if (result.containsKey('id_token')) {
-        userInfo = Jwt.parseJwt(result['id_token']);
+      try {
+        // Extract user info from id_token
+        Map<String, dynamic> userInfo = {};
+        if (result.containsKey('id_token')) {
+          userInfo = Jwt.parseJwt(result['id_token']);
+          print("User info from token: $userInfo"); // Debug log
+        }
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Login successful")),
+        );
+
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (!mounted) return;
+
+        // Navigate to home screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeContent(),
+          ),
+        );
+      } catch (e) {
+        print("Error during post-login process: $e");
+        PopupMessage.show(context,
+            "Login successful but encountered an error. Please try again.",
+            isSuccess: false);
       }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeContent(),
-        ),
-      );
     } else {
-      PopupMessage.show(context, "Login failed. Please check your credentials.",
+      PopupMessage.show(context, "Invalid email or password. Please try again.",
           isSuccess: false);
     }
   }

@@ -74,31 +74,46 @@ class _VerificationCodeInputState extends State<VerificationCodeInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(
-        widget.length,
-        (index) => SizedBox(
-          width: 45,
-          child: TextField(
-            controller: _controllers[index],
-            focusNode: _focusNodes[index],
-            autofocus: widget.autofocus && index == 0,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            style: const TextStyle(fontSize: 24),
-            decoration: InputDecoration(
-              counterText: "",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+    // Calculate available width and adjust field size accordingly
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Total space between items (widget.length - 1 spaces)
+    final spaceBetween = (widget.length - 1) * 8.0;
+    // Padding on both sides
+    final sidePadding = 32.0;
+    // Calculate field width based on available space
+    final fieldWidth =
+        (screenWidth - spaceBetween - sidePadding) / widget.length;
+    // Ensure minimum size of 40 and maximum of 50
+    final adjustedWidth = fieldWidth.clamp(40.0, 50.0);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(
+          widget.length,
+          (index) => SizedBox(
+            width: adjustedWidth,
+            child: TextField(
+              controller: _controllers[index],
+              focusNode: _focusNodes[index],
+              autofocus: widget.autofocus && index == 0,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: 1,
+              style: const TextStyle(fontSize: 24),
+              decoration: InputDecoration(
+                counterText: "",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: EdgeInsets.zero,
               ),
-              contentPadding: EdgeInsets.zero,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              onChanged: (value) => _onCodeChanged(value, index),
             ),
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            onChanged: (value) => _onCodeChanged(value, index),
           ),
         ),
       ),

@@ -148,6 +148,34 @@ class AuthService {
         }
       }
 
+      // If we still don't have an email, try getting it from Auth0 directly
+      if (!profileData.containsKey('email') || profileData['email'] == null) {
+        print("Still no email, trying Auth0 userinfo endpoint...");
+        try {
+          final auth0Response = await http.get(
+            Uri.parse("https://$auth0Domain/userinfo"),
+            headers: {
+              "Authorization": "Bearer $token",
+            },
+          );
+
+          if (auth0Response.statusCode == 200) {
+            final auth0Data = jsonDecode(auth0Response.body);
+            if (auth0Data['email'] != null) {
+              profileData['email'] = auth0Data['email'];
+              await _storage.write(
+                  key: "user_email", value: auth0Data['email']);
+
+              // Update other missing fields if available
+              profileData['name'] ??= auth0Data['name'];
+              profileData['picture'] ??= auth0Data['picture'];
+            }
+          }
+        } catch (e) {
+          print("Error extracting data from token: $e");
+        }
+      }
+
       // Debug logging
       return profileData;
     } catch (e) {

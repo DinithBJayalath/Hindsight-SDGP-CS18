@@ -84,8 +84,7 @@ class _HomeContentState extends State<HomeContent> {
   void updateEmotions() {
     setState(() {
       _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
-      for (var emotion in _uniqueEmotions) {
-      }
+      for (var emotion in _uniqueEmotions) {}
 
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _addEmotionsToJar();
@@ -93,7 +92,7 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  Future<void> _addEmotionsToJar() async{
+  Future<void> _addEmotionsToJar() async {
     // if (_isAddingEmotions) return;
     // _isAddingEmotions = true;
     // Add each emotion to the jar
@@ -603,20 +602,28 @@ class MoodTrackingWidget extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  color: data.color,
-                ),
-                const SizedBox(width: 4),
-                Text(data.emoji, style: const TextStyle(fontSize: 20)),
-              ],
+            Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    color: data.color,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(data.emoji, style: const TextStyle(fontSize: 20)),
+                ],
+              ),
             ),
-            Text(
-              '${data.mood} (${data.count})',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            Expanded(
+              flex: 2,
+              child: Text(
+                '${data.mood} (${data.count})',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.end,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         );
