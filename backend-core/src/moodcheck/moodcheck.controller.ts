@@ -9,7 +9,7 @@ export class MoodcheckController {
 
     }
     @Post()
-    saveMood(@Body() data:MoodCheckDto){
+    saveMood(@Body() data:string){ // Using MoodCheckDto here causes an error
         console.log(data)
         return data;
     }
