@@ -26,20 +26,22 @@ EMOTIONAL_STATES = ["enthusiasm",
                      "worry",
                      "hate"]
 # Template for the prompt
-TEMPLATE = """Analyze the emotional content of the following journal entry by comparing it with similar past entries:
+TEMPLATE = """Analyze the emotional content of the following journal entry:
 
 Context entries: {retrieved_journal_entries}
 New journal entry: {user_journal_entry}
-Available emotion categories: {emotion_categories}
+Valid emotion categories: {emotion_categories}
 
-Instructions:
+IMPORTANT INSTRUCTIONS:
 1. Compare the new entry with the retrieved similar entries
-2. Identify the most relevant emotion only from the provided emotion categories 
+2. Select EXACTLY ONE emotion from this list: {emotion_categories}
 3. Calculate a sentiment score (-1.0 to 1.0) based on the emotional tone
 
-Return your analysis strictly in the following structure: emotion, sentiment_score
+Your response must follow this EXACT format:
+emotion: [single emotion from the provided list]
+sentiment_score: [number between -1.0 and 1.0]
 
-Note: ONLY OUTPUT THE MOST RELEVANT EMOTION FROM THE LIST OF EMOTIONS AND SENTIMENT SCORE"""
+Do not include any other text, explanations, or emotions not in the provided list."""
 
 def Generate(query):
     '''This function takes the user's query and context and generates the most relevant emotion.  
