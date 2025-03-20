@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/welcome_screen.dart';
+import 'package:provider/provider.dart';
+import  'viewmodels/mood_viewmodel.dart';
+import 'views/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,17 +10,19 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Login Screen",
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => MoodViewModel(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,  // This removes the debug banner
+        title: 'Mood Tracker',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          scaffoldBackgroundColor: Colors.white,
+        ),
+        home: const DashboardScreen(),
       ),
-      home: const WelcomeScreen(),
     );
   }
 }
