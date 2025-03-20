@@ -16,16 +16,17 @@ These activities consist of exercieses, meditation activities, and creative acti
 ### Historical analysis and report dashboard 📊
 Users can get historical records of their emotional analysis and other information to help them understand patterns or trends in their mood helping them improve their mental health.
 
-# Dev branch
+# Dev branch 💻
 The dev branch is the starting point of all feature development branches.  
 Always make a feature branch and work, never work directly on the dev branch.  
 Prefix your feature branches with "feature/".  
 Please ask a 2nd person to confirm your merges or at least double-check your work.  
 When merging make sure you're merging with the dev branch.  
 
-# Folder structure
+# Folder structure 📁
 ## algorithms
 Code related to all algorithms (coded in Python) should be in this directory.  
+This is a gRPC server.  
 Make a new sub-directory for your work.  
 
 algorithms_service.py contains the main code for the gRPC service. Define a new Class for your service.  
