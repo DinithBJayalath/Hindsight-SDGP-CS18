@@ -5,7 +5,7 @@ import 'expressive_art_screen.dart';
 import 'future_letters_list_screen.dart';
 import '../models/activity.dart';
 import '../services/activity_service.dart';
-import '../widgets/custom_navigation_bar.dart';
+import '../widgets/app_navigation_bar.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -127,6 +127,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Opening ${activity.title}...')),
         );
+    }
+  }
+
+  void _onItemTapped(int index) {
+    // Handle navigation to other screens here
+    if (index != _selectedIndex) {
+      // TODO: Implement navigation to other screens
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Navigation to be implemented')),
+      );
     }
   }
 
@@ -291,13 +301,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
       ),
       bottomNavigationBar: AppNavigationBar(
         selectedIndex: _selectedIndex,
-        onItemTapped: (index) {
-          // Handle navigation here
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Navigation will be implemented soon')),
-          );
-        },
+        onItemTapped: _onItemTapped,
       ),
     );
   }
