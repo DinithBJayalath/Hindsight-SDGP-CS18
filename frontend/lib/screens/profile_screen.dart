@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,11 +15,11 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
-  final ProfileService _profileService = ProfileService();
   Map<String, dynamic> _userProfile = {};
   bool _isLoading = true;
   bool _hasUnsavedChanges = false;
   File? _profileImage;
+  String? _selectedAvatar;
 
   // Controllers for editable fields
   late TextEditingController _nameController;
@@ -129,6 +128,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _selectedLanguage = _languages.contains(languageValue)
               ? languageValue!
               : _languages[0];
+
+          // Check if picture is an asset path
+          final picturePath = profile['picture']?.toString() ?? '';
+          if (picturePath.startsWith('assets/avatars/')) {
+            _selectedAvatar = picturePath;
+            _profileImage = null;
+          }
 
           // Load boolean settings
           isDarkMode = profile['darkMode'] == true;
@@ -283,10 +289,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _updateProfileImage() async {
-    // TODO: Implement image upload to backend
-    // This is a placeholder for future implementation
+    // Update user profile with the selected avatar
     setState(() => _hasUnsavedChanges = true);
-    _updateProfile();
+
+    try {
+      final updatedProfile = {
+        ..._userProfile,
+        'picture': _selectedAvatar ?? _userProfile['picture']?.toString() ?? '',
+      };
+
+      final result = await ProfileService.updateProfile(
+          _userProfile['_id'], updatedProfile);
+
+      if (!mounted) return;
+
+      if (result != null) {
+        setState(() {
+          _userProfile = result;
+          _hasUnsavedChanges = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Profile picture updated successfully!"),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating profile image: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text("Failed to update profile picture. Please try again."),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _logout() async {
@@ -354,16 +397,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // UI enhancement methods
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    // List of available avatar images
+    final List<String> avatarImages = [
+      'assets/avatars/1.png',
+      'assets/avatars/2.png',
+      'assets/avatars/3.png',
+      'assets/avatars/4.png',
+      'assets/avatars/5.png',
+      'assets/avatars/6.png',
+    ];
 
-    if (image != null) {
-      setState(() {
-        _profileImage = File(image.path);
-      });
-      // Update profile image
-      _updateProfileImage();
-    }
+    // Show avatar selection dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Select Avatar',
+            style: TextStyle(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: avatarImages.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    // Close dialog and pass selected avatar path
+                    Navigator.of(context).pop(avatarImages[index]);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.all(5),
+                    child: Image.asset(
+                      avatarImages[index],
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    ).then((selectedAvatar) {
+      if (selectedAvatar != null) {
+        // Update the profile with the selected avatar
+        setState(() {
+          _profileImage = null; // Clear any file-based image
+          _selectedAvatar = selectedAvatar;
+        });
+        // Update the profile
+        _updateProfileImage();
+      }
+    });
   }
 
   void _showEditDialog(
@@ -409,12 +512,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: _profileImage != null
-                    ? FileImage(_profileImage!)
-                    : NetworkImage(
-                        _userProfile['picture']?.toString() ??
-                            'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-                      ) as ImageProvider,
+                backgroundImage: _selectedAvatar != null
+                    ? AssetImage(_selectedAvatar!)
+                    : _profileImage != null
+                        ? FileImage(_profileImage!)
+                        : NetworkImage(
+                            _userProfile['picture']?.toString() ??
+                                'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                          ) as ImageProvider,
               ),
               Positioned(
                 bottom: 0,

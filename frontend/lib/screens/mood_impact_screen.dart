@@ -3,14 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../services/API_Service.dart';
 
-
 class MoodImpactScreen extends StatefulWidget {
   final String mood;
   final Color moodColor;
   final String? emotion;
-  const MoodImpactScreen({Key? key, required this.mood, required this.emotion, required this.moodColor}): super(key: key);
+  const MoodImpactScreen(
+      {Key? key,
+      required this.mood,
+      required this.emotion,
+      required this.moodColor})
+      : super(key: key);
   @override
-  MoodImpactScreenState createState() => MoodImpactScreenState(mood: mood, emotion: emotion, moodColor: moodColor);
+  MoodImpactScreenState createState() =>
+      MoodImpactScreenState(mood: mood, emotion: emotion, moodColor: moodColor);
 }
 
 class MoodImpactScreenState extends State<MoodImpactScreen> {
@@ -23,26 +28,31 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   final ApiService _apiService = ApiService(baseUrl: 'http://10.31.6.238:3000');
   bool _isLoading = false;
   String _responseMessage = '';
-  MoodImpactScreenState({required this.mood, required this.emotion, required this.moodColor}) {
+  MoodImpactScreenState(
+      {required this.mood, required this.emotion, required this.moodColor}) {
     final parts = mood.split(' ');
     emoji = parts[0];
     text = parts.sublist(1).join(' ');
   }
   List<String> impactFactors = [
-    "Health", "Fitness", "Self-Care",
-    "Family", "Friends", "Work",
-    "Education", "Money","Love",
-    "Vacation", "Weather", "Traffic"
+    "Health",
+    "Fitness",
+    "Self-Care",
+    "Family",
+    "Friends",
+    "Work",
+    "Education",
+    "Money",
+    "Love",
+    "Vacation",
+    "Weather",
+    "Traffic"
   ];
 
   List<String> selectedFactors = [];
 
   Future<void> _sendRequest() async {
-    final data = {
-      "Mood": mood ,
-      "Emotion": emotion,
-      "Factors": selectedFactors
-    };
+    final data = {"Mood": mood, "Emotion": emotion, "Factors": selectedFactors};
     setState(() {
       _isLoading = true;
       _responseMessage = '';
@@ -50,7 +60,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
 
     try {
       // Send the request to the backend
-      final response = await _apiService.postData('moodcheck',data);
+      final response = await _apiService.postData('moodcheck', data);
 
       setState(() {
         _responseMessage = 'Response: ${response['result']}';
@@ -77,7 +87,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
           children: [
             // Header Row
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -87,7 +98,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
                   ),
                   Text(
                     formattedDate,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -156,7 +168,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
                     runSpacing: 10,
                     alignment: WrapAlignment.center,
                     children: [
-                      ...impactFactors.map((factor) => _buildSelectableButton(factor))
+                      ...impactFactors
+                          .map((factor) => _buildSelectableButton(factor))
                     ],
                   ),
                 ),
@@ -167,10 +180,13 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
 
             // Done Button
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: selectedFactors != null? Color.fromARGB(255, 68, 183, 255): Colors.grey,
+                  backgroundColor: selectedFactors != null
+                      ? Color.fromARGB(255, 68, 183, 255)
+                      : Colors.grey,
                   padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
                 ),
                 onPressed: () async {
@@ -180,7 +196,8 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
                 },
                 child: const Text(
                   "Done",
-                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -208,11 +225,16 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
         decoration: BoxDecoration(
           color: isSelected ? Colors.blueAccent : Colors.lightBlue.shade200,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
+          border: Border.all(
+              color: isSelected ? Colors.blue.shade900 : Colors.transparent,
+              width: 2),
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isSelected ? Colors.white : Colors.black),
+          style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isSelected ? Colors.white : Colors.black),
         ),
       ),
     );

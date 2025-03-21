@@ -1,0 +1,9 @@
+dotenv
+faiss-cpu
+grpcio
+langchain
+langchain-community
+langchain_openai
+openai
+protobuf==5.29.0
+tiktoken

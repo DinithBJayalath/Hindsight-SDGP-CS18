@@ -2,7 +2,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="frontend"
+        android:label="HindSight"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true">
         <activity
