@@ -19,10 +19,6 @@ export class Profile {
   @Prop()
   picture?: string;
 
-  @Prop({ required: false, index: false })
-  user?: Types.ObjectId;
-
-  // Additional profile fields from the original Profile entity
   @Prop()
   country?: string;
 
