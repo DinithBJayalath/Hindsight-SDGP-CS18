@@ -3,6 +3,8 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
 import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:frontend/screens/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
@@ -158,7 +160,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'country': _countries[0],
           'city': '',
           'bio': '',
-          'dateOfBirth': DateTime.now().toIso8601String(),
           'darkMode': false,
           'biometricAuthentication': false,
           'cloudBackup': false,
@@ -313,7 +314,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SnackBar(
             content: Text("Profile picture updated successfully!"),
             duration: Duration(seconds: 2),
-            backgroundColor: Colors.green,
           ),
         );
       }
@@ -362,24 +362,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.of(context).pop();
                 setState(() => _isLoading = true);
 
-                final success = await _authService.deleteAccount();
+                final success = await _authService.deleteAccount(context);
 
                 if (!mounted) return;
                 setState(() => _isLoading = false);
 
                 if (success) {
+                  // Show success message
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Account deleted successfully"),
+                      duration:
+                          Duration(seconds: 1), // Short duration before restart
                     ),
                   );
 
-                  // Redirect to login screen
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false, // Clear all routes
-                  );
+                  // Short delay to allow the snackbar to be seen
+                  Future.delayed(const Duration(milliseconds: 1200), () {
+                    if (mounted) {
+                      // Restart the app
+                      _authService.restartAppAfterDeletion(context);
+                    }
+                  });
                 } else {
                   PopupMessage.show(
                     context,
@@ -615,45 +619,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          _buildSection(
-            'Privacy & Security',
-            Icons.security_outlined,
-            [
-              SwitchListTile(
-                title: const Text('Biometric Authentication'),
-                value: isBiometricEnabled,
-                onChanged: (value) {
-                  _handleFieldChange(() {
-                    setState(() => isBiometricEnabled = value);
-                  });
-                },
-              ),
-              SwitchListTile(
-                title: const Text('Cloud Backup'),
-                value: isCloudBackupEnabled,
-                onChanged: (value) {
-                  _handleFieldChange(() {
-                    setState(() => isCloudBackupEnabled = value);
-                  });
-                },
-              ),
-            ],
-          ),
-          _buildSection(
-            'Notifications',
-            Icons.notifications_outlined,
-            [
-              SwitchListTile(
-                title: const Text('Push Notifications'),
-                value: isNotificationsEnabled,
-                onChanged: (value) {
-                  _handleFieldChange(() {
-                    setState(() => isNotificationsEnabled = value);
-                  });
-                },
-              ),
-            ],
-          ),
+          // _buildSection(
+          //   'Privacy & Security',
+          //   Icons.security_outlined,
+          //   [
+          //     SwitchListTile(
+          //       title: const Text('Biometric Authentication'),
+          //       value: isBiometricEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isBiometricEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //     SwitchListTile(
+          //       title: const Text('Cloud Backup'),
+          //       value: isCloudBackupEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isCloudBackupEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
+          // _buildSection(
+          //   'Notifications',
+          //   Icons.notifications_outlined,
+          //   [
+          //     SwitchListTile(
+          //       title: const Text('Push Notifications'),
+          //       value: isNotificationsEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isNotificationsEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
           _buildSection(
             'Help & Support',
             Icons.help_outline,
@@ -662,14 +666,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: const Text('FAQs'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
-                  // Navigate to FAQs
+                  // Open the Hindsight website
+                  _launchUrl('https://hindsight-18.vercel.app/');
                 },
               ),
               ListTile(
                 title: const Text('Contact Support'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 onTap: () {
-                  // Navigate to Support
+                  // Open the Hindsight website
+                  _launchUrl('https://hindsight-18.vercel.app/');
                 },
               ),
               ListTile(
@@ -797,11 +803,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../services/API_Service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MoodImpactScreen extends StatefulWidget {
   final String mood;
@@ -24,8 +24,9 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   late String emoji;
   late String text;
   final String? emotion;
-  // The following 3 are variables to handel the backend requests and responses
-  final ApiService _apiService = ApiService(baseUrl: 'http://10.31.6.238:3000');
+  // Using the API_URL from environment variables
+  final ApiService _apiService =
+      ApiService(baseUrl: dotenv.env['API_URL'] ?? '');
   bool _isLoading = false;
   String _responseMessage = '';
   MoodImpactScreenState(

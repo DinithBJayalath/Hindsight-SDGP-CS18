@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/services/email_verification_service.dart';
 import 'package:frontend/services/profile_service.dart';
 import 'package:frontend/widgets/agreements_popup.dart';
 import 'package:frontend/widgets/login_style.dart';
 import 'package:frontend/widgets/login_textfield.dart';
-import 'package:frontend/widgets/logo_tile.dart';
+//import 'package:frontend/widgets/logo_tile.dart';
 import 'package:frontend/widgets/signin_botton.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/widgets/popup_message.dart';
@@ -48,49 +48,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             title: const Text("Email Verification"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Enter the 6-digit verification code sent to your email.",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                VerificationCodeInput(
-                  onCompleted: (code) {
-                    enteredCode = code;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: dialogIsLoading
-                      ? null
-                      : () async {
-                          // Use the dialog's own setState
-                          setDialogState(() {
-                            dialogIsLoading = true;
-                          });
-
-                          await EmailVerificationService.sendVerificationEmail(
-                              email);
-
-                          // Only update state if the dialog is still showing
-                          if (dialogContext.mounted) {
+            content: Container(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Enter the 6-digit verification code sent to your email.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  VerificationCodeInput(
+                    onCompleted: (code) {
+                      enteredCode = code;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: dialogIsLoading
+                        ? null
+                        : () async {
+                            // Use the dialog's own setState
                             setDialogState(() {
-                              dialogIsLoading = false;
+                              dialogIsLoading = true;
                             });
 
-                            ScaffoldMessenger.of(dialogContext).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Verification code resent to your email"),
-                              ),
-                            );
-                          }
-                        },
-                  child: const Text("Resend Code"),
-                ),
-              ],
+                            await EmailVerificationService
+                                .sendVerificationEmail(email);
+
+                            // Only update state if the dialog is still showing
+                            if (dialogContext.mounted) {
+                              setDialogState(() {
+                                dialogIsLoading = false;
+                              });
+
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Verification code resent to your email"),
+                                ),
+                              );
+                            }
+                          },
+                    child: const Text("Resend Code"),
+                  ),
+                ],
+              ),
             ),
             actions: [
               TextButton(
@@ -260,7 +266,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfileScreen(userInfo: userInfo),
+              builder: (context) => const HomeScreen(),
             ),
           );
         } else {
@@ -413,58 +419,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SigninButton(
               onTap: isLoading ? null : signUpUser,
               buttonText: isLoading ? 'Processing...' : 'Create Account',
-            ),
-            const SizedBox(height: 30),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Color.fromARGB(255, 137, 137, 137),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      ' Or ',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 137, 137, 137),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Divider(
-                      thickness: 1,
-                      color: Color.fromARGB(255, 137, 137, 137),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Social sign-up icons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Apple button
-                GestureDetector(
-                  //onTap: () => _authService.loginWithGoogle(),
-                  child: const LogoTile(imagePath: 'assets/images/google.png'),
-                ),
-                const SizedBox(width: 60),
-                GestureDetector(
-                  //onTap: () => _authService.loginWithApple(),
-                  child: const LogoTile(imagePath: 'assets/images/apple.png'),
-                ),
-                const SizedBox(width: 60),
-                // Twitter button
-                GestureDetector(
-                  //onTap: () => _authService.loginWithTwitter(),
-                  child: const LogoTile(imagePath: 'assets/images/x.png'),
-                ),
-              ],
             ),
             const SizedBox(height: 15),
             Row(

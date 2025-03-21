@@ -3,6 +3,7 @@ import 'package:intl/intl.dart'; // Import the intl package
 import '../services/API_Service.dart';
 import 'package:provider/provider.dart';
 import '../services/Emotions_Provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(int, String, String, String, String) addJournalEntry;
@@ -33,8 +34,9 @@ class JournalWritingScreen extends StatefulWidget {
 class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _entryController = TextEditingController();
-  // The following 3 are variables to handel the backend requests and responses
-  final ApiService _apiService = ApiService(baseUrl: 'http://192.168.8.153:3000');
+  // Using the API_URL from environment variables
+  final ApiService _apiService =
+      ApiService(baseUrl: dotenv.env['API_URL'] ?? '');
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
@@ -63,7 +65,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     }
     return '🤔'; // Fallback emoji if not found
   }
-  
+
   String getCurrentDate() {
     final now = DateTime.now();
     final formatter = DateFormat('dd MMM yyyy');
@@ -169,16 +171,21 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
             TextButton(
               onPressed: () async {
                 if (!_isLoading) {
-                  String response = await _sendRequest(); // Correctly calling the function
+                  String response =
+                      await _sendRequest(); // Correctly calling the function
                   print('status code: $_responseMessage');
                   // Proceed with saving or updating the journal entry
-                  final emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
-                  emotionsProvider.addEmotion(response, getEmojiForEmotion(response));
+                  final emotionsProvider =
+                      Provider.of<EmotionsProvider>(context, listen: false);
+                  emotionsProvider.addEmotion(
+                      response, getEmojiForEmotion(response));
                   widget.addJournalEntry(
                     widget.entryIndex, // Use the index for update or -1 for new
                     _titleController.text,
                     selectedEmoji = getEmojiForEmotion(response),
-                    widget.isEditMode ? widget.date : getCurrentDate(), // Update date only for edit mode
+                    widget.isEditMode
+                        ? widget.date
+                        : getCurrentDate(), // Update date only for edit mode
                     _entryController.text,
                   );
 
@@ -284,7 +291,8 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
 
     try {
       // Send the request to the backend
-      final response = await _apiService.getData('algorithms/analyze', queryParams: {'query': query});
+      final response = await _apiService
+          .getData('algorithms/analyze', queryParams: {'query': query});
 
       setState(() {
         _responseMessage = 'Response: ${response['result']}';

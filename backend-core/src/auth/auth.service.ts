@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as jwksRsa from 'jwks-rsa';
 import * as jwt from 'jsonwebtoken';
-import { UserService } from '../user/user.service';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    private userService: UserService,
+    private profileService: ProfileService,
   ) {
     this.jwksClient = jwksRsa({
       jwksUri: `https://${this.configService.get<string>('AUTH0_DOMAIN')}/.well-known/jwks.json`,
@@ -43,7 +43,7 @@ export class AuthService {
 
       // Get user info from Auth0 or create user if not exists
       const userProfile = await this.getUserProfile(token);
-      const user = await this.userService.findOrCreateUser(userProfile);
+      const user = await this.profileService.findOrCreateUser(userProfile);
 
       return { verified, user };
     } catch (error) {
@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   async validateUser(payload: any): Promise<any> {
-    const user = await this.userService.findById(payload.sub);
+    const user = await this.profileService.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -143,7 +143,7 @@ export class AuthService {
       }
 
       // 3. Delete user from our database
-      await this.userService.deleteUser(userId);
+      await this.profileService.deleteProfile(userId);
 
       this.logger.log(`Successfully deleted user ${userId}`);
       return { success: true, message: 'Account deleted successfully' };

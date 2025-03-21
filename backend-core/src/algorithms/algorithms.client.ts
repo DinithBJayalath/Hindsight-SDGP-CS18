@@ -22,7 +22,8 @@ export function analyze(query: string): Promise<string> {
       if (err) {
         reject(err);
       } else {
-        resolve(response.response);
+        const [emotion, sentiment] = response.response.split(',');
+        resolve(emotion);
       }
     });
   });

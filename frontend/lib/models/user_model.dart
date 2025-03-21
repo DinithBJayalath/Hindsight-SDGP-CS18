@@ -5,8 +5,6 @@ class User {
   final String email;
   final String name;
   final String? picture;
-  final bool isVerified;
-  final DateTime? dateOfBirth;
   final String? country;
   final String? city;
   final String? bio;
@@ -23,8 +21,6 @@ class User {
     required this.email,
     required this.name,
     this.picture,
-    required this.isVerified,
-    this.dateOfBirth,
     this.country,
     this.city,
     this.bio,
@@ -43,10 +39,6 @@ class User {
       email: json['email'],
       name: json['name'],
       picture: json['picture'],
-      isVerified: json['isVerified'] ?? false,
-      dateOfBirth: json['dateOfBirth'] != null
-          ? DateTime.parse(json['dateOfBirth'])
-          : null,
       country: json['country'],
       city: json['city'],
       bio: json['bio'],
@@ -62,7 +54,6 @@ class User {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'dateOfBirth': dateOfBirth?.toIso8601String(),
       'country': country,
       'city': city,
       'bio': bio,
@@ -75,7 +66,6 @@ class User {
 
   User copyWith({
     String? name,
-    DateTime? dateOfBirth,
     String? country,
     String? city,
     String? bio,
@@ -90,8 +80,6 @@ class User {
       email: this.email,
       name: name ?? this.name,
       picture: this.picture,
-      isVerified: this.isVerified,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       country: country ?? this.country,
       city: city ?? this.city,
       bio: bio ?? this.bio,

@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:flutter/services.dart';
 
 class AuthService {
   final String auth0Domain = dotenv.env['AUTH0_DOMAIN'] ?? "";
@@ -16,8 +19,11 @@ class AuthService {
   // Username/Password login method
   Future<Map<String, dynamic>?> login(String username, String password) async {
     try {
+      print("Attempting to connect to $auth0Domain...");
+
       // First, authenticate with Auth0
-      final auth0Response = await http.post(
+      final auth0Response = await http
+          .post(
         Uri.parse("https://$auth0Domain/oauth/token"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
@@ -29,7 +35,12 @@ class AuthService {
           "scope": "openid profile email offline_access",
           "connection": "Username-Password-Authentication",
         }),
-      );
+      )
+          .timeout(const Duration(seconds: 60), onTimeout: () {
+        print("Connection timeout to Auth0");
+        throw Exception(
+            "Connection timeout. Please check your internet connection.");
+      });
 
       if (auth0Response.statusCode == 200) {
         final data = jsonDecode(auth0Response.body);
@@ -113,7 +124,6 @@ class AuthService {
           'email': rawData['email'],
           'name': rawData['name'],
           'picture': rawData['picture'],
-          'isVerified': rawData['isVerified'],
           'profile': rawData['profile'],
           'auth0Id': rawData['auth0Id'] ?? rawData['sub'],
         };
@@ -148,7 +158,7 @@ class AuthService {
         }
       }
 
-      // If we still don't have an email, try getting it from Auth0 directly
+      // email getting it from Auth0 directly
       if (!profileData.containsKey('email') || profileData['email'] == null) {
         print("Still no email, trying Auth0 userinfo endpoint...");
         try {
@@ -282,7 +292,7 @@ class AuthService {
   }
 
   // Delete account from Auth0 and backend
-  Future<bool> deleteAccount() async {
+  Future<bool> deleteAccount(BuildContext context) async {
     try {
       String? token = await _storage.read(key: "access_token");
       if (token == null) {
@@ -303,6 +313,12 @@ class AuthService {
         print("Account deleted successfully");
         // Clear local storage
         await logout();
+
+        // Navigate to login screen and restart app
+        if (context.mounted) {
+          restartAppAfterDeletion(context);
+        }
+
         return true;
       } else if (response.statusCode == 401) {
         // Token might be expired, try refreshing and retrying
@@ -328,6 +344,12 @@ class AuthService {
             if (retryResponse.statusCode == 200) {
               print("Account deleted successfully after token refresh");
               await logout();
+
+              // Navigate to login screen and restart app
+              if (context.mounted) {
+                restartAppAfterDeletion(context);
+              }
+
               return true;
             }
           }
@@ -351,5 +373,21 @@ class AuthService {
       print("Delete account exception: $e");
       return false;
     }
+  }
+
+  // Navigate to login screen after account deletion and restart the app
+  void restartAppAfterDeletion(BuildContext context) {
+    // Clear all routes and navigate to login screen
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (Route<dynamic> route) => false,
+    );
+
+    // Optional: If you want to perform a more complete restart,
+    // you can use SystemNavigator to exit the app - user will need to reopen it
+    // This simulates a complete app restart
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      SystemNavigator.pop(); // This will close the app
+    });
   }
 }

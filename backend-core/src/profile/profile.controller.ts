@@ -2,12 +2,12 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards, NotFoundException, BadRequestException } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { AuthGuard } from '@nestjs/passport'; // Assuming AuthGuard is used to protect routes
-import { Profile, ProfileDocument } from './entities/profile.entity';
+import { ProfileDocument } from '../entities/profile.entity';
 import { Types } from 'mongoose';
 
 // Create DTO for profile creation
 interface CreateProfileDto {
-  user: Types.ObjectId | string;
+  auth0Id: string;
   email: string;
   name: string;
   picture?: string;
@@ -17,7 +17,6 @@ interface CreateProfileDto {
 interface UpdateProfileDto {
   name?: string;
   picture?: string;
-  dateOfBirth?: Date;
   country?: string;
   city?: string;
   bio?: string;
@@ -44,13 +43,12 @@ export class ProfileController {
 
   // Use JWT Authentication to protect this route
   @UseGuards(AuthGuard('jwt')) 
-  @Get('user/:userId')  // Endpoint to get profile by user ID
-  async getProfile(@Param('userId') userId: string): Promise<ProfileDocument> {
-    const objectId = this.validateObjectId(userId);
-    const profile = await this.profileService.getProfileByUserId(objectId);
+  @Get('auth0/:auth0Id')  // Endpoint to get profile by Auth0 ID
+  async getProfile(@Param('auth0Id') auth0Id: string): Promise<ProfileDocument> {
+    const profile = await this.profileService.getProfileByAuth0Id(auth0Id);
     
     if (!profile) {
-      throw new NotFoundException(`Profile with user ID ${userId} not found`);
+      throw new NotFoundException(`Profile with Auth0 ID ${auth0Id} not found`);
     }
     
     return profile;
@@ -60,15 +58,7 @@ export class ProfileController {
   @Post()
   async createProfile(@Body() profileData: CreateProfileDto): Promise<ProfileDocument> {
     try {
-      // Convert string ID to ObjectId if needed
-      const userId = typeof profileData.user === 'string' 
-        ? this.validateObjectId(profileData.user)
-        : profileData.user;
-
-      return this.profileService.createProfile({
-        ...profileData,
-        user: userId
-      });
+      return this.profileService.createProfile(profileData);
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
@@ -88,10 +78,9 @@ export class ProfileController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Delete(':profileId')
-  async deleteProfile(@Param('profileId') profileId: string): Promise<void> {
-    const objectId = this.validateObjectId(profileId);
-    return this.profileService.deleteProfile(objectId);
+  @Delete('auth0/:auth0Id')
+  async deleteProfile(@Param('auth0Id') auth0Id: string): Promise<void> {
+    return this.profileService.deleteProfile(auth0Id);
   }
 
   @UseGuards(AuthGuard('jwt'))
