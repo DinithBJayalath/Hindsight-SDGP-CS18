@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { ActivitiesModule } from "./activities/activities.module";
+import { ActivitiesModule } from "./activities/activities/activities.module";
 
 @Module({
   imports: [
