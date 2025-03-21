@@ -5,6 +5,7 @@ import 'expressive_art_screen.dart';
 import 'future_letters_list_screen.dart';
 import '../models/activity.dart';
 import '../services/activity_service.dart';
+import '../widgets/custom_navigation_bar.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -15,7 +16,7 @@ class ActivitiesScreen extends StatefulWidget {
 
 class _ActivitiesScreenState extends State<ActivitiesScreen>
     with SingleTickerProviderStateMixin {
-  int _selectedIndex = 4;
+  final int _selectedIndex = 3;
   late ScrollController _scrollController;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -288,42 +289,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           ),
         ),
       ),
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
+      bottomNavigationBar: AppNavigationBar(
         selectedIndex: _selectedIndex,
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+        onItemTapped: (index) {
+          // Handle navigation here
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Navigation will be implemented soon')),
+          );
         },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.home_outlined, color: Colors.black54),
-            selectedIcon: Icon(Icons.home, color: Colors.black),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.book_outlined, color: Colors.black54),
-            selectedIcon: Icon(Icons.book, color: Colors.black),
-            label: 'Journal',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.mood_outlined, color: Colors.black54),
-            selectedIcon: Icon(Icons.mood, color: Colors.black),
-            label: 'Mood',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.analytics_outlined, color: Colors.black54),
-            selectedIcon: Icon(Icons.analytics, color: Colors.black),
-            label: 'Analytics',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.sports_gymnastics_outlined, color: Colors.black54),
-            selectedIcon: Icon(Icons.sports_gymnastics, color: Colors.black),
-            label: 'Activities',
-          ),
-        ],
       ),
     );
   }
