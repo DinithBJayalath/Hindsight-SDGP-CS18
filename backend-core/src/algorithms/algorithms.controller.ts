@@ -3,6 +3,7 @@ import {analyze} from "./algorithms.client";
 
 @Controller('algorithms')
 export class AlgorithmsController {
+    // This get method is just for testing the controller
     @Get()
     great(): string {
         return 'Hello from algorithms';
