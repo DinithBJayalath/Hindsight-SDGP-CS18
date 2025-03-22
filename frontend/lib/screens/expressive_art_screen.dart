@@ -1,18 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:convert';
 import 'drawing_canvas_screen.dart';
-
-class Artwork {
-  final String title;
-  final DateTime dateCreated;
-  final String imagePath; // This will be used later for actual image storage
-
-  Artwork({
-    required this.title,
-    required this.dateCreated,
-    required this.imagePath,
-  });
-}
+import '../models/drawing.dart';
+import '../services/drawing_service.dart';
 
 class ExpressiveArtScreen extends StatefulWidget {
   const ExpressiveArtScreen({super.key});
@@ -22,31 +13,54 @@ class ExpressiveArtScreen extends StatefulWidget {
 }
 
 class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
-  // Temporary list of artworks for demonstration
-  final List<Artwork> artworks = [
-    Artwork(
-      title: 'Peaceful Mind',
-      dateCreated: DateTime.now().subtract(const Duration(days: 2)),
-      imagePath: 'assets/art/peaceful_mind.png',
-    ),
-    Artwork(
-      title: 'Joyful Moments',
-      dateCreated: DateTime.now().subtract(const Duration(days: 5)),
-      imagePath: 'assets/art/joyful_moments.png',
-    ),
-  ];
+  final DrawingService _drawingService = DrawingService();
+  List<Drawing> _drawings = [];
+  bool _isLoading = true;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDrawings();
+  }
+
+  Future<void> _loadDrawings() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+
+      // Using a mock user ID for now, replace with actual auth user ID
+      final drawings = await _drawingService.getUserDrawings('user123');
+      setState(() {
+        _drawings = drawings;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading artworks: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFE0F4FF),
-              const Color(0xFFCCE9FF),
+              Color(0xFFE0F4FF),
+              Color(0xFFCCE9FF),
             ],
           ),
         ),
@@ -77,13 +91,13 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(24.0),
+                      const Padding(
+                        padding: EdgeInsets.all(24.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               'Expressive Art',
                               style: TextStyle(
                                 fontFamily: 'Montserrat',
@@ -92,8 +106,8 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                                 color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(height: 16),
-                            const Text(
+                            SizedBox(height: 16),
+                            Text(
                               'Draw your thoughts. Express yourself freely.',
                               style: TextStyle(
                                 fontFamily: 'Montserrat',
@@ -146,7 +160,8 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                                   builder: (context) =>
                                       const DrawingCanvasScreen(),
                                 ),
-                              );
+                              ).then((_) =>
+                                  _loadDrawings()); // Reload when returning
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFFE0F4FF),
@@ -189,22 +204,72 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
                         ),
                         const SizedBox(height: 16),
                         // Artworks Grid
-                        GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
+                        if (_isLoading)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        else if (_error != null)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: Column(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      size: 48, color: Colors.red),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Failed to load artworks: $_error',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: _loadDrawings,
+                                    child: const Text('Try Again'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else if (_drawings.isEmpty)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Text(
+                                'You don\'t have any saved artworks yet.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 16,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          )
+                        else
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 1,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
+                            itemCount: _drawings.length,
+                            itemBuilder: (context, index) {
+                              final drawing = _drawings[index];
+                              return DrawingCard(
+                                drawing: drawing,
+                                onViewDrawing: () => _viewDrawing(drawing),
+                                onDeleteDrawing: () => _deleteDrawing(drawing),
+                              );
+                            },
                           ),
-                          itemCount: artworks.length,
-                          itemBuilder: (context, index) {
-                            final artwork = artworks[index];
-                            return ArtworkCard(artwork: artwork);
-                          },
-                        ),
                       ],
                     ),
                   ),
@@ -216,30 +281,114 @@ class _ExpressiveArtScreenState extends State<ExpressiveArtScreen> {
       ),
     );
   }
+
+  void _viewDrawing(Drawing drawing) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                drawing.title,
+                style: const TextStyle(
+                  fontFamily: 'Montserrat',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.6,
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+                child: Image.memory(
+                  base64Decode(drawing.imageData),
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _deleteDrawing(Drawing drawing) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Artwork'),
+        content: Text('Are you sure you want to delete "${drawing.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      try {
+        await _drawingService.deleteDrawing(drawing.id!);
+        await _loadDrawings(); // Reload the list
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Artwork deleted successfully')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete artwork: $e')),
+          );
+        }
+      }
+    }
+  }
 }
 
-class ArtworkCard extends StatelessWidget {
-  final Artwork artwork;
+class DrawingCard extends StatelessWidget {
+  final Drawing drawing;
+  final VoidCallback onViewDrawing;
+  final VoidCallback onDeleteDrawing;
 
-  const ArtworkCard({
+  const DrawingCard({
     super.key,
-    required this.artwork,
+    required this.drawing,
+    required this.onViewDrawing,
+    required this.onDeleteDrawing,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+    return GestureDetector(
+      onTap: onViewDrawing,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFE0F4FF),
-                const Color(0xFFCCE9FF),
+                Color(0xFFE0F4FF),
+                Color(0xFFCCE9FF),
               ],
             ),
             border: Border.all(
@@ -249,86 +398,64 @@ class ArtworkCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 10,
-                spreadRadius: 0,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                // TODO: Navigate to artwork detail/edit screen
-              },
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  margin: const EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(
+                      base64Decode(drawing.imageData),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.black12,
-                            width: 0.5,
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image,
-                            size: 32,
-                            color: Colors.black54,
-                          ),
+                      child: Text(
+                        drawing.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontFamily: 'Montserrat',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      artwork.title,
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Created ${_getTimeAgo(artwork.dateCreated)}',
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 12,
-                        color: Colors.black54,
+                    GestureDetector(
+                      onTap: onDeleteDrawing,
+                      child: const Icon(
+                        Icons.delete,
+                        size: 20,
+                        color: Colors.red,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
-  }
-
-  String _getTimeAgo(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
-    } else {
-      return 'Just now';
-    }
   }
 }
