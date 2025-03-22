@@ -16,9 +16,9 @@ class JournalAnalyzer(algorithms_pb2_grpc.JournalAnalyzerServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     algorithms_pb2_grpc.add_JournalAnalyzerServicer_to_server(JournalAnalyzer(), server)
-    server.add_insecure_port("[::]:50051")
+    server.add_insecure_port("[::]:8080")
     server.start()
-    print("Server started at port 50051")
+    print("Server started at port 8080")
     server.wait_for_termination()
 
 if __name__ == "__main__":
