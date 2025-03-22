@@ -1,6 +1,8 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/sdgp-mind/hindsight-algo', './algorithms']
+env:
+      - 'OPENAI_API_KEY=${_OPENAI_API_KEY}'
 images:
   - 'gcr.io/sdgp-mind/hindsight-algo'
 options:
