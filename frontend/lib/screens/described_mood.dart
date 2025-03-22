@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'mood_impact_screen.dart';
 
-
-
 class MoodDescribeScreen extends StatefulWidget {
   final String mood;
   final Color moodColor;
-  const MoodDescribeScreen({Key? key, required this.mood, required this.moodColor}): super(key: key);
+  const MoodDescribeScreen(
+      {Key? key, required this.mood, required this.moodColor})
+      : super(key: key);
   @override
-  MoodDescribeScreenState createState() => MoodDescribeScreenState(mood: this.mood, moodColor: this.moodColor);
+  MoodDescribeScreenState createState() =>
+      MoodDescribeScreenState(mood: this.mood, moodColor: this.moodColor);
 }
 
 class MoodDescribeScreenState extends State<MoodDescribeScreen> {
@@ -24,12 +25,61 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
   }
   String selectedMood = "Happy"; // Default mood
   String formattedDate = DateFormat('dd MMM yyyy').format(DateTime.now());
-  Map<String,List<String>> emotions = {
-    "very sad": ["Sadness", "Anger", "Worry", "Hate", "Hopeless", "Lonely", "Depressed", "Anxious", "Guilty", "Hurt"],
-    "sad": ["Disappointed", "Frustrated", "Stressed", "Tired", "Overwhelmed", "Insecure", "Confused", "Regretful"],
-    "neutral": ["Relief", "Surprise", "Calm", "Boredom", "Content", "Focused", "Peaceful", "Mindful", "Balanced"],
-    "happy": ["Joy", "Fun", "Love", "Enthusiasm", "Grateful", "Inspired", "Proud", "Confident", "Creative"],
-    "very happy": ["Ecstatic", "Excited", "Blissful", "Energetic", "Passionate", "Optimistic", "Motivated", "Thrilled"]
+  Map<String, List<String>> emotions = {
+    "very sad": [
+      "Sadness",
+      "Anger",
+      "Worry",
+      "Hate",
+      "Hopeless",
+      "Lonely",
+      "Depressed",
+      "Anxious",
+      "Guilty",
+      "Hurt"
+    ],
+    "sad": [
+      "Disappointed",
+      "Frustrated",
+      "Stressed",
+      "Tired",
+      "Overwhelmed",
+      "Insecure",
+      "Confused",
+      "Regretful"
+    ],
+    "neutral": [
+      "Relief",
+      "Surprise",
+      "Calm",
+      "Boredom",
+      "Content",
+      "Focused",
+      "Peaceful",
+      "Mindful",
+      "Balanced"
+    ],
+    "happy": [
+      "Joy",
+      "Fun",
+      "Love",
+      "Enthusiasm",
+      "Grateful",
+      "Inspired",
+      "Proud",
+      "Confident",
+      "Creative"
+    ],
+    "very happy": [
+      "Ecstatic",
+      "Excited",
+      "Blissful",
+      "Energetic",
+      "Passionate",
+      "Optimistic",
+      "Motivated",
+      "Thrilled"
+    ]
   };
   String? selectedEmotion; // Track selected emotion
 
@@ -104,39 +154,48 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                  children: (emotions[text.toLowerCase()] ?? []).map((emotion) {
-                    bool isSelected = selectedEmotion == emotion;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedEmotion = emotion; // Select emotion
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue : Colors.lightBlue.shade200,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: isSelected ? Colors.blue.shade900 : Colors.transparent, width: 2),
-                        ),
-                        child: Text(
-                          emotion,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.black,
-                          ),
+                children: (emotions[text.toLowerCase()] ?? []).map((emotion) {
+                  bool isSelected = selectedEmotion == emotion;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedEmotion = emotion; // Select emotion
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Colors.blue
+                            : Colors.lightBlue.shade200,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: isSelected
+                                ? Colors.blue.shade900
+                                : Colors.transparent,
+                            width: 2),
+                      ),
+                      child: Text(
+                        emotion,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isSelected ? Colors.white : Colors.black,
                         ),
                       ),
-                    );
-                  }).toList(),
+                    ),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 40),
 
               // "Next" Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: selectedEmotion != null? Color.fromARGB(255, 68, 183, 255): Colors.grey,
+                  backgroundColor: selectedEmotion != null
+                      ? Color.fromARGB(255, 68, 183, 255)
+                      : Colors.grey,
                   padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
                 ),
                 onPressed: () {
@@ -145,14 +204,20 @@ class MoodDescribeScreenState extends State<MoodDescribeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MoodImpactScreen(mood: mood, emotion: selectedEmotion, moodColor: moodColor),
+                        builder: (context) => MoodImpactScreen(
+                            mood: mood,
+                            emotion: selectedEmotion,
+                            moodColor: moodColor),
                       ),
                     );
                   }
                 },
                 child: const Text(
                   "Next",
-                  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ],

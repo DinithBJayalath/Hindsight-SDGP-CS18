@@ -147,4 +147,38 @@ class ProfileService {
       return false;
     }
   }
+
+  // Update user name in Auth0
+  static Future<bool> updateNameInAuth0(String name) async {
+    try {
+      final token = await _storage.read(key: 'access_token');
+      if (token == null) {
+        print('Error: No access token found');
+        return false;
+      }
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/auth/update-name'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'name': name}),
+      );
+
+      if (response.statusCode == 200) {
+        // Update the name in secure storage as well
+        await _storage.write(key: 'user_name', value: name);
+        print('Name updated successfully in Auth0 and local storage');
+        return true;
+      }
+
+      print(
+          'Failed to update name in Auth0: ${response.statusCode} ${response.body}');
+      return false;
+    } catch (e) {
+      print('Error updating name in Auth0: $e');
+      return false;
+    }
+  }
 }

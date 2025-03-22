@@ -52,6 +52,26 @@ class AuthService {
               key: "refresh_token", value: data['refresh_token']);
         }
 
+        // Extract user info from the ID token if available
+        if (data.containsKey('id_token')) {
+          try {
+            final idTokenData = Jwt.parseJwt(data['id_token']);
+            if (idTokenData.containsKey('sub')) {
+              await _storage.write(key: "auth0_id", value: idTokenData['sub']);
+            }
+            if (idTokenData.containsKey('name')) {
+              await _storage.write(
+                  key: "user_name", value: idTokenData['name']);
+            }
+            if (idTokenData.containsKey('email')) {
+              await _storage.write(
+                  key: "user_email", value: idTokenData['email']);
+            }
+          } catch (e) {
+            print("Error extracting data from ID token: $e");
+          }
+        }
+
         // Validate the token with our backend
         await _validateTokenWithBackend(data['access_token']);
 
@@ -79,9 +99,24 @@ class AuthService {
 
       if (response.statusCode == 200) {
         print("Token validated successfully with backend");
-        // Optionally store user info from backend
+        // Store user info from backend
         final userData = jsonDecode(response.body);
         await _storage.write(key: "user_data", value: jsonEncode(userData));
+
+        // Store auth0Id, name and email separately for easier access
+        if (userData.containsKey('auth0Id') || userData.containsKey('sub')) {
+          final auth0Id = userData['auth0Id'] ?? userData['sub'];
+          await _storage.write(key: "auth0_id", value: auth0Id);
+        }
+
+        if (userData.containsKey('name')) {
+          await _storage.write(key: "user_name", value: userData['name']);
+        }
+
+        if (userData.containsKey('email')) {
+          await _storage.write(key: "user_email", value: userData['email']);
+        }
+
         return true;
       } else {
         print("Backend token validation failed: ${response.body}");
@@ -127,6 +162,16 @@ class AuthService {
           'profile': rawData['profile'],
           'auth0Id': rawData['auth0Id'] ?? rawData['sub'],
         };
+
+        // Store auth0Id and name for easier access
+        if (profileData.containsKey('auth0Id') &&
+            profileData['auth0Id'] != null) {
+          await _storage.write(key: "auth0_id", value: profileData['auth0Id']);
+        }
+
+        if (profileData.containsKey('name') && profileData['name'] != null) {
+          await _storage.write(key: "user_name", value: profileData['name']);
+        }
       } else if (response.statusCode == 401) {
         print("Token expired, attempting refresh...");
         // Token expired, try to refresh
@@ -152,15 +197,32 @@ class AuthService {
               // Store for future use
               await _storage.write(key: "user_email", value: tokenEmail);
             }
+
+            // Also try to get auth0Id and name from token
+            if (decodedToken.containsKey('sub')) {
+              profileData['auth0Id'] = decodedToken['sub'];
+              await _storage.write(key: "auth0_id", value: decodedToken['sub']);
+            }
+
+            if (decodedToken.containsKey('name')) {
+              profileData['name'] = decodedToken['name'];
+              await _storage.write(
+                  key: "user_name", value: decodedToken['name']);
+            }
           } catch (e) {
             print("Error decoding token: $e");
           }
         }
       }
 
-      // email getting it from Auth0 directly
-      if (!profileData.containsKey('email') || profileData['email'] == null) {
-        print("Still no email, trying Auth0 userinfo endpoint...");
+      // If still missing data, try getting it from Auth0 directly
+      if (!profileData.containsKey('email') ||
+          profileData['email'] == null ||
+          !profileData.containsKey('name') ||
+          profileData['name'] == null ||
+          !profileData.containsKey('auth0Id') ||
+          profileData['auth0Id'] == null) {
+        print("Still missing user data, trying Auth0 userinfo endpoint...");
         try {
           final auth0Response = await http.get(
             Uri.parse("https://$auth0Domain/userinfo"),
@@ -171,22 +233,31 @@ class AuthService {
 
           if (auth0Response.statusCode == 200) {
             final auth0Data = jsonDecode(auth0Response.body);
+
             if (auth0Data['email'] != null) {
               profileData['email'] = auth0Data['email'];
               await _storage.write(
                   key: "user_email", value: auth0Data['email']);
-
-              // Update other missing fields if available
-              profileData['name'] ??= auth0Data['name'];
-              profileData['picture'] ??= auth0Data['picture'];
             }
+
+            // Update other missing fields if available
+            if (auth0Data['name'] != null) {
+              profileData['name'] ??= auth0Data['name'];
+              await _storage.write(key: "user_name", value: auth0Data['name']);
+            }
+
+            if (auth0Data['sub'] != null) {
+              profileData['auth0Id'] ??= auth0Data['sub'];
+              await _storage.write(key: "auth0_id", value: auth0Data['sub']);
+            }
+
+            profileData['picture'] ??= auth0Data['picture'];
           }
         } catch (e) {
-          print("Error extracting data from token: $e");
+          print("Error getting data from Auth0 userinfo: $e");
         }
       }
 
-      // Debug logging
       return profileData;
     } catch (e) {
       print("Get profile exception: $e");
@@ -288,6 +359,9 @@ class AuthService {
     await _storage.delete(key: "access_token");
     await _storage.delete(key: "refresh_token");
     await _storage.delete(key: "user_data");
+    await _storage.delete(key: "user_name");
+    await _storage.delete(key: "auth0_id");
+
     print("User logged out.");
   }
 

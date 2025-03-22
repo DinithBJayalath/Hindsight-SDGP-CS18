@@ -224,8 +224,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Store the old name to check if it was changed
+      final oldName = _userProfile['name'] ?? '';
+      final newName = _nameController.text;
+      final nameChanged = oldName != newName;
+
       final updatedProfile = {
-        'name': _nameController.text,
+        'name': newName,
         'bio': _bioController.text,
         'country': _selectedCountry,
         'city': _cityController.text,
@@ -246,6 +251,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _userProfile = result;
           _hasUnsavedChanges = false;
         });
+
+        // If name was changed, update it in Auth0 and local storage
+        if (nameChanged) {
+          print(
+              "Name changed from '$oldName' to '$newName'. Updating in Auth0...");
+          await ProfileService.updateNameInAuth0(newName);
+        }
 
         // Show a SnackBar for success message
         ScaffoldMessenger.of(context).showSnackBar(
@@ -477,6 +489,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       String label, String currentValue, Function(String) onSave) {
     final TextEditingController controller =
         TextEditingController(text: currentValue);
+    final bool isNameField = label == 'Name';
 
     showDialog(
       context: context,
@@ -495,9 +508,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              onSave(controller.text);
+            onPressed: () async {
+              final String newValue = controller.text;
+              onSave(newValue);
               Navigator.pop(context);
+
+              // If the name field is being edited, update it in Auth0 as well
+              if (isNameField && newValue != currentValue) {
+                print(
+                    "Name changed from '$currentValue' to '$newValue'. Updating in Auth0...");
+                await ProfileService.updateNameInAuth0(newValue);
+              }
+
               _updateProfile();
             },
             child: const Text('Save'),
@@ -818,7 +840,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
           },
         ),
         actions: [

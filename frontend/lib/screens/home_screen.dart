@@ -9,6 +9,7 @@ import '../widgets/mood_jar.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'profile_screen.dart';
 import '../services/auth_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +34,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_selectedIndex == 1 && index == 0) {
       // Update the emotions jar when returning to home
       _homeContentKey.currentState?.updateEmotions();
+    }
+    if (index == 0) {
+      // Reload the username when returning to home
+      _homeContentKey.currentState?._loadUserName();
     }
     setState(() {
       _selectedIndex = index;
@@ -63,11 +68,31 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final GlobalKey<MoodJarState> _moodJarKey = GlobalKey<MoodJarState>();
   final AuthService _authService = AuthService();
-  final _userName = "Ramudi";
+  String _userName = "User"; // Default username
   // This is the shared instance of the provider
   late EmotionsProvider _emotionsProvider;
   List<Emotion> _uniqueEmotions = [];
   bool _isAddingEmotions = false;
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          _userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading username: $e');
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -130,11 +155,13 @@ class _HomeContentState extends State<HomeContent> {
   void _navigateToProfile() async {
     final userInfo = await _authService.getUserProfile();
     if (userInfo.isNotEmpty) {
-      Navigator.push(
+      await Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => ProfileScreen(userInfo: userInfo)),
       );
+      // Reload the username when returning from profile screen
+      _loadUserName();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load user profile')),
