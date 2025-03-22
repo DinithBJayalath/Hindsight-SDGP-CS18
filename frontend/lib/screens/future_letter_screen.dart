@@ -17,7 +17,6 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
   bool _isCustomDate = false;
   String _selectedPeriod = '1 month';
   final LetterService _letterService = LetterService();
-  bool _isSaving = false;
 
   final List<String> _predefinedPeriods = [
     '1 month',
@@ -103,10 +102,6 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
       return;
     }
 
-    setState(() {
-      _isSaving = true;
-    });
-
     try {
       // Create letter object
       final letter = Letter(
@@ -138,12 +133,6 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
             backgroundColor: Colors.red,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
       }
     }
   }
