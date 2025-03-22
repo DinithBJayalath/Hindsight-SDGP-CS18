@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:async';
+import 'dart:convert';
 import 'breathing_exercises_screen.dart';
+import '../models/breathing_session.dart';
+import '../services/breathing_service.dart';
 
 class BreathingPlayerScreen extends StatefulWidget {
   final BreathingExercise exercise;
@@ -23,6 +26,9 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
   bool _isPlaying = false;
   double _progress = 0.0;
   Timer? _progressTimer;
+  int _sessionDuration = 0;
+  final BreathingService _breathingService = BreathingService();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -67,13 +73,57 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
     });
   }
 
+  Future<void> _saveBreathingSession() async {
+    // Don't save if we haven't spent meaningful time
+    if (_sessionDuration < 5) return;
+
+    try {
+      setState(() {
+        _isSaving = true;
+      });
+
+      // Create a new breathing session
+      final session = BreathingSession(
+        userId: 'user123', // Replace with actual user ID
+        duration: _sessionDuration,
+        // In a real app, you would record and save actual audio
+        // audioRecording: base64Audio,
+      );
+
+      await _breathingService.saveSession(session);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Breathing session saved successfully!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save session: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
+  }
+
   void _startProgressTimer() {
     _progressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {
         _progress += 0.001;
+        _sessionDuration =
+            (_progress * 100).round(); // Rough time tracking in seconds
+
         if (_progress >= 1.0) {
           _progress = 0.0;
           _togglePlay();
+          _saveBreathingSession(); // Save session when completed
         }
       });
     });
@@ -83,13 +133,13 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFE0F4FF),
-              const Color(0xFFCCE9FF),
+              Color(0xFFE0F4FF),
+              Color(0xFFCCE9FF),
             ],
           ),
         ),
@@ -261,12 +311,12 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
                           height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: LinearGradient(
+                            gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                const Color(0xFFE0F4FF),
-                                const Color(0xFFCCE9FF),
+                                Color(0xFFE0F4FF),
+                                Color(0xFFCCE9FF),
                               ],
                             ),
                             boxShadow: [
