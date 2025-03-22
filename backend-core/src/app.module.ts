@@ -7,10 +7,11 @@ import { AlgorithmsController } from './algorithms/algorithms.controller';
 import { AppService } from './app.service';
 import { MoodcheckController } from './moodcheck/moodcheck.controller';
 import { MoodcheckService } from './moodcheck/moodcheck.service';
-import { MoodCheckDto } from './moodcheck/moodcheck.dto';
 import { AuthModule } from './auth/auth.module';
+//import { UserModule } from './user/user.module';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
 import { ProfileModule } from './profile/profile.module'; 
+import { MoodcheckModule } from './moodcheck/moodcheck.module';
 
 @Module({
   imports: [
@@ -25,12 +26,13 @@ import { ProfileModule } from './profile/profile.module';
       }),
     }),
     AuthModule,
+    //UserModule,
     EmailVerificationModule,
     ProfileModule,
-    MoodCheckDto,
+    MoodcheckModule,
   ],
-  controllers: [AppController, AlgorithmsController, MoodcheckController],
-  providers: [AppService, MoodcheckService],
+  controllers: [AppController, AlgorithmsController],
+  providers: [AppService],
 })
 export class AppModule {}
 

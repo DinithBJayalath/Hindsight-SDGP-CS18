@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frontend/services/Journal_Provider.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:provider/provider.dart';
@@ -14,20 +15,60 @@ class JournalingScreen extends StatefulWidget {
 }
 
 class _JournalingScreenState extends State<JournalingScreen> {
-  final String userName = "John"; // Replace with dynamic username
+  String userName = "User"; // Default username
+  final _storage = const FlutterSecureStorage();
   late JournalProvider _journalProvider;
-  List<Map<String, String>> _journalEntries = [];
+  List<Map<String, dynamic>> _journalEntries = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      // Try to get the name directly from secure storage
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Initialize the provider
     _journalProvider = Provider.of<JournalProvider>(context, listen: false);
-    // Get the initial emotions
-    _updateJournal();
+
+    // Load journals from the backend if not already initialized
+    if (!_journalProvider.isInitialized) {
+      _loadJournals();
+    } else {
+      _updateJournal();
+    }
 
     // If you want to listen for changes, you can add a listener
     _journalProvider.addListener(_updateJournal);
+  }
+
+  Future<void> _loadJournals() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await _journalProvider.initJournals();
+
+    setState(() {
+      _journalEntries = _journalProvider.journalEntries;
+      _isLoading = false;
+    });
   }
 
   void _updateJournal() {
@@ -46,10 +87,12 @@ class _JournalingScreenState extends State<JournalingScreen> {
   }
 
   // Method to filter entries based on the search query
-  List<Map<String, String>> getFilteredEntries() {
+  List<Map<String, dynamic>> getFilteredEntries() {
     return _journalEntries
-        .where((entry) =>
-            entry['title']!.toLowerCase().contains(searchQuery.toLowerCase()))
+        .where((entry) => entry['title']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase()))
         .toList();
   }
 
@@ -57,80 +100,24 @@ class _JournalingScreenState extends State<JournalingScreen> {
   void addJournalEntry(
       int index, String title, String emoji, String date, String entryContent) {
     if (index == -1) {
-      // Add new entry at the top (index 0)
-      setState(() {
-        _journalEntries.insert(0, {
-          // insert at the beginning
-          'title': title,
-          'emoji': emoji,
-          'date': getCurrentDate(),
-          'entryContent': entryContent,
-        });
-      });
+      // For new entries, the backend will handle creation through journal_writing_screen
+      // This remains for compatibility with the existing code
     } else {
-      // Update existing entry
-      setState(() {
-        _journalEntries[index] = {
-          'title': title,
-          'emoji': emoji,
-          'date': date,
-          'entryContent': entryContent,
-        };
-      });
+      // For editing, update the provider
+      final entry = _journalEntries[index];
+      _journalProvider.updateJournalEntry(
+          index,
+          title,
+          entryContent,
+          entry['emotion'] ?? 'neutral',
+          entry['mood'] ?? 'neutral',
+          entry['sentiment'] ?? 0.0);
     }
   }
 
   // Delete journal entry function
   void deleteJournalEntry(int index) {
-    setState(() {
-      _journalEntries.removeAt(index); // Removes entry at the specified index
-    });
-  }
-
-  // Show confirmation dialog before deleting
-  void _showDeleteConfirmationDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Are you sure you want to delete this entry?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 97, 210, 255),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                deleteJournalEntry(index); // Delete the entry
-                Navigator.pop(context); // Close the dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Entry deleted')),
-                );
-              },
-              child: Text(
-                "Delete",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 97, 210, 255),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
+    _journalProvider.deleteJournalEntry(index);
   }
 
   @override
@@ -191,7 +178,8 @@ class _JournalingScreenState extends State<JournalingScreen> {
                             deleteJournalEntry: deleteJournalEntry,
                           ),
                         ),
-                      );
+                      ).then((_) =>
+                          _loadJournals()); // Refresh journals after returning
                     },
                   ),
                 ),
@@ -203,40 +191,75 @@ class _JournalingScreenState extends State<JournalingScreen> {
             thickness: 2,
           ),
           SizedBox(height: 6),
-          Expanded(
-            child: ListView.builder(
-              itemCount: getFilteredEntries().length,
-              itemBuilder: (context, index) {
-                var entry = getFilteredEntries()[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => JournalWritingScreen(
-                          addJournalEntry: addJournalEntry,
-                          title: entry['title']!,
-                          emoji: entry['emoji']!,
-                          date: entry['date']!,
-                          entryContent: entry['entryContent']!,
-                          isEditMode: true,
-                          entryIndex: index,
-                          deleteJournalEntry: deleteJournalEntry,
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Expanded(
+                  child: _journalEntries.isEmpty
+                      ? Center(
+                          child: Text(
+                              'No journal entries yet. Start by creating one!'))
+                      : ListView.builder(
+                          itemCount: getFilteredEntries().length,
+                          itemBuilder: (context, index) {
+                            var entry = getFilteredEntries()[index];
+                            String emoji = getEmojiForEmotion(
+                                entry['emotion'] ?? 'neutral');
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JournalWritingScreen(
+                                      addJournalEntry: addJournalEntry,
+                                      title: entry['title'].toString(),
+                                      emoji: emoji,
+                                      date: entry['date'].toString(),
+                                      entryContent: entry['content'].toString(),
+                                      isEditMode: true,
+                                      entryIndex: index,
+                                      deleteJournalEntry: deleteJournalEntry,
+                                    ),
+                                  ),
+                                ).then((_) =>
+                                    _loadJournals()); // Refresh after edit
+                              },
+                              child: JournalEntryWidget(
+                                title: entry['title'].toString(),
+                                date: entry['date'].toString(),
+                                emoji: emoji,
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    );
-                  },
-                  child: JournalEntryWidget(
-                    title: entry['title']!,
-                    date: entry['date']!,
-                    emoji: entry['emoji']!,
-                  ),
-                );
-              },
-            ),
-          ),
+                ),
         ],
       ),
     );
+  }
+
+  // Match emotions to emojis
+  String getEmojiForEmotion(String emotion) {
+    final Map<String, String> emojiMap = {
+      'happiness': '😄',
+      'joy': '😄',
+      'contentment': '😊',
+      'love': '😍',
+      'enthusiasm': '😃',
+      'optimism': '😀',
+      'relief': '😌',
+      'surprise': '😮',
+      'sadness': '😢',
+      'disappointment': '😞',
+      'worry': '😟',
+      'anxiety': '😰',
+      'fear': '😨',
+      'anger': '😠',
+      'frustration': '😤',
+      'hate': '😡',
+      'boredom': '😑',
+      'neutral': '😐',
+    };
+
+    return emojiMap[emotion.toLowerCase()] ?? '😐';
   }
 }

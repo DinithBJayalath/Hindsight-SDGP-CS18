@@ -284,21 +284,51 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   Future<String> _sendRequest() async {
     // query from the user's journal entry
     final query = _entryController.text.trim();
+    final title = _titleController.text.trim();
+
     setState(() {
       _isLoading = true;
       _responseMessage = '';
     });
 
     try {
-      // Send the request to the backend
-      final response = await _apiService
-          .getData('algorithms/analyze', queryParams: {'query': query});
+      // Use the detailed analysis endpoint
+      final analysisResponse = await _apiService.getData(
+          'algorithms/analyze-detailed',
+          queryParams: {'query': query},
+          requireAuth: true);
+
+      // Extract the emotion and sentiment
+      final emotion = analysisResponse['emotion'] ??
+          analysisResponse['result'] ??
+          'unknown';
+      final sentiment = analysisResponse['sentiment'] ?? 0.0;
+
+      // Now save the journal entry with the analysis results
+      final journalData = {
+        'title': title,
+        'content': query,
+        'factors': [], // Optional factors that influenced the mood
+        'emotion': emotion,
+        'sentiment': sentiment
+      };
+
+      // Save the journal record to the database
+      print('Saving journal record to database');
+      final saveResponse = await _apiService.postData('moodcheck/journal',
+          journalData, // Pass journalData directly as the second parameter
+          requireAuth: true);
+
+      print('Journal save response: $saveResponse');
 
       setState(() {
-        _responseMessage = 'Response: ${response['result']}';
+        _responseMessage = 'Emotion: $emotion, Sentiment: $sentiment';
       });
-      return response['result'];
+
+      // For backward compatibility, return just the emotion
+      return emotion;
     } catch (e) {
+      print('Error during journal analysis: $e');
       setState(() {
         _responseMessage = 'Error: $e';
       });

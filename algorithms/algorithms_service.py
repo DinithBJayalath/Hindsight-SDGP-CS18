@@ -13,7 +13,7 @@ class JournalAnalyzer(algorithms_pb2_grpc.JournalAnalyzerServicer):
             emotion = emotion.split(":", 1)[1].strip()
             sentiment_score = sentiment_score.split(":", 1)[1].strip()
         print(f"Emotional analysis of journal entry is: {emotion}, Sentiment score is: {sentiment_score}")
-        return algorithms_pb2.AnalyzeResponse(response = emotion)
+        return algorithms_pb2.AnalyzeResponse(response = emotion+","+sentiment_score)
 
 # SSL/TLS, uncomment to enable
 # with open("resources/server.key", "rb") as f:

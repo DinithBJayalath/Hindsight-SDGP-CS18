@@ -32,13 +32,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid token: missing user identifier');
     }
     
+    console.log('JWT payload:', JSON.stringify(payload));
+    
     // First, validate the user with our service
     const user = await this.authService.validateUser(payload);
+    console.log('User from DB:', JSON.stringify(user));
     
-    // Ensure we always return the Auth0 user ID (sub) with the user object
+    if (!user || !user._id) {
+      throw new UnauthorizedException('User not found or invalid');
+    }
+    
+    // Ensure we always return the Auth0 user ID (sub) and profile ID with the user object
     return {
       ...user,
-      sub: payload.sub // Ensure sub is always included in the request.user object
+      sub: payload.sub, // Ensure sub is always included in the request.user object
+      profileId: user._id.toString() // Explicitly include profileId as a string
     };
   }
 }
