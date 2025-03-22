@@ -5,6 +5,9 @@ export type ActivityDocument = Activity & Document;
 
 @Schema({ timestamps: true })
 export class Activity {
+  @Prop({ required: true, type: String })
+  _id: string;
+
   @Prop({ required: true })
   title: string;
 
