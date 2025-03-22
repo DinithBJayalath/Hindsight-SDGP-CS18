@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose gRPC server port
-EXPOSE 50051
+EXPOSE 8080
 
 # Run the gRPC server
 CMD ["python", "server.py"]
