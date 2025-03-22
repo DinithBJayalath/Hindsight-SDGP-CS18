@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../models/letter.dart';
+import '../services/letter_service.dart';
 
 class FutureLetterScreen extends StatefulWidget {
   const FutureLetterScreen({super.key});
@@ -14,6 +16,8 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 30));
   bool _isCustomDate = false;
   String _selectedPeriod = '1 month';
+  final LetterService _letterService = LetterService();
+  bool _isSaving = false;
 
   final List<String> _predefinedPeriods = [
     '1 month',
@@ -79,8 +83,7 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
     }
   }
 
-  void _saveLetter() {
-    // TODO: Implement letter saving functionality
+  Future<void> _saveLetter() async {
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -100,15 +103,49 @@ class _FutureLetterScreenState extends State<FutureLetterScreen> {
       return;
     }
 
-    // Show success message and navigate back
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-            'Letter saved successfully! You\'ll receive it on the selected date.'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    Navigator.pop(context);
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      // Create letter object
+      final letter = Letter(
+        title: _titleController.text,
+        content: _letterController.text,
+        userId: 'user123', // Replace with actual user ID from auth
+        deliveryDate: _selectedDate,
+      );
+
+      // Save to database
+      await _letterService.saveLetter(letter);
+
+      if (mounted) {
+        // Show success message and navigate back
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Letter saved successfully! You\'ll receive it on the selected date.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context, true); // Return success to previous screen
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save letter: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
+      }
+    }
   }
 
   @override
