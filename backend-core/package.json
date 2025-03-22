@@ -20,13 +20,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.13.1",
+    "@grpc/proto-loader": "^0.7.13",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0",
-    "mongoose": "^7.0.0",
+    "class-validator": "^0.14.1",
+    "mongoose": "^7.8.6",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
@@ -71,4 +74,3 @@
     "testEnvironment": "node"
   }
 }
-

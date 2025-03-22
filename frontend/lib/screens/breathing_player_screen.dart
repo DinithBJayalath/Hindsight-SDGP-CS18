@@ -26,6 +26,7 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
   double _progress = 0.0;
   Timer? _progressTimer;
   int _sessionDuration = 0;
+  bool _isSaving = false;
   final BreathingService _breathingService = BreathingService();
 
   @override

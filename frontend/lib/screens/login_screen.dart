@@ -1,8 +1,8 @@
+import 'package:activities_feature/widgets/login_style.dart';
+import 'package:activities_feature/widgets/login_textfield.dart';
+import 'package:activities_feature/widgets/logo_tile.dart';
+import 'package:activities_feature/widgets/signin_botton.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/login_style.dart';
-import 'package:frontend/widgets/login_textfield.dart';
-import 'package:frontend/widgets/logo_tile.dart';
-import 'package:frontend/widgets/signin_botton.dart';
 
 class login_screen extends StatefulWidget {
   const login_screen({super.key});
