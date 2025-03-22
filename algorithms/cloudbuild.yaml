@@ -17,6 +17,7 @@ steps:
       '--port', '8080',
       '--execution-environment', 'gen2',
       '--use-http2',
+      '--set-secrets', 'OPENAI_API_KEY=openai-api-key:latest',
       '--timeout', '300s',
       '--cpu', '1',
       '--memory', '512Mi' 
