@@ -16,7 +16,10 @@ steps:
       '--allow-unauthenticated',
       '--port', '8080',
       '--execution-environment', 'gen2',
-      '--use-http2'  
+      '--use-http2',
+      '--timeout', '300s',
+      '--cpu', '1',
+      '--memory', '512Mi' 
     ]
 
 images:
