@@ -54,7 +54,7 @@ def Generate(query):
     # Setting up the prompt for the chain
     prompt = ChatPromptTemplate.from_template(TEMPLATE)
     # Loading the vector store and setting up the retriever
-    loaded_vectors = FAISS.load_local('./app/algorithms/LLM_Analysis/tests/emotions_vector_store', embeddings=emb_model, allow_dangerous_deserialization=True)
+    loaded_vectors = FAISS.load_local('./LLM_Analysis/tests/emotions_vector_store', embeddings=emb_model, allow_dangerous_deserialization=True)
     retriever = loaded_vectors.as_retriever(k=7)
     # Setting up the the LLM
     llm = ChatOpenAI(model_name = "gpt-4o-mini", temperature = 0)
