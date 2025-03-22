@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/sdgp-mind/hindsight-algo', './python-backend']
+    args: ['build', '-t', 'gcr.io/sdgp-mind/hindsight-algo', './algorithms']
 images:
   - 'gcr.io/$PROJECT_ID/python-backend'
 options:
