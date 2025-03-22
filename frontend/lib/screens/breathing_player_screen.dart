@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:async';
-import 'dart:convert';
 import 'breathing_exercises_screen.dart';
 import '../models/breathing_session.dart';
 import '../services/breathing_service.dart';
@@ -28,7 +27,6 @@ class _BreathingPlayerScreenState extends State<BreathingPlayerScreen>
   Timer? _progressTimer;
   int _sessionDuration = 0;
   final BreathingService _breathingService = BreathingService();
-  bool _isSaving = false;
 
   @override
   void initState() {
