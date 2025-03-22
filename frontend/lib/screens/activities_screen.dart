@@ -35,7 +35,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
         setState(() {
           // Calculate the slide animation value based on scroll position
           final scrollPosition = _scrollController.offset;
-          final maxScroll = 300.0; // Height of the header
+          const maxScroll = 300.0; // Height of the header
           final slideValue = (scrollPosition / maxScroll).clamp(0.0, 1.0);
           _slideAnimation = Tween<double>(begin: 0.0, end: -50.0).animate(
             CurvedAnimation(
@@ -58,7 +58,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     );
     _slideAnimation = Tween<double>(begin: 0.0, end: 0.0).animate(
       CurvedAnimation(
-        parent: AlwaysStoppedAnimation(0.0),
+        parent: const AlwaysStoppedAnimation(0.0),
         curve: Curves.easeOut,
       ),
     );
@@ -144,13 +144,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              const Color(0xFFE0F4FF),
-              const Color(0xFFCCE9FF),
+              Color(0xFFE0F4FF),
+              Color(0xFFCCE9FF),
             ],
           ),
         ),
@@ -310,7 +310,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 class ActivityCard extends StatelessWidget {
   final String title;
   final String description;
-  final String icon;
+  final IconData icon;
   final VoidCallback onTap;
 
   const ActivityCard({
@@ -329,12 +329,12 @@ class ActivityCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFE0F4FF),
-                const Color(0xFFCCE9FF),
+                Color(0xFFE0F4FF),
+                Color(0xFFCCE9FF),
               ],
             ),
             border: Border.all(
@@ -362,16 +362,26 @@ class ActivityCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          icon,
-                          style: const TextStyle(
-                            fontSize: 24,
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.black12,
+                              width: 0.5,
+                            ),
+                          ),
+                          child: Icon(
+                            icon,
+                            size: 32,
+                            color: Colors.black87,
                           ),
                         ),
                         const Spacer(),
-                        Icon(
+                        const Icon(
                           Icons.arrow_forward_ios,
-                          size: 20,
+                          size: 16,
                           color: Colors.black45,
                         ),
                       ],
