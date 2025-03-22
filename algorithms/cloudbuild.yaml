@@ -2,7 +2,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/sdgp-mind/hindsight-algo', './algorithms']
 images:
-  - 'gcr.io/$PROJECT_ID/python-backend'
+  - 'gcr.io/sdgp-mind/hindsight-algo'
 options:
   logging: CLOUD_LOGGING_ONLY
   # logs_bucket: 'gs://your-logs-bucket'
