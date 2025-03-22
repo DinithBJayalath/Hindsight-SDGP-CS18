@@ -16,7 +16,7 @@ steps:
       '--allow-unauthenticated',
       '--port', '8080',
       '--execution-environment', 'gen2',
-      '--protocol', 'grpc'  
+      '--use-http2'  
     ]
 
 images:
