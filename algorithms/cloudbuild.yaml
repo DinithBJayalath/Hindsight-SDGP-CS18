@@ -7,4 +7,3 @@ images:
   - 'gcr.io/sdgp-mind/hindsight-algo'
 options:
   logging: CLOUD_LOGGING_ONLY
-  # logs_bucket: 'gs://your-logs-bucket'
