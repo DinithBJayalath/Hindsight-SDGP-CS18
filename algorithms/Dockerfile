@@ -15,4 +15,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the gRPC server
-CMD ["python", "server.py"]
+CMD ["python", "algorithms_service.py"]
