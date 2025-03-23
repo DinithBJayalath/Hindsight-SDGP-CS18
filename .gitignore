@@ -1,0 +1,150 @@
+# Content in the base of the repository
+.env
+.idea/
+
+# Content in the landing_page directory
+# Node.js dependencies
+landing_page/node_modules/
+
+# npm debug logs
+landing_page/npm-debug.log*
+landing_page/yarn-debug.log*
+landing_page/yarn-error.log*
+
+# Environment variables
+landing_page/.env
+landing_page/.env.local
+landing_page/.env.development.local
+landing_page/.env.test.local
+landing_page/.env.production.local
+
+# Optional npm cache directory
+landing_page/.npm
+
+# Optional eslint cache
+landing_page/.eslintcache
+
+# Optional REPL history
+landing_page/.node_repl_history
+
+# Output of 'npm pack'
+landing_page/*.tgz
+
+# Yarn Integrity file
+landing_page/.yarn-integrity
+
+# dotenv environment variable files
+landing_page/.env 
+
+# Content in th frontend directory
+# Miscellaneous
+frontend/.env
+frontend/*.class
+frontend/*.log
+frontend/*.pyc
+frontend/*.swp
+frontend/.DS_Store
+frontend/.atom/
+frontend/.buildlog/
+frontend/.history
+frontend/.svn/
+frontend/migrate_working_dir/
+
+# IntelliJ related
+frontend/*.iml
+frontend/*.ipr
+frontend/*.iws
+frontend/.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+frontend/**/doc/api/
+frontend/**/ios/Flutter/.last_build_id
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.pub-cache/
+frontend/.pub/
+frontend/build/
+
+# Symbolication related
+frontend/app.*.symbols
+
+# Obfuscation related
+frontend/app.*.map.json
+
+# Android Studio will place build artifacts here
+frontend/android/app/debug
+frontend/android/app/profile
+frontend/android/app/release
+
+# Content in the backend directory
+# compiled output
+backend-core/dist
+backend-core/node_modules
+backend-core/build
+
+# Logs
+backend-core/logs
+backend-core/*.log
+backend-core/npm-debug.log*
+backend-core/pnpm-debug.log*
+backend-core/yarn-debug.log*
+backend-core/yarn-error.log*
+backend-core/lerna-debug.log*
+
+# OS
+backend-core/.DS_Store
+
+# Tests
+backend-core/coverage
+backend-core/.nyc_output
+
+# IDEs and editors
+backend-core/.idea
+backend-core/.project
+backend-core/.classpath
+backend-core/.c9/
+backend-core/*.launch
+backend-core/.settings/
+backend-core/*.sublime-workspace
+
+# IDE - VSCode
+backend-core/.vscode/*
+backend-core/!.vscode/settings.json
+backend-core/!.vscode/tasks.json
+backend-core/!.vscode/launch.json
+backend-core/!.vscode/extensions.json
+
+# dotenv environment variable files
+backend-core/.env
+backend-core/.env.development.local
+backend-core/.env.test.local
+backend-core/.env.production.local
+backend-core/.env.local
+
+# temp directory
+backend-core/.temp
+backend-core/.tmp
+
+# Runtime data
+backend-core/pids
+backend-core/*.pid
+backend-core/*.seed
+backend-core/*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+backend-core/report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Content for the algorithms directory
+# JSON datasets to create the vector database.
+algorithms/LLM_Analysis/tests/Emotions_dataset_vader_am.json
+algorithms/LLM_Analysis/tests/Emotions_dataset_cardiff_oai.json
+algorithms/LLM_Analysis/tests/Emotions_dataset_distil_oai.json
+
+# Local vector index
+algorithms/LLM_Analysis/tests/emotions_vector_store
