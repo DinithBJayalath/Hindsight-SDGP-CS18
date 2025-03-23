@@ -321,88 +321,85 @@ class ActivityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFE0F4FF),
-                Color(0xFFCCE9FF),
-              ],
-            ),
-            border: Border.all(
-              color: Colors.black12,
-              width: 0.5,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                spreadRadius: 0,
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFE0F4FF),
+              Color(0xFFCCE9FF),
             ],
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Icon(
-                            icon,
-                            size: 32,
-                            color: Colors.black87,
+          border: Border.all(
+            color: Colors.black12,
+            width: 0.5,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.black12,
+                            width: 0.5,
                           ),
                         ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.black45,
+                        child: Icon(
+                          icon,
+                          size: 32,
+                          color: Colors.black87,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      description,
-                      style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14,
-                        color: Colors.black54,
+                      const Spacer(),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Colors.black45,
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -172,120 +172,115 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-        child: Container(
-          height: 160,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFFE0F4FF),
-                const Color(0xFFCCE9FF),
-              ],
-            ),
-            border: Border.all(
-              color: Colors.black12,
-              width: 0.5,
-            ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 10,
-                spreadRadius: 0,
-              ),
-            ],
+    return Container(
+      height: 160,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFE0F4FF),
+            Color(0xFFCCE9FF),
+          ],
+        ),
+        border: Border.all(
+          color: Colors.black12,
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            spreadRadius: 0,
           ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BreathingPlayerScreen(
-                      exercise: exercise,
-                    ),
-                  ),
-                );
-              },
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BreathingPlayerScreen(
+                  exercise: exercise,
+                ),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.black12,
-                              width: 0.5,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.black12,
+                          width: 0.5,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.self_improvement,
+                        size: 32,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            exercise.title,
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
                             ),
                           ),
-                          child: const Icon(
-                            Icons.self_improvement,
-                            size: 32,
-                            color: Colors.black87,
+                          const SizedBox(height: 4),
+                          Text(
+                            exercise.duration,
+                            style: const TextStyle(
+                              fontFamily: 'Montserrat',
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                exercise.title,
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                exercise.duration,
-                                style: const TextStyle(
-                                  fontFamily: 'Montserrat',
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Icon(
-                          Icons.play_circle_outline,
-                          size: 32,
-                          color: Colors.black54,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: Text(
-                        exercise.description,
-                        style: const TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14,
-                          color: Colors.black54,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        ],
                       ),
+                    ),
+                    const Icon(
+                      Icons.play_circle_outline,
+                      size: 32,
+                      color: Colors.black54,
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Text(
+                    exercise.description,
+                    style: const TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 14,
+                      color: Colors.black54,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
