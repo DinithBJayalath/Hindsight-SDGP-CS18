@@ -4,9 +4,9 @@ import { DataDisplayService } from './data-display.service';
 @Controller('data-display')
 export class DataDisplayController {
 
-    constructor(private readonly dataDisplayService: DataDisplayService) {}
+  constructor(private readonly dataDisplayService: DataDisplayService) {}
 
-    @Get()
+  @Get()
   async findAll(@Request() req) {
     const emotions = await this.dataDisplayService.findAll(req.user.userId);
     return { 

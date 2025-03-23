@@ -35,8 +35,8 @@ import { DataDisplayModule } from './data-display/data-display.module';
     MoodcheckModule,
     DataDisplayModule,
   ],
-  controllers: [AppController, AlgorithmsController, DataDisplayController],
-  providers: [AppService, DataDisplayService],
+  controllers: [AppController, AlgorithmsController],
+  providers: [AppService],
 })
 export class AppModule {}
 

@@ -9,6 +9,24 @@ class EmotionsProvider extends ChangeNotifier {
   bool _isLoading = false;
   String _error = '';
 
+  static const Map<String, Map<String, dynamic>> moodData = {
+    "awful": {
+      "emoji": "😫",
+    },
+    "bad": {
+      "emoji": "😢",
+    },
+    "neutral": {
+      "emoji": "😐",
+    },
+    "good": {
+      "emoji": "😊",
+    },
+    "great": {
+      "emoji": "😄",
+    }
+  };
+
   EmotionsProvider({required ApiService apiService}) : _apiService = apiService {
     // Load emotions when the provider is initialized
     fetchEmotions();
@@ -82,18 +100,16 @@ class EmotionsProvider extends ChangeNotifier {
       _allEmotions.clear();
 
       // Parse emotions from response
-      if (response.containsKey('emotions') && response['emotions'] is List) {
-        for (var emotionData in response['emotions']) {
-          final emotion = Emotion(
-            id: emotionData['id'] ?? const Uuid().v4(),
-            name: emotionData['name'] ?? '',
-            emoji: emotionData['emoji'] ?? '',
-            timestamp: emotionData['timestamp'] != null
-                ? DateTime.parse(emotionData['timestamp'])
-                : DateTime.now(),
-          );
-          _allEmotions.add(emotion);
-        }
+      for (var emotionData in response['emotions']) {
+        final emotion = Emotion(
+          id: const Uuid().v4(),
+          name: emotionData['mood'] ?? '',
+          emoji: moodData[emotionData['mood']]?["emoji"] as String? ?? "😐",
+          timestamp: emotionData['createdAt'] != null
+              ? DateTime.parse(emotionData['createdAt'])
+              : DateTime.now(),
+        );
+        _allEmotions.add(emotion);
       }
 
       _isLoading = false;

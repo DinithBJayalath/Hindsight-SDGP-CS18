@@ -10,9 +10,18 @@ export class DataDisplayService {
         @InjectModel(Mood.name) private moodModel: Model<MoodDocument>
       ) {}
 
-    async findAll(userId: string): Promise<string[]> {
-        const moods = await this.moodModel.find({ profileId: userId }).exec();
-        return moods.flatMap(mood => mood.entries.map(entry => entry.mood));
+    async findAll(userId: string): Promise<{ mood: string; createdAt: Date }[]> {
+        const result = await this.moodModel.findOne(
+            { profileId: userId }, 
+            { entries: 1, _id: 0 } 
+          ).lean();
+        
+        if (!result || !result.entries) return [];
+        
+        return result.entries.map(entry => ({
+            mood: entry.mood,
+            createdAt: entry.createdAt,
+        }));
     }
 
 }
