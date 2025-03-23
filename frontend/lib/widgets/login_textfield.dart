@@ -4,6 +4,7 @@ class LoginTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
+
   const LoginTextField({
     super.key,
     required this.controller,
@@ -13,27 +14,33 @@ class LoginTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+    return Container(
+      // This provides the margin
+      margin: const EdgeInsets.symmetric(horizontal: 15),
       child: TextField(
         controller: controller,
         obscureText: obscureText,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: Colors.white),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 140, 211, 255),
+              width: 2.0,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-            borderSide:
-                const BorderSide(color: Color.fromARGB(255, 245, 237, 255)),
+            borderRadius: BorderRadius.circular(10),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 140, 211, 255),
+              width: 2.0,
+            ),
           ),
           fillColor: Colors.white,
           filled: true,
           hintText: hintText,
           hintStyle: const TextStyle(
-            color: Colors.black,
+            color: Color.fromARGB(255, 137, 137, 137),
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),

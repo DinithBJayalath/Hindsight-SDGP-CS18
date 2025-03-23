@@ -1,0 +1,265 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frontend/services/Journal_Provider.dart';
+import 'package:intl/intl.dart'; // Import the intl package
+import 'package:provider/provider.dart';
+import '../widgets/journal_container.dart';
+import '../widgets/journal_entry_widget.dart';
+import 'journal_writing_screen.dart';
+
+class JournalingScreen extends StatefulWidget {
+  const JournalingScreen({super.key});
+
+  @override
+  _JournalingScreenState createState() => _JournalingScreenState();
+}
+
+class _JournalingScreenState extends State<JournalingScreen> {
+  String userName = "User"; // Default username
+  final _storage = const FlutterSecureStorage();
+  late JournalProvider _journalProvider;
+  List<Map<String, dynamic>> _journalEntries = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      // Try to get the name directly from secure storage
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize the provider
+    _journalProvider = Provider.of<JournalProvider>(context, listen: false);
+
+    // Load journals from the backend if not already initialized
+    if (!_journalProvider.isInitialized) {
+      _loadJournals();
+    } else {
+      _updateJournal();
+    }
+
+    // If you want to listen for changes, you can add a listener
+    _journalProvider.addListener(_updateJournal);
+  }
+
+  Future<void> _loadJournals() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await _journalProvider.initJournals();
+
+    setState(() {
+      _journalEntries = _journalProvider.journalEntries;
+      _isLoading = false;
+    });
+  }
+
+  void _updateJournal() {
+    setState(() {
+      _journalEntries = _journalProvider.journalEntries;
+    });
+  }
+
+  String searchQuery = '';
+
+  // Method to get current date
+  String getCurrentDate() {
+    final now = DateTime.now();
+    final formatter = DateFormat('dd MMM yyyy');
+    return formatter.format(now);
+  }
+
+  // Method to filter entries based on the search query
+  List<Map<String, dynamic>> getFilteredEntries() {
+    return _journalEntries
+        .where((entry) => entry['title']
+            .toString()
+            .toLowerCase()
+            .contains(searchQuery.toLowerCase()))
+        .toList();
+  }
+
+  // Add journal entry function
+  void addJournalEntry(
+      int index, String title, String emoji, String date, String entryContent) {
+    if (index == -1) {
+      // For new entries, the backend will handle creation through journal_writing_screen
+      // This remains for compatibility with the existing code
+    } else {
+      // For editing, update the provider
+      final entry = _journalEntries[index];
+      _journalProvider.updateJournalEntry(
+          index,
+          title,
+          entryContent,
+          entry['emotion'] ?? 'neutral',
+          entry['mood'] ?? 'neutral',
+          entry['sentiment'] ?? 0.0);
+    }
+  }
+
+  // Delete journal entry function
+  void deleteJournalEntry(int index) {
+    _journalProvider.deleteJournalEntry(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          JournalContainer(userName: userName),
+          SizedBox(height: 10),
+          // Search bar implementation
+          TextField(
+            onChanged: (query) {
+              setState(() {
+                searchQuery = query;
+              });
+            },
+            decoration: InputDecoration(
+              hintText: "Search Entries",
+              filled: true,
+              fillColor: Color(0xFFBFE6FF),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              prefixIcon: Icon(Icons.search),
+            ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    "Hi ! Tell me about your day... I'm waiting to hear your story...",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFBFE6FF),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.create),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => JournalWritingScreen(
+                            addJournalEntry: addJournalEntry,
+                            isEditMode: false,
+                            entryIndex: -1,
+                            deleteJournalEntry: deleteJournalEntry,
+                          ),
+                        ),
+                      ).then((_) =>
+                          _loadJournals()); // Refresh journals after returning
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            color: const Color.fromARGB(255, 0, 0, 0),
+            thickness: 2,
+          ),
+          SizedBox(height: 6),
+          _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : Expanded(
+                  child: _journalEntries.isEmpty
+                      ? Center(
+                          child: Text(
+                              'No journal entries yet. Start by creating one!'))
+                      : ListView.builder(
+                          itemCount: getFilteredEntries().length,
+                          itemBuilder: (context, index) {
+                            var entry = getFilteredEntries()[index];
+                            String emoji = getEmojiForEmotion(
+                                entry['emotion'] ?? 'neutral');
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => JournalWritingScreen(
+                                      addJournalEntry: addJournalEntry,
+                                      title: entry['title'].toString(),
+                                      emoji: emoji,
+                                      date: entry['date'].toString(),
+                                      entryContent: entry['content'].toString(),
+                                      isEditMode: true,
+                                      entryIndex: index,
+                                      deleteJournalEntry: deleteJournalEntry,
+                                    ),
+                                  ),
+                                ).then((_) =>
+                                    _loadJournals()); // Refresh after edit
+                              },
+                              child: JournalEntryWidget(
+                                title: entry['title'].toString(),
+                                date: entry['date'].toString(),
+                                emoji: emoji,
+                              ),
+                            );
+                          },
+                        ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  // Match emotions to emojis
+  String getEmojiForEmotion(String emotion) {
+    final Map<String, String> emojiMap = {
+      'happiness': '😄',
+      'joy': '😄',
+      'contentment': '😊',
+      'love': '😍',
+      'enthusiasm': '😃',
+      'optimism': '😀',
+      'relief': '😌',
+      'surprise': '😮',
+      'sadness': '😢',
+      'disappointment': '😞',
+      'worry': '😟',
+      'anxiety': '😰',
+      'fear': '😨',
+      'anger': '😠',
+      'frustration': '😤',
+      'hate': '😡',
+      'boredom': '😑',
+      'neutral': '😐',
+    };
+
+    return emojiMap[emotion.toLowerCase()] ?? '😐';
+  }
+}
