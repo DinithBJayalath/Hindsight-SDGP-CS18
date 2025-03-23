@@ -9,6 +9,7 @@ import 'package:frontend/screens/profile_screen.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'screens/activities_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ class HindsightApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'HindSight',
       debugShowCheckedModeBanner: false,
       title: 'HindSight',
       theme: ThemeData(

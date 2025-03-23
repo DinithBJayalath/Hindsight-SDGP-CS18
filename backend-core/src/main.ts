@@ -27,6 +27,9 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
   
+  await activitiesSeedService.seed();
+  const activitiesSeedService = app.get(ActivitiesSeedService);
+  
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();
