@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import '../widgets/custom_navigation_bar.dart';
 import 'breathing_exercises_screen.dart';
 import 'expressive_art_screen.dart';
 import 'future_letters_list_screen.dart';
 import '../models/activity.dart';
 import '../services/activity_service.dart';
-import '../widgets/app_navigation_bar.dart';
 
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
@@ -298,10 +298,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: AppNavigationBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
       ),
     );
   }

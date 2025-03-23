@@ -1,7 +1,7 @@
+import '../services/auth_service.dart';
+import '../services/profile_service.dart';
+import '../widgets/popup_message.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/services/profile_service.dart';
-import 'package:frontend/widgets/popup_message.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;

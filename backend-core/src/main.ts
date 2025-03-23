@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
+import { ActivitiesSeedService } from './activities/activities/seed/activities.seed';
 
 // const httpsOptions = {
 //   key: fs.readFileSync("../resources/server.key"),
@@ -27,8 +28,9 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
   }));
   
-  await activitiesSeedService.seed();
   const activitiesSeedService = app.get(ActivitiesSeedService);
+  await activitiesSeedService.seed();
+
   
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }

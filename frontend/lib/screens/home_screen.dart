@@ -1,12 +1,13 @@
+import '../Core/Models/Emotion.dart';
+import 'activities_screen.dart';
+import 'quick_mood.dart';
+import '../services/Emotions_Provider.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/Core/Models/Emotion.dart';
-import 'package:frontend/screens/quick_mood.dart';
-import 'package:frontend/services/Emotions_Provider.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'profile_screen.dart';
 import '../services/auth_service.dart';
 
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(),
     JournalingScreen(),
     MoodTrackerScreen(),
-    ActivityRecommendationsScreen(),
+    ActivitiesScreen(),
     MoodDashboardScreen(),
   ];
 
@@ -84,8 +85,7 @@ class _HomeContentState extends State<HomeContent> {
   void updateEmotions() {
     setState(() {
       _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
-      for (var emotion in _uniqueEmotions) {
-      }
+      for (var emotion in _uniqueEmotions) {}
 
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _addEmotionsToJar();
@@ -93,7 +93,7 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
-  Future<void> _addEmotionsToJar() async{
+  Future<void> _addEmotionsToJar() async {
     // if (_isAddingEmotions) return;
     // _isAddingEmotions = true;
     // Add each emotion to the jar

@@ -1,5 +1,4 @@
 import { BreathingModule } from "./breathing/breathing.module";
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -25,14 +24,7 @@ import { MongooseModule, MongooseModuleOptions } from "@nestjs/mongoose";
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      // test for the concurrent version
-    //   useFactory: (configService: ConfigService) => ({
-        // uri: configService.get<string>('MONGODB_URI'),
-        // }),
-})
-      useFactory: async (
-        configService: ConfigService
-      ): Promise<MongooseModuleOptions> => ({
+      useFactory: async (configService: ConfigService): Promise<MongooseModuleOptions> => ({
         uri: configService.get<string>("MONGODB_URI"),
         dbName: configService.get<string>("MONGODB_DB_NAME"),
       }),
@@ -41,9 +33,12 @@ import { MongooseModule, MongooseModuleOptions } from "@nestjs/mongoose";
     UserModule,
     EmailVerificationModule,
     ProfileModule,
-    MoodCheckDto,
+    BreathingModule,
+    LettersModule,
+    DrawingsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController, AlgorithmsController, MoodcheckController],
-  providers: [AppService, MoodcheckService],
+  providers: [AppService, MoodcheckService, MoodCheckDto],  // Add MoodCheckDto to providers if it's a DTO
+})
 export class AppModule {}
-
