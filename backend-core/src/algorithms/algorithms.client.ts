@@ -11,7 +11,7 @@ const clientKey = fs.readFileSync("../resources/client.key");
 const sslCreds = grpc.credentials.createSsl(rootCert, clientKey, clientCert);
 
 const client = new algorithmsProto.JournalAnalyzer(
-    'localhost:50051', 
+    'https://hindsight-algo-grpc-108992851524.asia-south1.run.app', 
     sslCreds
 );
 

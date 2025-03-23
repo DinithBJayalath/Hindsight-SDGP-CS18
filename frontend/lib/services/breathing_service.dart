@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/breathing_session.dart';
-import 'api_service.dart';
+import 'activity_api_service.dart';
 
 class BreathingService {
-  final ApiService _apiService = ApiService();
+  final ApiActivityService _apiService = ApiActivityService();
   final String endpoint = '/breathing';
 
   Future<List<BreathingSession>> getUserSessions(String userId) async {

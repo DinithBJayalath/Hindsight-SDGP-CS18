@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'dart:async';
 import 'breathing_exercises_screen.dart';
 import '../models/breathing_session.dart';

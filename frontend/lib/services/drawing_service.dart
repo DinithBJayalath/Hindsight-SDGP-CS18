@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/drawing.dart';
-import 'api_service.dart';
+import 'activity_api_service.dart';
 
 class DrawingService {
-  final ApiService _apiService = ApiService();
+  final ApiActivityService _apiService = ApiActivityService();
   final String endpoint = '/drawings';
 
   Future<List<Drawing>> getUserDrawings(String userId) async {
