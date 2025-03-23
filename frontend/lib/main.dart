@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/services/API_Service.dart';
 import 'package:frontend/services/Journal_Provider.dart';
 import 'screens/home_screen.dart';
 import 'services/Emotions_Provider.dart';
@@ -9,10 +10,11 @@ import 'package:frontend/screens/splash_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
+  final apiService = ApiService(baseUrl: 'https://your-backend-url.com/api');
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => EmotionsProvider()),
+    ChangeNotifierProvider(create: (_) => EmotionsProvider(apiService: apiService)),
     ChangeNotifierProvider(create: (_) => JournalProvider())
   ], child: const HindsightApp()));
 }

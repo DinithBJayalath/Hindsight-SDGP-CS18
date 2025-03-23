@@ -98,22 +98,23 @@ class _HomeContentState extends State<HomeContent> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Initialize the provider
-    _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: false);
+    _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: true);
+
+    // Refresh emotions from backend every time the page loads
+    _refreshEmotions();
+
     // Get the initial emotions
     updateEmotions();
-
-    // If you want to listen for changes, you can add a listener
-    _emotionsProvider.addListener(updateEmotions);
   }
 
   void updateEmotions() {
     setState(() {
       _uniqueEmotions = _emotionsProvider.uniqueTodayEmotions;
-      for (var emotion in _uniqueEmotions) {}
-
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        _addEmotionsToJar();
-      });
+      if (_uniqueEmotions.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await _addEmotionsToJar();
+        });
+      }
     });
   }
 
@@ -128,9 +129,22 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   void dispose() {
-    // Remove the listener when the widget is disposed
-    _emotionsProvider.removeListener(updateEmotions);
     super.dispose();
+  }
+
+  Future<void> _refreshEmotions() async {
+    try {
+      await _emotionsProvider.refreshEmotions();
+      // Show success message or update UI as needed
+    } catch (e) {
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to refresh emotions: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   // Sample emotions for testing

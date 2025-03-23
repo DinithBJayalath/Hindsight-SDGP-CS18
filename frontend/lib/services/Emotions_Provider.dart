@@ -1,9 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import '../Core/Models/Emotion.dart';
+import '../services/API_Service.dart';
 
 class EmotionsProvider extends ChangeNotifier {
   final List<Emotion> _allEmotions = [];
+  final ApiService _apiService;
+  bool _isLoading = false;
+  String _error = '';
+
+  EmotionsProvider({required ApiService apiService}) : _apiService = apiService {
+    // Load emotions when the provider is initialized
+    fetchEmotions();
+  }
 
   // Getter for all emotions
   List<Emotion> get allEmotions => _allEmotions;
@@ -56,6 +65,48 @@ class EmotionsProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future<void> fetchEmotions() async {
+    _isLoading = true;
+    _error = '';
+    notifyListeners();
+
+    try {
+      final response = await _apiService.getData(
+        'moodcheck/emotions', // Update this endpoint based on your API
+        requireAuth: true,
+      );
+
+      // Clear existing emotions
+      _allEmotions.clear();
+
+      // Parse emotions from response
+      if (response.containsKey('emotions') && response['emotions'] is List) {
+        for (var emotionData in response['emotions']) {
+          final emotion = Emotion(
+            id: emotionData['id'] ?? const Uuid().v4(),
+            name: emotionData['name'] ?? '',
+            emoji: emotionData['emoji'] ?? '',
+            timestamp: emotionData['timestamp'] != null
+                ? DateTime.parse(emotionData['timestamp'])
+                : DateTime.now(),
+          );
+          _allEmotions.add(emotion);
+        }
+      }
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = 'Failed to load emotions: $e';
+      notifyListeners();
+    }
+  }
+
+  Future<void> refreshEmotions() async {
+    await fetchEmotions();
   }
 
   // Clear all emotions (for testing)
