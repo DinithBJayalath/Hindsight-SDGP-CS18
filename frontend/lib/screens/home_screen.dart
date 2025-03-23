@@ -100,11 +100,13 @@ class _HomeContentState extends State<HomeContent> {
     // Initialize the provider
     _emotionsProvider = Provider.of<EmotionsProvider>(context, listen: true);
 
-    // Refresh emotions from backend every time the page loads
-    _refreshEmotions();
-
     // Get the initial emotions
     updateEmotions();
+
+    // Refresh emotions from backend every time the page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emotionsProvider.refreshEmotions();
+    });
   }
 
   void updateEmotions() {

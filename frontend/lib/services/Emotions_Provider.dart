@@ -74,7 +74,7 @@ class EmotionsProvider extends ChangeNotifier {
 
     try {
       final response = await _apiService.getData(
-        'moodcheck/emotions', // Update this endpoint based on your API
+        'moodcheck', // Update this endpoint based on your API
         requireAuth: true,
       );
 

@@ -12,6 +12,9 @@ import { AuthModule } from './auth/auth.module';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
 import { ProfileModule } from './profile/profile.module'; 
 import { MoodcheckModule } from './moodcheck/moodcheck.module';
+import { DataDisplayController } from './data-display/data-display.controller';
+import { DataDisplayService } from './data-display/data-display.service';
+import { DataDisplayModule } from './data-display/data-display.module';
 
 @Module({
   imports: [
@@ -30,9 +33,10 @@ import { MoodcheckModule } from './moodcheck/moodcheck.module';
     EmailVerificationModule,
     ProfileModule,
     MoodcheckModule,
+    DataDisplayModule,
   ],
-  controllers: [AppController, AlgorithmsController],
-  providers: [AppService],
+  controllers: [AppController, AlgorithmsController, DataDisplayController],
+  providers: [AppService, DataDisplayService],
 })
 export class AppModule {}
 
