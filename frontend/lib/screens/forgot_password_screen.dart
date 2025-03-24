@@ -1,12 +1,12 @@
+import 'login_screen.dart';
+import 'reset_email_sent_screen.dart';
+import '../services/profile_service.dart';
+import '../services/reset_password.dart';
+import '../widgets/login_style.dart';
+import '../widgets/login_textfield.dart';
+import '../widgets/popup_message.dart';
+import '../widgets/signin_botton.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/login_screen.dart';
-import 'package:frontend/screens/reset_email_sent_screen.dart';
-import 'package:frontend/services/reset_password.dart';
-import 'package:frontend/services/profile_service.dart';
-import 'package:frontend/widgets/login_style.dart';
-import 'package:frontend/widgets/login_textfield.dart';
-import 'package:frontend/widgets/signin_botton.dart';
-import 'package:frontend/widgets/popup_message.dart';
 import 'package:email_validator/email_validator.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {

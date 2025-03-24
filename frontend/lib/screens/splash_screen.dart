@@ -1,8 +1,7 @@
+import 'home_screen.dart';
+import 'login_screen.dart';
+import '../services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
-import 'package:frontend/screens/login_screen.dart';
-import 'package:frontend/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,14 +27,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Check if user is logged in
     final isLoggedIn = !(await _authService.isTokenExpired());
-
-    if (!mounted) return;
-
-    // Get user info if logged in
-    Map<String, dynamic> userInfo = {};
-    if (isLoggedIn) {
-      userInfo = await _authService.getUserProfile();
-    }
 
     if (!mounted) return;
 
