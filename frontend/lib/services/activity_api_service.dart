@@ -1,5 +1,5 @@
 class ApiActivityService {
-  final String baseUrl = 'http://10.0.2.2:3000'; // Android emulator localhost
+  final String baseUrl = 'https://hindsight-backend-core-108992851524.asia-south1.run.app'; // Android emulator localhost
 
   Map<String, String> get headers => {
         'Content-Type': 'application/json',

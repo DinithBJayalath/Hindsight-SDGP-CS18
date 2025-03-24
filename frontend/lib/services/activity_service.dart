@@ -4,7 +4,7 @@ import '../models/activity.dart';
 
 class ActivityService {
   static const String baseUrl =
-      'http://10.0.2.2:3000'; // Special Android emulator IP that points to host machine's localhost
+      'https://hindsight-backend-core-108992851524.asia-south1.run.app'; // Special Android emulator IP that points to host machine's localhost
 
   Future<List<Activity>> getActivities() async {
     try {
