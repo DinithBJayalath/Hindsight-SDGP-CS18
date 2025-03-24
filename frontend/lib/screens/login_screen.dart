@@ -1,14 +1,13 @@
+import 'forgot_password_screen.dart';
+import 'home_screen.dart';
+import 'signup_screen.dart';
+import '../services/auth_service.dart';
+import '../widgets/login_style.dart';
+import '../widgets/login_textfield.dart';
+import '../widgets/popup_message.dart';
+import '../widgets/signin_botton.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/forgot_password_screen.dart';
-import 'package:frontend/screens/home_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
-import 'package:frontend/screens/signup_screen.dart';
-import 'package:frontend/widgets/login_style.dart';
-import 'package:frontend/widgets/login_textfield.dart';
-import 'package:frontend/widgets/logo_tile.dart';
-import 'package:frontend/widgets/signin_botton.dart';
-import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/widgets/popup_message.dart';
+
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -234,32 +233,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Social login buttons row
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Google button
-                    GestureDetector(
-                      //onTap: loginWithGoogle,
-                      child:
-                          const LogoTile(imagePath: 'assets/images/google.png'),
-                    ),
-                    const SizedBox(width: 60),
-                    // Apple button
-                    GestureDetector(
-                      //onTap: loginWithApple,
-                      child:
-                          const LogoTile(imagePath: 'assets/images/apple.png'),
-                    ),
-                    const SizedBox(width: 60),
-                    // Twitter button
-                    GestureDetector(
-                      //onTap: loginWithTwitter,
-                      child: const LogoTile(imagePath: 'assets/images/x.png'),
-                    ),
-                  ],
-                ),
+                // const SizedBox(height: 30),
+                // // Social login buttons row
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     // Google button
+                //     GestureDetector(
+                //       //onTap: loginWithGoogle,
+                //       child:
+                //           const LogoTile(imagePath: 'assets/images/google.png'),
+                //     ),
+                //     const SizedBox(width: 60),
+                //     // Apple button
+                //     GestureDetector(
+                //       //onTap: loginWithApple,
+                //       child:
+                //           const LogoTile(imagePath: 'assets/images/apple.png'),
+                //     ),
+                //     const SizedBox(width: 60),
+                //     // Twitter button
+                //     GestureDetector(
+                //       //onTap: loginWithTwitter,
+                //       child: const LogoTile(imagePath: 'assets/images/x.png'),
+                //     ),
+                //   ],
+                // ),
                 const SizedBox(height: 15),
                 // Sign up prompt: "Don't have an account? Sign up" with clickable, underlined sign-up text
                 Row(

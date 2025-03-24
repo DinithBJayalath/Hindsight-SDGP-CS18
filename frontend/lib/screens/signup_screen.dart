@@ -1,16 +1,16 @@
+import 'login_screen.dart';
+import 'profile_screen.dart';
+import '../services/auth_service.dart';
+import '../services/email_verification_service.dart';
+import '../services/profile_service.dart';
+import '../widgets/agreements_popup.dart';
+import '../widgets/login_style.dart';
+import '../widgets/login_textfield.dart';
+import '../widgets/popup_message.dart';
+import '../widgets/signin_botton.dart';
+import '../widgets/verification_code_input.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/login_screen.dart';
-import 'package:frontend/screens/profile_screen.dart';
-import 'package:frontend/services/email_verification_service.dart';
-import 'package:frontend/services/profile_service.dart';
-import 'package:frontend/widgets/agreements_popup.dart';
-import 'package:frontend/widgets/login_style.dart';
-import 'package:frontend/widgets/login_textfield.dart';
-import 'package:frontend/widgets/logo_tile.dart';
-import 'package:frontend/widgets/signin_botton.dart';
-import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/widgets/popup_message.dart';
-import 'package:frontend/widgets/verification_code_input.dart';
+
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -443,29 +443,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            // Social sign-up icons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Apple button
-                GestureDetector(
-                  //onTap: () => _authService.loginWithGoogle(),
-                  child: const LogoTile(imagePath: 'assets/images/google.png'),
-                ),
-                const SizedBox(width: 60),
-                GestureDetector(
-                  //onTap: () => _authService.loginWithApple(),
-                  child: const LogoTile(imagePath: 'assets/images/apple.png'),
-                ),
-                const SizedBox(width: 60),
-                // Twitter button
-                GestureDetector(
-                  //onTap: () => _authService.loginWithTwitter(),
-                  child: const LogoTile(imagePath: 'assets/images/x.png'),
-                ),
-              ],
-            ),
+            // const SizedBox(height: 20),
+            // // Social sign-up icons
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     // Apple button
+            //     GestureDetector(
+            //       //onTap: () => _authService.loginWithGoogle(),
+            //       child: const LogoTile(imagePath: 'assets/images/google.png'),
+            //     ),
+            //     const SizedBox(width: 60),
+            //     GestureDetector(
+            //       //onTap: () => _authService.loginWithApple(),
+            //       child: const LogoTile(imagePath: 'assets/images/apple.png'),
+            //     ),
+            //     const SizedBox(width: 60),
+            //     // Twitter button
+            //     GestureDetector(
+            //       //onTap: () => _authService.loginWithTwitter(),
+            //       child: const LogoTile(imagePath: 'assets/images/x.png'),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
