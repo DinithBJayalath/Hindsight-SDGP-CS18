@@ -2,7 +2,7 @@ import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
 // import * as fs from 'fs';
 
-const PROTO_PATH = '../algorithms.proto';
+const PROTO_PATH = './algorithms.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH);
 const algorithmsProto: any = grpc.loadPackageDefinition(packageDefinition).algorithms;
 // const rootCert = fs.readFileSync("../resources/ca.crt");
