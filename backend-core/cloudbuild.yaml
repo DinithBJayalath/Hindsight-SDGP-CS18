@@ -22,7 +22,7 @@ steps:
       '--memory', '512Mi',
 
       '--set-env-vars', 
-      'AUTH0_DOMAIN=dev-hindsight.uk.auth0.com,AUTH0_AUDIENCE=https://dev-hindsight.uk.auth0.com/api/v2/,AUTH0_CLIENT_ID=FFAKXDh8vl0RHvZcSp2em9UABrI3a746,AUTH0_BACKEND_CLIENT_ID=GkMJecaDicTUTsQoxcbQMnN13IC9i6pW,JWT_SECRET=f4ba488e3b94602ee8a0b3d52d63a9eaf6d0cba84c251621a9fcbe36768c59f772e7954f3b5c658410135a2454f75ce0bc1acd54b2e75d1629570bcd541940cd,JWT_EXPIRES_IN=1h,MONGODB_URI=mongodb+srv://Achintha:lenovo132@hindsight.icqd9.mongodb.net/hindsight?retryWrites=true&w=majority&appName=Hindsight,PORT=8080,MAIL_HOST=smtp.gmail.com,MAIL_PORT=587,MAIL_SECURE=false',
+      'AUTH0_DOMAIN=dev-hindsight.uk.auth0.com,AUTH0_AUDIENCE=https://dev-hindsight.uk.auth0.com/api/v2/,AUTH0_CLIENT_ID=FFAKXDh8vl0RHvZcSp2em9UABrI3a746,AUTH0_BACKEND_CLIENT_ID=GkMJecaDicTUTsQoxcbQMnN13IC9i6pW,JWT_SECRET=f4ba488e3b94602ee8a0b3d52d63a9eaf6d0cba84c251621a9fcbe36768c59f772e7954f3b5c658410135a2454f75ce0bc1acd54b2e75d1629570bcd541940cd,JWT_EXPIRES_IN=1h,MONGODB_URI=mongodb+srv://Achintha:lenovo132@hindsight.icqd9.mongodb.net/hindsight?retryWrites=true&w=majority&appName=Hindsight,MAIL_HOST=smtp.gmail.com,MAIL_PORT=587,MAIL_SECURE=false',
       '--set-secrets',
       'AUTH0_CLIENT_SECRET=auth0-client-secret:latest,AUTH0_BACKEND_CLIENT_SECRET=auth0-backend-client-secret:latest,MAIL_USER=mail-user:latest,MAIL_PASSWORD=mail-password:latest,MAIL_FROM=mail-from:latest,MAIL_TLS_REJECT_UNAUTHORIZED=mail-tls-reject:latest'
     ]
