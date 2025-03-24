@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package algorithms;
+
+message AnalyzeRequest {
+    string query = 1;
+}
+
+message AnalyzeResponse {
+    string response = 1;
+}
+
+service JournalAnalyzer {
+    rpc analyze (AnalyzeRequest) returns (AnalyzeResponse);
+}
