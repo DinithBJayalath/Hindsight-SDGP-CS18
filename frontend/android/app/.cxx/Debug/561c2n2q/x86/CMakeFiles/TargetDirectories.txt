@@ -1,0 +1,2 @@
+/Users/ramudiherath/Downloads/Hindsight-SDGP-CS18/frontend/android/app/.cxx/Debug/561c2n2q/x86/CMakeFiles/rebuild_cache.dir
+/Users/ramudiherath/Downloads/Hindsight-SDGP-CS18/frontend/android/app/.cxx/Debug/561c2n2q/x86/CMakeFiles/edit_cache.dir

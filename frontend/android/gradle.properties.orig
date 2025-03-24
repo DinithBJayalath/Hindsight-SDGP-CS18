@@ -1,0 +1,12 @@
+<<<<<<< HEAD
+org.gradle.jvmargs=-Xmx4G -XX:MaxMetaspaceSize=2G -XX:+HeapDumpOnOutOfMemoryError
+=======
+# Set JVM memory allocation to 4GB (4096MB)
+org.gradle.jvmargs=-Xmx4096M
+
+# Enable AndroidX and Jetifier for compatibility
+>>>>>>> feature/login-page-v2
+android.useAndroidX=true
+android.enableJetifier=true
+
+

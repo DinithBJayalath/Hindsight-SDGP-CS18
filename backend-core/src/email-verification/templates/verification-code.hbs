@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Hindsight Account</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .header {
+      background-color: rgba(88, 187, 249, 0.655);
+      padding: 25px 0;
+      text-align: center;
+    }
+    .logo {
+      max-width: 120px;
+      margin: 0 auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .content {
+      padding: 35px 40px;
+    }
+    .greeting {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #444;
+    }
+    .code-container {
+      background-color: #f0f9ff;
+      border: 1px solid rgba(66, 183, 255, 0.3);
+      border-radius: 10px;
+      margin: 30px 0;
+      padding: 25px;
+      text-align: center;
+    }
+    .code {
+      font-size: 36px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      color: rgb(5, 5, 5);
+      margin: 0;
+    }
+    .expiration {
+      margin-top: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+    .message {
+      margin-bottom: 25px;
+      color: #555;
+      font-size: 15px;
+    }
+    .footer {
+      background-color: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+      border-top: 1px solid #eaeaea;
+    }
+    .footer a {
+      color: rgb(66, 183, 255);
+      text-decoration: none;
+    }
+    .tagline {
+      font-style: italic;
+      color: rgb(0, 0, 0);
+      text-align: center;
+      margin-top: 5px;
+    }
+    .header-text {
+      color: rgb(0, 0, 0);
+      font-size: 24px;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    .btn {
+      display: inline-block;
+      background-color: rgb(66, 183, 255);
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 500;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://res.cloudinary.com/dxbr76xee/image/upload/v1742075283/hindsight_yijuel.jpg" alt="Hindsight Logo" class="logo">
+      <div class="header-text">Hindsight</div>
+      <div class="tagline">Write, Reflect, Heal</div>
+    </div>
+    <div class="content">
+      <p class="greeting">Welcome to Hindsight,</p>
+      <p class="message">Thank you for choosing Hindsight, your personal journal companion. To complete your registration and secure your account, please verify your email address using the code below:</p>
+      
+      <div class="code-container">
+        <p class="code">{{ code }}</p>
+        <p class="expiration">This verification code will expire in {{ expirationMinutes }} minutes</p>
+      </div>
+      
+      <p class="message">Enter this code in the mobile app to continue setting up your personal journal space.</p>
+      
+      <p>If you did not create an account with Hindsight, please disregard this email.</p>
+      
+      <p>Warm regards,<br>The Hindsight Team</p>
+    </div>
+    <div class="footer">
+      <p>This is an automated message. Please do not reply to this email.</p>
+      <p>&copy; 2025 Hindsight. All rights reserved.</p>
+      <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Support</a></p>
+    </div>
+  </div>
+</body>
+</html>
