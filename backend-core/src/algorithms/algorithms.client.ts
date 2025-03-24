@@ -11,7 +11,7 @@ const algorithmsProto: any = grpc.loadPackageDefinition(packageDefinition).algor
 // const sslCreds = grpc.credentials.createSsl(rootCert, clientKey, clientCert);
 
 const client = new algorithmsProto.JournalAnalyzer(
-  'https://hindsight-algo-grpc-108992851524.asia-south1.run.app',
+  'hindsight-algo-grpc-108992851524.asia-south1.run.app:443',
   grpc.credentials.createInsecure(),
   // sslCreds
 );
