@@ -25,7 +25,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
   late String text;
   final String? emotion;
   // The following 3 are variables to handel the backend requests and responses
-  final ApiService _apiService = ApiService(baseUrl: 'http://10.31.6.238:3000');
+  final ApiService _apiService = ApiService(baseUrl: 'https://hindsight-backend-core-108992851524.asia-south1.run.app');
   bool _isLoading = false;
   String _responseMessage = '';
   MoodImpactScreenState(

@@ -35,7 +35,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _entryController = TextEditingController();
   // The following 3 are variables to handel the backend requests and responses
   final ApiService _apiService =
-      ApiService(baseUrl: 'http://192.168.8.153:3000');
+      ApiService(baseUrl: 'https://hindsight-backend-core-108992851524.asia-south1.run.app');
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
