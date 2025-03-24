@@ -1,5 +1,5 @@
+import '../services/Journal_Provider.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/services/Journal_Provider.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:provider/provider.dart';
 import '../widgets/journal_container.dart';
