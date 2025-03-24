@@ -28,7 +28,7 @@ steps:
     ]
 
 images:
-  - 'gcr.io/YOUR_PROJECT_ID/nestjs-backend'
+  - 'gcr.io/sdgp-mind/hindsight-backend-core'
 
 options:
   logging: CLOUD_LOGGING_ONLY
