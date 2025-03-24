@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'models/mood_viewmodel.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/profile_screen.dart';
@@ -15,14 +16,14 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => EmotionsProvider()),
-    ChangeNotifierProvider(create: (_) => JournalProvider())
+    ChangeNotifierProvider(create: (_) => JournalProvider()),
+    ChangeNotifierProvider(create: (_) => MoodViewModel())
   ], child: const HindsightApp()));
 }
 
 class HindsightApp extends StatelessWidget {
   const HindsightApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

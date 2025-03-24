@@ -1,5 +1,6 @@
 import '../Core/Models/Emotion.dart';
 import 'activities_screen.dart';
+import 'dashboard_screen.dart';
 import 'quick_mood.dart';
 import '../services/Emotions_Provider.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     JournalingScreen(),
     MoodTrackerScreen(),
     ActivitiesScreen(),
-    MoodDashboardScreen(),
+    DashboardScreen(),
   ];
 
   void _onItemTapped(int index) {
