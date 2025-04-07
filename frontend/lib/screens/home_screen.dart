@@ -255,7 +255,7 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 10),
 
                   // Mood selection section
-                  _buildMoodSelectionSection(),
+                  //_buildMoodSelectionSection(),
 
                   const SizedBox(height: 10),
 
@@ -264,17 +264,17 @@ class _HomeContentState extends State<HomeContent> {
 
                   const SizedBox(height: 20),
 
-                  MoodTrackingWidget(
-                    moodData: [
-                      MoodData('Awful', 1, const Color(0xFFB668D2), '😫'),
-                      MoodData('Bad', 1, const Color(0xFF6B88E8), '😢'),
-                      MoodData('Neutral', 1, const Color(0xFF5ECCE6), '😐'),
-                      MoodData('Good', 2, const Color(0xFF5ED48C), '😊'),
-                      MoodData('Great', 2, const Color(0xFFF87D7D), '😄'),
-                    ],
-                  ),
+                  // MoodTrackingWidget(
+                  //   moodData: [
+                  //     MoodData('Awful', 1, const Color(0xFFB668D2), '😫'),
+                  //     MoodData('Bad', 1, const Color(0xFF6B88E8), '😢'),
+                  //     MoodData('Neutral', 1, const Color(0xFF5ECCE6), '😐'),
+                  //     MoodData('Good', 2, const Color(0xFF5ED48C), '😊'),
+                  //     MoodData('Great', 2, const Color(0xFFF87D7D), '😄'),
+                  //   ],
+                  // ),
 
-                  const SizedBox(height: 20),
+                  // const SizedBox(height: 20),
 
                   // Daily Quote
                   _buildDailyQuote(),
