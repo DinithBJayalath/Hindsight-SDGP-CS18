@@ -604,20 +604,29 @@ class MoodTrackingWidget extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  color: data.color,
-                ),
-                const SizedBox(width: 4),
-                Text(data.emoji, style: const TextStyle(fontSize: 20)),
-              ],
+            // Use Flexible for the left side with the emoji
+            Flexible(
+              child: Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    color: data.color,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(data.emoji, style: const TextStyle(fontSize: 20)),
+                ],
+              ),
             ),
-            Text(
-              '${data.mood} (${data.count})',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // Add some spacing
+            const SizedBox(width: 8),
+            // Use Flexible for the text as well to ensure it doesn't overflow
+            Flexible(
+              child: Text(
+                '${data.mood} (${data.count})',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         );

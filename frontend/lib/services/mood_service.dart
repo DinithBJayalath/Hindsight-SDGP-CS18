@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/mood_entry.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MoodService {
-  static const String baseDomain = '172.20.10.3:3000';  // Adjust for production
+  static final String baseDomain =
+      dotenv.env['API_URL'] ?? ''; // Adjust for production
   static const String basePath = '/api/mood';
 
   Future<List<MoodEntry>> getMoodEntries({
@@ -23,7 +25,7 @@ class MoodService {
 
     try {
       final response = await http.get(uri);
-      
+
       // **Log the response status and body**
       print("Response Status: ${response.statusCode}");
       print("Response Body: ${response.body}");

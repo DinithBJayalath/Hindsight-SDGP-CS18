@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/activity.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ActivityService {
-  static const String baseUrl ='https://hindsight-backend-core-108992851524.asia-south1.run.app'; 
+  //static const String baseUrl ='https://hindsight-backend-core-108992851524.asia-south1.run.app';
+  final String baseUrl = dotenv.env['API_URL'] ?? '';
 
   Future<List<Activity>> getActivities() async {
     try {
