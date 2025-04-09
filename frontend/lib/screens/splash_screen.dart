@@ -30,14 +30,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
+    // Get user info if logged in
+    Map<String, dynamic> userInfo = {};
+    if (isLoggedIn) {
+      userInfo = await _authService.getUserProfile();
+    }
+
+    if (!mounted) return;
+
     // Navigate to appropriate screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => isLoggedIn
-            ? HomeScreen()
-            //? ProfileScreen(userInfo: userInfo)
-            : const LoginScreen(),
+        builder: (context) => isLoggedIn ? HomeScreen() : const LoginScreen(),
       ),
     );
   }

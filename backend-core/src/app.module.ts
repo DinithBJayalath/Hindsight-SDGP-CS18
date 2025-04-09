@@ -8,7 +8,6 @@ import { MoodcheckController } from './moodcheck/moodcheck.controller';
 import { MoodcheckService } from './moodcheck/moodcheck.service';
 import { MoodCheckDto } from './moodcheck/moodcheck.dto';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
 import { ProfileModule } from './profile/profile.module'; 
 import { LettersModule } from "./letters/letters.module";
@@ -30,15 +29,16 @@ import { MongooseModule, MongooseModuleOptions } from "@nestjs/mongoose";
       }),
     }),
     AuthModule,
-    UserModule,
     EmailVerificationModule,
     ProfileModule,
     BreathingModule,
     LettersModule,
     DrawingsModule,
     ActivitiesModule,
+    MoodcheckModule,
   ],
   controllers: [AppController, AlgorithmsController, MoodcheckController],
   providers: [AppService, MoodcheckService, MoodCheckDto],  // Add MoodCheckDto to providers if it's a DTO
 })
 export class AppModule {}
+//

@@ -1,5 +1,6 @@
 import '../services/Journal_Provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart'; // Import the intl package
 import 'package:provider/provider.dart';
 import '../widgets/journal_container.dart';
@@ -14,9 +15,31 @@ class JournalingScreen extends StatefulWidget {
 }
 
 class _JournalingScreenState extends State<JournalingScreen> {
-  final String userName = "John"; // Replace with dynamic username
+  String userName = "User"; // Default username
+  final _storage = const FlutterSecureStorage();
   late JournalProvider _journalProvider;
-  List<Map<String, String>> _journalEntries = [];
+  List<Map<String, dynamic>> _journalEntries = [];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      // Try to get the name directly from secure storage
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -46,7 +69,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
   }
 
   // Method to filter entries based on the search query
-  List<Map<String, String>> getFilteredEntries() {
+  List<Map<String, dynamic>> getFilteredEntries() {
     return _journalEntries
         .where((entry) =>
             entry['title']!.toLowerCase().contains(searchQuery.toLowerCase()))

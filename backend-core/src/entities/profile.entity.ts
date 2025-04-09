@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { User } from '../../user/entities/user.entity';
 
 export type ProfileDocument = Document & Profile;
 
@@ -8,14 +7,8 @@ export type ProfileDocument = Document & Profile;
 export class Profile {
   _id: Types.ObjectId;
 
-  @Prop({ 
-    type: Types.ObjectId, 
-    ref: 'User', 
-    required: true, 
-    unique: true,
-    index: true 
-  })
-  user: Types.ObjectId;
+  @Prop({ required: true, unique: true, index: true })
+  auth0Id: string;
 
   @Prop({ required: true, unique: true, index: true })
   email: string;
@@ -26,12 +19,6 @@ export class Profile {
   @Prop()
   picture?: string;
 
-  @Prop({ default: false })
-  isVerified: boolean;
-
-  @Prop()
-  dateOfBirth?: Date;
-
   @Prop()
   country?: string;
 
@@ -41,6 +28,7 @@ export class Profile {
   @Prop({ default: '' })
   bio: string;
 
+  // Settings
   @Prop({ default: false })
   biometricAuthentication: boolean;
 
@@ -52,6 +40,20 @@ export class Profile {
 
   @Prop({ default: 'en' })
   language: string;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
+
+  @Prop({ default: Date.now })
+  updatedAt: Date;
 }
 
 export const ProfileSchema = SchemaFactory.createForClass(Profile);
+
+// Add a pre-save hook to set a unique ObjectId for the user field if it's not set
+// ProfileSchema.pre('save', function(next) {
+//   if (this.isNew && !this.user) {
+//     this.user = new Types.ObjectId();
+//   }
+//   next();
+// }); 

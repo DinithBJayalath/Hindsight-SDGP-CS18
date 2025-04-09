@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as jwksRsa from 'jwks-rsa';
 import * as jwt from 'jsonwebtoken';
-import { UserService } from '../user/user.service';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    private userService: UserService,
+    private profileService: ProfileService,
   ) {
     this.jwksClient = jwksRsa({
       jwksUri: `https://${this.configService.get<string>('AUTH0_DOMAIN')}/.well-known/jwks.json`,
@@ -43,7 +43,7 @@ export class AuthService {
 
       // Get user info from Auth0 or create user if not exists
       const userProfile = await this.getUserProfile(token);
-      const user = await this.userService.findOrCreateUser(userProfile);
+      const user = await this.profileService.findOrCreateUser(userProfile);
 
       return { verified, user };
     } catch (error) {
@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   async validateUser(payload: any): Promise<any> {
-    const user = await this.userService.findById(payload.sub);
+    const user = await this.profileService.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -143,13 +143,82 @@ export class AuthService {
       }
 
       // 3. Delete user from our database
-      await this.userService.deleteUser(userId);
+      await this.profileService.deleteProfile(userId);
 
       this.logger.log(`Successfully deleted user ${userId}`);
       return { success: true, message: 'Account deleted successfully' };
     } catch (error) {
       this.logger.error(`Failed to delete account: ${error.message}`);
       throw new InternalServerErrorException('Failed to delete account');
+    }
+  }
+
+  // Update user name in Auth0
+  async updateUserName(userId: string, newName: string) {
+    try {
+      this.logger.log(`Starting name update for user: ${userId}`);
+      
+      if (!userId) {
+        throw new Error('User ID is required for name update');
+      }
+      
+      // Ensure proper formatting of Auth0 user ID
+      const formattedUserId = userId.includes('|') ? userId : `auth0|${userId}`;
+      this.logger.log(`Formatted user ID for Auth0: ${formattedUserId}`);
+      
+      // 1. Get Auth0 Management API token
+      const auth0Domain = this.configService.get<string>('AUTH0_DOMAIN');
+      const clientId = this.configService.get<string>('AUTH0_BACKEND_CLIENT_ID');
+      const clientSecret = this.configService.get<string>('AUTH0_BACKEND_CLIENT_SECRET');
+      
+      this.logger.log(`Using client ID: ${clientId}, domain: ${auth0Domain}`);
+      
+      // Get management API token
+      this.logger.log('Getting Auth0 Management API token');
+      const tokenResponse = await axios.post(
+        `https://${auth0Domain}/oauth/token`,
+        {
+          client_id: clientId,
+          client_secret: clientSecret,
+          audience: `https://${auth0Domain}/api/v2/`,
+          grant_type: 'client_credentials',
+        },
+        {
+          headers: { 'content-type': 'application/json' },
+        }
+      );
+
+      if (!tokenResponse.data || !tokenResponse.data.access_token) {
+        throw new Error('No access token received from Auth0');
+      }
+
+      const managementApiToken = tokenResponse.data.access_token;
+      this.logger.log('Successfully obtained Auth0 Management API token');
+
+      // 2. Update user name in Auth0
+      this.logger.log(`Updating name for user: ${formattedUserId}`);
+      await axios.patch(
+        `https://${auth0Domain}/api/v2/users/${encodeURIComponent(formattedUserId)}`,
+        {
+          name: newName,
+          user_metadata: { full_name: newName }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${managementApiToken}`,
+            'Content-Type': 'application/json'
+          },
+        }
+      );
+      
+      this.logger.log(`Successfully updated name for user: ${formattedUserId}`);
+      return { success: true, message: 'Name updated successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to update name: ${error.message}`);
+      if (error.response) {
+        this.logger.error(`Auth0 response: ${JSON.stringify(error.response.data)}`);
+      }
+      throw new InternalServerErrorException('Failed to update name in Auth0');
     }
   }
 }

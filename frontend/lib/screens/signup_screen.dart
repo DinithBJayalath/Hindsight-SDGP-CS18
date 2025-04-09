@@ -1,5 +1,6 @@
+import 'package:activities_feature/screens/home_screen.dart';
+
 import 'login_screen.dart';
-import 'profile_screen.dart';
 import '../services/auth_service.dart';
 import '../services/email_verification_service.dart';
 import '../services/profile_service.dart';
@@ -48,49 +49,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
         builder: (context, setDialogState) {
           return AlertDialog(
             title: const Text("Email Verification"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Enter the 6-digit verification code sent to your email.",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                VerificationCodeInput(
-                  onCompleted: (code) {
-                    enteredCode = code;
-                  },
-                ),
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: dialogIsLoading
-                      ? null
-                      : () async {
-                          // Use the dialog's own setState
-                          setDialogState(() {
-                            dialogIsLoading = true;
-                          });
-
-                          await EmailVerificationService.sendVerificationEmail(
-                              email);
-
-                          // Only update state if the dialog is still showing
-                          if (dialogContext.mounted) {
+            content: Container(
+              width: double.maxFinite,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Enter the 6-digit verification code sent to your email.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  VerificationCodeInput(
+                    onCompleted: (code) {
+                      enteredCode = code;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: dialogIsLoading
+                        ? null
+                        : () async {
+                            // Use the dialog's own setState
                             setDialogState(() {
-                              dialogIsLoading = false;
+                              dialogIsLoading = true;
                             });
 
-                            ScaffoldMessenger.of(dialogContext).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Verification code resent to your email"),
-                              ),
-                            );
-                          }
-                        },
-                  child: const Text("Resend Code"),
-                ),
-              ],
+                            await EmailVerificationService
+                                .sendVerificationEmail(email);
+
+                            // Only update state if the dialog is still showing
+                            if (dialogContext.mounted) {
+                              setDialogState(() {
+                                dialogIsLoading = false;
+                              });
+
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Verification code resent to your email"),
+                                ),
+                              );
+                            }
+                          },
+                    child: const Text("Resend Code"),
+                  ),
+                ],
+              ),
             ),
             actions: [
               TextButton(
@@ -260,7 +267,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfileScreen(userInfo: userInfo),
+              builder: (context) => const HomeScreen(),
             ),
           );
         } else {

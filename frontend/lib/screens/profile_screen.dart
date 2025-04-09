@@ -2,6 +2,9 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../widgets/popup_message.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:frontend/screens/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
@@ -16,7 +19,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   Map<String, dynamic> _userProfile = {};
   bool _isLoading = true;
-  bool _isEditing = false;
+  bool _hasUnsavedChanges = false;
+  File? _profileImage;
+  String? _selectedAvatar;
 
   // Controllers for editable fields
   late TextEditingController _nameController;
@@ -24,6 +29,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _cityController;
   String _selectedCountry = 'Sri Lanka';
   String _selectedLanguage = 'English';
+
+  // UI enhancement settings
+  bool isDarkMode = false;
+  bool isBiometricEnabled = false;
+  bool isCloudBackupEnabled = false;
+  bool isNotificationsEnabled = true;
 
   // Lists for dropdowns
   final List<String> _countries = [
@@ -119,6 +130,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _selectedLanguage = _languages.contains(languageValue)
               ? languageValue!
               : _languages[0];
+
+          // Check if picture is an asset path
+          final picturePath = profile['picture']?.toString() ?? '';
+          if (picturePath.startsWith('assets/avatars/')) {
+            _selectedAvatar = picturePath;
+            _profileImage = null;
+          }
+
+          // Load boolean settings
+          isDarkMode = profile['darkMode'] == true;
+          isBiometricEnabled = profile['biometricAuthentication'] == true;
+          isCloudBackupEnabled = profile['cloudBackup'] == true;
+          isNotificationsEnabled =
+              profile['pushNotifications'] != false; // Default to true
         });
       } else {
         print("No existing profile found, creating new profile...");
@@ -135,7 +160,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'country': _countries[0],
           'city': '',
           'bio': '',
-          'dateOfBirth': DateTime.now().toIso8601String(),
+          'darkMode': false,
+          'biometricAuthentication': false,
+          'cloudBackup': false,
+          'pushNotifications': true,
         };
 
         final createdProfile = await ProfileService.createProfile(newProfile);
@@ -159,6 +187,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _selectedLanguage = _languages.contains(languageValue)
                 ? languageValue!
                 : _languages[0];
+
+            // Initialize switch values
+            isDarkMode = false;
+            isBiometricEnabled = false;
+            isCloudBackupEnabled = false;
+            isNotificationsEnabled = true;
           });
         } else {
           PopupMessage.show(
@@ -190,12 +224,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Store the old name to check if it was changed
+      final oldName = _userProfile['name'] ?? '';
+      final newName = _nameController.text;
+      final nameChanged = oldName != newName;
+
       final updatedProfile = {
-        'name': _nameController.text,
+        'name': newName,
         'bio': _bioController.text,
         'country': _selectedCountry,
         'city': _cityController.text,
         'language': _selectedLanguage,
+        'darkMode': isDarkMode,
+        'biometricAuthentication': isBiometricEnabled,
+        'cloudBackup': isCloudBackupEnabled,
+        'pushNotifications': isNotificationsEnabled,
       };
 
       final result = await ProfileService.updateProfile(
@@ -206,11 +249,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (result != null) {
         setState(() {
           _userProfile = result;
-          _isEditing = false;
+          _hasUnsavedChanges = false;
         });
+
+        // If name was changed, update it in Auth0 and local storage
+        if (nameChanged) {
+          print(
+              "Name changed from '$oldName' to '$newName'. Updating in Auth0...");
+          await ProfileService.updateNameInAuth0(newName);
+        }
+
+        // Show a SnackBar for success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Account deleted successfully"),
+            content: Text("Profile updated successfully!"),
+            duration: Duration(seconds: 2),
           ),
         );
       } else {
@@ -232,6 +285,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  // Method to handle field changes and trigger update
+  void _handleFieldChange(Function() updateField) {
+    updateField();
+    setState(() => _hasUnsavedChanges = true);
+    // Automatically update profile after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (_hasUnsavedChanges) {
+        _updateProfile();
+      }
+    });
+  }
+
+  Future<void> _updateProfileImage() async {
+    // Update user profile with the selected avatar
+    setState(() => _hasUnsavedChanges = true);
+
+    try {
+      final updatedProfile = {
+        ..._userProfile,
+        'picture': _selectedAvatar ?? _userProfile['picture']?.toString() ?? '',
+      };
+
+      final result = await ProfileService.updateProfile(
+          _userProfile['_id'], updatedProfile);
+
+      if (!mounted) return;
+
+      if (result != null) {
+        setState(() {
+          _userProfile = result;
+          _hasUnsavedChanges = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Profile picture updated successfully!"),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print("Error updating profile image: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text("Failed to update profile picture. Please try again."),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -266,24 +374,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.of(context).pop();
                 setState(() => _isLoading = true);
 
-                final success = await _authService.deleteAccount();
+                final success = await _authService.deleteAccount(context);
 
                 if (!mounted) return;
                 setState(() => _isLoading = false);
 
                 if (success) {
+                  // Show success message
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text("Account deleted successfully"),
+                      duration:
+                          Duration(seconds: 1), // Short duration before restart
                     ),
                   );
 
-                  // Redirect to login screen
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/login',
-                    (route) => false, // Clear all routes
-                  );
+                  // Short delay to allow the snackbar to be seen
+                  Future.delayed(const Duration(milliseconds: 1200), () {
+                    if (mounted) {
+                      // Restart the app
+                      _authService.restartAppAfterDeletion(context);
+                    }
+                  });
                 } else {
                   PopupMessage.show(
                     context,
@@ -299,70 +411,425 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileField(String label, TextEditingController? controller,
-      {bool readOnly = false,
-      bool isDropdown = false,
-      String? value,
-      List<String>? items,
-      Function(String?)? onChanged}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: _isEditing && !readOnly
-          ? isDropdown
-              ? DropdownButtonFormField<String>(
-                  value: value,
-                  decoration: InputDecoration(
-                    labelText: label,
-                    border: const OutlineInputBorder(),
+  // UI enhancement methods
+  Future<void> _pickImage() async {
+    // List of available avatar images
+    final List<String> avatarImages = [
+      'assets/avatars/1.png',
+      'assets/avatars/2.png',
+      'assets/avatars/3.png',
+      'assets/avatars/4.png',
+      'assets/avatars/5.png',
+      'assets/avatars/6.png',
+    ];
+
+    // Show avatar selection dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Select Avatar',
+            style: TextStyle(fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          content: Container(
+            width: double.maxFinite,
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: avatarImages.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    // Close dialog and pass selected avatar path
+                    Navigator.of(context).pop(avatarImages[index]);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.all(5),
+                    child: Image.asset(
+                      avatarImages[index],
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  items: items?.map((String item) {
-                        return DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item),
-                        );
-                      }).toList() ??
-                      [],
-                  onChanged: onChanged,
-                )
-              : TextField(
-                  controller: controller,
-                  readOnly: readOnly,
-                  decoration: InputDecoration(
-                    labelText: label,
-                    border: const OutlineInputBorder(),
-                    enabled: !readOnly,
-                  ),
-                )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  isDropdown
-                      ? value ?? 'Not set'
-                      : controller?.text.isNotEmpty == true
-                          ? controller!.text
-                          : 'Not set',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: (isDropdown ? value : controller?.text)
-                            .toString()
-                            .isNotEmpty
-                        ? Colors.black
-                        : Colors.grey,
-                  ),
-                ),
-                const Divider(),
-              ],
+                );
+              },
             ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    ).then((selectedAvatar) {
+      if (selectedAvatar != null) {
+        // Update the profile with the selected avatar
+        setState(() {
+          _profileImage = null; // Clear any file-based image
+          _selectedAvatar = selectedAvatar;
+        });
+        // Update the profile
+        _updateProfileImage();
+      }
+    });
+  }
+
+  void _showEditDialog(
+      String label, String currentValue, Function(String) onSave) {
+    final TextEditingController controller =
+        TextEditingController(text: currentValue);
+    final bool isNameField = label == 'Name';
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Edit $label'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final String newValue = controller.text;
+              onSave(newValue);
+              Navigator.pop(context);
+
+              // If the name field is being edited, update it in Auth0 as well
+              if (isNameField && newValue != currentValue) {
+                print(
+                    "Name changed from '$currentValue' to '$newValue'. Updating in Auth0...");
+                await ProfileService.updateNameInAuth0(newValue);
+              }
+
+              _updateProfile();
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildProfileHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: _selectedAvatar != null
+                    ? AssetImage(_selectedAvatar!)
+                    : _profileImage != null
+                        ? FileImage(_profileImage!)
+                        : NetworkImage(
+                            _userProfile['picture']?.toString() ??
+                                'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+                          ) as ImageProvider,
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: CircleAvatar(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  radius: 18,
+                  child: IconButton(
+                    icon: const Icon(Icons.camera_alt, size: 18),
+                    onPressed: _pickImage,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _nameController.text.isNotEmpty
+                ? _nameController.text
+                : 'Your Name',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          Text(
+            widget.userInfo['email'] ?? 'email@example.com',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.grey,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileSections() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          _buildSection(
+            'Personal Information',
+            Icons.person_outline,
+            [
+              _buildEditableField('Name', _nameController.text, (value) {
+                setState(() => _nameController.text = value);
+              }),
+              _buildEditableField('Bio', _bioController.text, (value) {
+                setState(() => _bioController.text = value);
+              }),
+              _buildCountryField(),
+              _buildEditableField('City', _cityController.text, (value) {
+                setState(() => _cityController.text = value);
+              }),
+            ],
+          ),
+          _buildSection(
+            'Language & Accessibility',
+            Icons.language_outlined,
+            [
+              ListTile(
+                title: const Text('Language'),
+                trailing: DropdownButton<String>(
+                  value: _selectedLanguage,
+                  items: _languages
+                      .map((String value) => DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          ))
+                      .toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      _handleFieldChange(() {
+                        _selectedLanguage = newValue;
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+          _buildSection(
+            'Appearance',
+            Icons.palette_outlined,
+            [
+              SwitchListTile(
+                title: const Text('Dark Mode'),
+                value: isDarkMode,
+                onChanged: (value) {
+                  _handleFieldChange(() {
+                    setState(() => isDarkMode = value);
+                  });
+                },
+              ),
+            ],
+          ),
+          // _buildSection(
+          //   'Privacy & Security',
+          //   Icons.security_outlined,
+          //   [
+          //     SwitchListTile(
+          //       title: const Text('Biometric Authentication'),
+          //       value: isBiometricEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isBiometricEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //     SwitchListTile(
+          //       title: const Text('Cloud Backup'),
+          //       value: isCloudBackupEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isCloudBackupEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
+          // _buildSection(
+          //   'Notifications',
+          //   Icons.notifications_outlined,
+          //   [
+          //     SwitchListTile(
+          //       title: const Text('Push Notifications'),
+          //       value: isNotificationsEnabled,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isNotificationsEnabled = value);
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
+          _buildSection(
+            'Help & Support',
+            Icons.help_outline,
+            [
+              ListTile(
+                title: const Text('FAQs'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  // Open the Hindsight website
+                  _launchUrl('https://hindsight-18.vercel.app/');
+                },
+              ),
+              ListTile(
+                title: const Text('Contact Support'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  // Open the Hindsight website
+                  _launchUrl('https://hindsight-18.vercel.app/');
+                },
+              ),
+              ListTile(
+                title: const Text('App Version'),
+                trailing: const Text('1.0.0'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          // Show indicator when changes are being saved
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _showDeleteAccountDialog,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete Account'),
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, IconData icon, List<Widget> children) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      elevation: 2,
+      child: Column(
+        children: [
+          ListTile(
+            leading: Icon(icon, color: Theme.of(context).primaryColor),
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...children,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditableField(
+      String label, String value, Function(String) onSave) {
+    return ListTile(
+      title: Text(label),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value.isNotEmpty ? value : 'Not set',
+            style: TextStyle(
+              color: value.isNotEmpty ? Colors.grey : Colors.grey.shade400,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.edit, size: 16),
+        ],
+      ),
+      onTap: () {
+        _showEditDialog(label, value, onSave);
+      },
+    );
+  }
+
+  Widget _buildCountryField() {
+    return ListTile(
+      title: const Text('Country'),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _selectedCountry,
+            style: const TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.arrow_drop_down, size: 16),
+        ],
+      ),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Select Country'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 300,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _countries.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_countries[index]),
+                    onTap: () {
+                      setState(() {
+                        _selectedCountry = _countries[index];
+                      });
+                      Navigator.pop(context);
+                      _updateProfile();
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -370,101 +837,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          },
+        ),
         actions: [
-          if (!_isEditing)
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => setState(() => _isEditing = true),
-            ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
           ),
         ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(
-                      _userProfile['picture']?.toString() ??
-                          'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildProfileField(
-                      'Email',
-                      TextEditingController(
-                          text: widget.userInfo['email'] ?? ''),
-                      readOnly: true),
-                  _buildProfileField('Name', _nameController),
-                  _buildProfileField('Bio', _bioController),
-                  _buildProfileField(
-                    'Country',
-                    null,
-                    isDropdown: true,
-                    value: _selectedCountry,
-                    items: _countries,
-                    onChanged: _isEditing
-                        ? (value) {
-                            setState(() => _selectedCountry = value!);
-                          }
-                        : null,
-                  ),
-                  _buildProfileField('City', _cityController),
-                  _buildProfileField(
-                    'Language',
-                    null,
-                    isDropdown: true,
-                    value: _selectedLanguage,
-                    items: _languages,
-                    onChanged: _isEditing
-                        ? (value) {
-                            setState(() => _selectedLanguage = value!);
-                          }
-                        : null,
-                  ),
-                  if (_isEditing) ...[
+      body: Container(
+        color: const Color.fromARGB(255, 255, 255, 255),
+        child: _isLoading && _userProfile.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _buildProfileHeader(),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() => _isEditing = false);
-                            _loadUserProfile(); // Reset to original values
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: _updateProfile,
-                          child: const Text('Save Changes'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                    _buildProfileSections(),
                   ],
-                  // Delete Account Button
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: TextButton(
-                      onPressed: _showDeleteAccountDialog,
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.red,
-                      ),
-                      child: const Text(
-                        'Delete Account',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+      ),
     );
   }
 }

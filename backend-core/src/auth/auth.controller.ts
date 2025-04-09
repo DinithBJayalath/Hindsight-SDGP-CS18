@@ -9,6 +9,8 @@ import {
   UnauthorizedException,
   Delete,
   HttpCode,
+  Body,
+  Patch,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -32,6 +34,20 @@ export class AuthController {
 
     const token = authHeader.split(' ')[1];
     return this.authService.validateAuth0Token(token);
+  }
+
+  @Patch('update-name')
+  @UseGuards(JwtAuthGuard)
+  async updateUserName(@Request() req, @Body() body: { name: string }) {
+    if (!req.user || !req.user.sub) {
+      throw new UnauthorizedException('User ID not found in token');
+    }
+    
+    if (!body.name) {
+      throw new UnauthorizedException('Name is required');
+    }
+    
+    return this.authService.updateUserName(req.user.sub, body.name);
   }
 
   @Delete('delete-account')

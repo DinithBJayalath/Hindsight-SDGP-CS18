@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'described_mood.dart'; // Import the described_mood.dart file to access the MoodDescribeScreen
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() {
   runApp(MoodTrackerApp());
@@ -23,7 +24,8 @@ class MoodTrackerScreen extends StatefulWidget {
 
 class MoodTrackerScreenState extends State<MoodTrackerScreen> {
   double moodValue = 2; // Default mood index
-  String userName = "Ramudi"; // Example user name
+  String userName = "User"; // Default username
+  final _storage = const FlutterSecureStorage();
 
   final List<String> moods = [
     "😢 Very Sad",
@@ -39,6 +41,25 @@ class MoodTrackerScreenState extends State<MoodTrackerScreen> {
     Colors.lightGreen,
     Colors.greenAccent
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading username: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

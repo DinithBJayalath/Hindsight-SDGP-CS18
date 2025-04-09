@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
   // Base URL of your NestJS backend
   final String baseUrl;
+  final _storage = const FlutterSecureStorage();
 
   ApiService({required this.baseUrl});
 

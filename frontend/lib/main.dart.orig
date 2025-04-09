@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
 <<<<<<< HEAD
-import 'screens/home_screen.dart';
-
-void main() {
-  runApp(const HindsightApp());
+import 'models/mood_viewmodel.dart';
 =======
-import 'package:frontend/screens/profile_screen.dart';
-import 'package:frontend/screens/login_screen.dart';
-import 'package:frontend/screens/splash_screen.dart';
+import 'package:frontend/services/API_Service.dart';
+import 'package:frontend/services/Journal_Provider.dart';
+>>>>>>> profile_page
+import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/activities_screen.dart';
+import 'screens/quick_mood.dart';
+import 'services/Emotions_Provider.dart';
+import 'services/Journal_Provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
+  final apiService = ApiService(baseUrl: 'https://your-backend-url.com/api');
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
->>>>>>> feature/login-page-v2
+  runApp(MultiProvider(providers: [
+<<<<<<< HEAD
+    ChangeNotifierProvider(create: (_) => EmotionsProvider()),
+    ChangeNotifierProvider(create: (_) => JournalProvider()),
+    ChangeNotifierProvider(create: (_) => MoodViewModel())
+=======
+    ChangeNotifierProvider(create: (_) => EmotionsProvider(apiService: apiService)),
+    ChangeNotifierProvider(create: (_) => JournalProvider())
+>>>>>>> profile_page
+  ], child: const HindsightApp()));
 }
 
 class HindsightApp extends StatelessWidget {
@@ -23,12 +38,8 @@ class HindsightApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-<<<<<<< HEAD
       title: 'HindSight',
-=======
-      title: "Hindsight",
->>>>>>> feature/login-page-v2
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         colorScheme: ColorScheme.fromSeed(
@@ -36,15 +47,13 @@ class HindsightApp extends StatelessWidget {
           primary: Colors.blue,
         ),
       ),
-<<<<<<< HEAD
-      home: const HomeScreen(),
-=======
       routes: {
         '/login': (context) => const LoginScreen(),
         '/profile': (context) => const ProfileScreen(userInfo: {}),
+        '/home': (context) => const HomeScreen(),
+        '/activities': (context) => const ActivitiesScreen(),
       },
       home: const SplashScreen(),
->>>>>>> feature/login-page-v2
     );
   }
 }

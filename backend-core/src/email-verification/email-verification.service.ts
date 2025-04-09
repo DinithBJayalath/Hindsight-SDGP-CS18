@@ -3,9 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as crypto from 'crypto';
-
-// Import User schema
-import { User } from '../user/entities/user.entity';
+import { Profile } from '../entities/profile.entity';
 
 // You'll need to create this schema
 interface VerificationCode {
@@ -19,7 +17,7 @@ interface VerificationCode {
 export class EmailVerificationService {
   constructor(
     @InjectModel('VerificationCode') private verificationCodeModel: Model<VerificationCode>,
-    @InjectModel(User.name) private userModel: Model<User>, // Inject User Model
+    @InjectModel('Profile') private profileModel: Model<Profile>, // Inject Profile model
     private readonly mailerService: MailerService,
   ) {}
 
@@ -90,9 +88,8 @@ export class EmailVerificationService {
       return false; // Invalid or expired code
     }
   
-    // Update user's isVerified field to true
-    await this.userModel.updateOne({ email }, { $set: { isVerified: true } });
-
+    // Remove the code after verification
+    await this.verificationCodeModel.deleteOne({ email, code });
     
     return !!verificationRecord; // Return true if a valid record was found
   }

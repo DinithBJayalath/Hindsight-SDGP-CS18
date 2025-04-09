@@ -9,8 +9,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'profile_screen.dart';
 import '../services/auth_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,14 +29,18 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(),
     JournalingScreen(),
     MoodTrackerScreen(),
-    ActivitiesScreen(),
-    DashboardScreen(),
+    ActivityRecommendationsScreen(),
+    MoodDashboardScreen(),
   ];
 
   void _onItemTapped(int index) {
     if (_selectedIndex == 1 && index == 0) {
       // Update the emotions jar when returning to home
       _homeContentKey.currentState?.updateEmotions();
+    }
+    if (index == 0) {
+      // Reload the username when returning to home
+      _homeContentKey.currentState?._loadUserName();
     }
     setState(() {
       _selectedIndex = index;
@@ -65,11 +71,31 @@ class HomeContent extends StatefulWidget {
 class _HomeContentState extends State<HomeContent> {
   final GlobalKey<MoodJarState> _moodJarKey = GlobalKey<MoodJarState>();
   final AuthService _authService = AuthService();
-  final _userName = "Ramudi";
+  String _userName = "User"; // Default username
   // This is the shared instance of the provider
   late EmotionsProvider _emotionsProvider;
   List<Emotion> _uniqueEmotions = [];
   bool _isAddingEmotions = false;
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final storedName = await _storage.read(key: 'user_name');
+      if (storedName != null && storedName.isNotEmpty) {
+        setState(() {
+          _userName = storedName;
+        });
+      }
+    } catch (e) {
+      print('Error loading username: $e');
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -137,6 +163,8 @@ class _HomeContentState extends State<HomeContent> {
         MaterialPageRoute(
             builder: (context) => ProfileScreen(userInfo: userInfo)),
       );
+      // Reload the username when returning from profile screen
+      _loadUserName();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load user profile')),
@@ -214,7 +242,7 @@ class _HomeContentState extends State<HomeContent> {
                   const SizedBox(height: 10),
 
                   // Mood selection section
-                  _buildMoodSelectionSection(),
+                  //_buildMoodSelectionSection(),
 
                   const SizedBox(height: 10),
 
@@ -223,17 +251,17 @@ class _HomeContentState extends State<HomeContent> {
 
                   const SizedBox(height: 20),
 
-                  MoodTrackingWidget(
-                    moodData: [
-                      MoodData('Awful', 1, const Color(0xFFB668D2), '😫'),
-                      MoodData('Bad', 1, const Color(0xFF6B88E8), '😢'),
-                      MoodData('Neutral', 1, const Color(0xFF5ECCE6), '😐'),
-                      MoodData('Good', 2, const Color(0xFF5ED48C), '😊'),
-                      MoodData('Great', 2, const Color(0xFFF87D7D), '😄'),
-                    ],
-                  ),
+                  // MoodTrackingWidget(
+                  //   moodData: [
+                  //     MoodData('Awful', 1, const Color(0xFFB668D2), '😫'),
+                  //     MoodData('Bad', 1, const Color(0xFF6B88E8), '😢'),
+                  //     MoodData('Neutral', 1, const Color(0xFF5ECCE6), '😐'),
+                  //     MoodData('Good', 2, const Color(0xFF5ED48C), '😊'),
+                  //     MoodData('Great', 2, const Color(0xFFF87D7D), '😄'),
+                  //   ],
+                  // ),
 
-                  const SizedBox(height: 20),
+                  // const SizedBox(height: 20),
 
                   // Daily Quote
                   _buildDailyQuote(),
@@ -625,6 +653,7 @@ class MoodTrackingWidget extends StatelessWidget {
               child: Text(
                 '${data.mood} (${data.count})',
                 style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.end,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

@@ -8,13 +8,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EmailVerificationController } from './email-verification.controller';
 import { EmailVerificationService } from './email-verification.service';
 import { VerificationCodeSchema } from './verification-code.schema';
-import { User, UserSchema } from '../user/entities/user.entity';
+import { ProfileSchema } from '../entities/profile.entity';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: 'VerificationCode', schema: VerificationCodeSchema },
-      { name: User.name, schema: UserSchema },
+      { name: 'Profile', schema: ProfileSchema },
     ]),
     MailerModule.forRootAsync({
       imports: [ConfigModule],

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart'; // Import the intl package
 import '../services/API_Service.dart';
 import 'package:provider/provider.dart';
 import '../services/Emotions_Provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class JournalWritingScreen extends StatefulWidget {
   final Function(int, String, String, String, String) addJournalEntry;
@@ -33,9 +34,9 @@ class JournalWritingScreen extends StatefulWidget {
 class _JournalWritingScreenState extends State<JournalWritingScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _entryController = TextEditingController();
-  // The following 3 are variables to handel the backend requests and responses
+  // Using the API_URL from environment variables
   final ApiService _apiService =
-      ApiService(baseUrl: 'https://hindsight-backend-core-108992851524.asia-south1.run.app');
+      ApiService(baseUrl: dotenv.env['API_URL'] ?? '');
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
@@ -283,21 +284,26 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   Future<String> _sendRequest() async {
     // query from the user's journal entry
     final query = _entryController.text.trim();
+    final title = _titleController.text.trim();
+
     setState(() {
       _isLoading = true;
       _responseMessage = '';
     });
 
     try {
-      // Send the request to the backend
+      // Use the detailed analysis endpoint
       final response = await _apiService
           .getData('algorithms/analyze', queryParams: {'query': query});
 
       setState(() {
         _responseMessage = 'Response: ${response['result']}';
       });
-      return response['result'];
+
+      // For backward compatibility, return just the emotion
+      return emotion;
     } catch (e) {
+      print('Error during journal analysis: $e');
       setState(() {
         _responseMessage = 'Error: $e';
       });

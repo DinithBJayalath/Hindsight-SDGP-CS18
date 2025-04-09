@@ -40,8 +40,9 @@ class ProfileService {
     }
   }
 
-  // Get profile by user ID
-  static Future<Map<String, dynamic>?> getProfileByUserId(String userId) async {
+  // Get profile by auth0Id
+  static Future<Map<String, dynamic>?> getProfileByAuth0Id(
+      String auth0Id) async {
     try {
       final token = await _storage.read(key: 'access_token');
       if (token == null) {
@@ -50,7 +51,7 @@ class ProfileService {
       }
 
       final response = await http.get(
-        Uri.parse('$baseUrl/profile/user/$userId'),
+        Uri.parse('$baseUrl/profile/auth0id/$auth0Id'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -98,7 +99,7 @@ class ProfileService {
     }
   }
 
-  // Create profile with user ObjectId
+  // Create profile
   static Future<Map<String, dynamic>?> createProfile(
       Map<String, dynamic> profileData) async {
     try {
@@ -128,6 +129,7 @@ class ProfileService {
     }
   }
 
+  // Check if email exists
   static Future<bool> checkEmailExists(String email) async {
     try {
       final response = await http.get(
@@ -142,6 +144,40 @@ class ProfileService {
       return false;
     } catch (e) {
       print('Error checking email existence: $e');
+      return false;
+    }
+  }
+
+  // Update user name in Auth0
+  static Future<bool> updateNameInAuth0(String name) async {
+    try {
+      final token = await _storage.read(key: 'access_token');
+      if (token == null) {
+        print('Error: No access token found');
+        return false;
+      }
+
+      final response = await http.patch(
+        Uri.parse('$baseUrl/auth/update-name'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'name': name}),
+      );
+
+      if (response.statusCode == 200) {
+        // Update the name in secure storage as well
+        await _storage.write(key: 'user_name', value: name);
+        print('Name updated successfully in Auth0 and local storage');
+        return true;
+      }
+
+      print(
+          'Failed to update name in Auth0: ${response.statusCode} ${response.body}');
+      return false;
+    } catch (e) {
+      print('Error updating name in Auth0: $e');
       return false;
     }
   }

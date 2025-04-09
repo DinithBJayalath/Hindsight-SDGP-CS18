@@ -1,20 +1,28 @@
-// src/app.module.ts
+import { BreathingModule } from "./breathing/breathing.module";
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AlgorithmsController } from './algorithms/algorithms.controller';
 import { AppService } from './app.service';
+import { MoodcheckController } from './moodcheck/moodcheck.controller';
+import { MoodcheckService } from './moodcheck/moodcheck.service';
 import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
+//import { UserModule } from './user/user.module';
 import { EmailVerificationModule } from './email-verification/email-verification.module';
 import { ProfileModule } from './profile/profile.module'; 
+<<<<<<< HEAD
+import { LettersModule } from "./letters/letters.module";
+import { DrawingsModule } from "./drawings/drawings.module";
+import { ActivitiesModule } from "./activities/activities/activities.module";
+import { MongooseModule, MongooseModuleOptions } from "@nestjs/mongoose";
+=======
+import { MoodcheckModule } from './moodcheck/moodcheck.module';
+import { DataDisplayController } from './data-display/data-display.controller';
+import { DataDisplayService } from './data-display/data-display.service';
+import { DataDisplayModule } from './data-display/data-display.module';
+>>>>>>> profile_page
 
 @Module({
-<<<<<<< HEAD
-  imports: [],
-  controllers: [AppController, AlgorithmsController],
-=======
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,18 +30,29 @@ import { ProfileModule } from './profile/profile.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
+      useFactory: async (configService: ConfigService): Promise<MongooseModuleOptions> => ({
+        uri: configService.get<string>("MONGODB_URI"),
+        dbName: configService.get<string>("MONGODB_DB_NAME"),
       }),
     }),
     AuthModule,
-    UserModule,
+    //UserModule,
     EmailVerificationModule,
     ProfileModule,
+<<<<<<< HEAD
+    BreathingModule,
+    LettersModule,
+    DrawingsModule,
+    ActivitiesModule,
   ],
-  controllers: [AppController],
->>>>>>> feature/login-page-v2
+  controllers: [AppController, AlgorithmsController, MoodcheckController],
+  providers: [AppService, MoodcheckService, MoodCheckDto],  // Add MoodCheckDto to providers if it's a DTO
+=======
+    MoodcheckModule,
+    DataDisplayModule,
+  ],
+  controllers: [AppController, AlgorithmsController],
   providers: [AppService],
+>>>>>>> profile_page
 })
 export class AppModule {}
-

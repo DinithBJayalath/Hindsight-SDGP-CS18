@@ -1,0 +1,176 @@
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+// import * as fs from 'fs';
+
+const PROTO_PATH = './algorithms.proto';
+const packageDefinition = protoLoader.loadSync(PROTO_PATH);
+const algorithmsProto: any = grpc.loadPackageDefinition(packageDefinition).algorithms;
+// const rootCert = fs.readFileSync("../resources/ca.crt");
+// const clientCert = fs.readFileSync("../resources/client.crt");
+// const clientKey = fs.readFileSync("../resources/client.key");
+// const sslCreds = grpc.credentials.createSsl(rootCert, clientKey, clientCert);
+
+const client = new algorithmsProto.JournalAnalyzer(
+<<<<<<< HEAD
+  'hindsight-algo-grpc-108992851524.asia-south1.run.app:443',
+=======
+  'https://hindsight-algo-grpc-1089992851524.asia-south1.run.app',
+>>>>>>> profile_page
+  grpc.credentials.createInsecure(),
+  // sslCreds
+);
+
+// Helper function to extract and log analysis data (emotion and sentiment)
+function extractAndLogAnalysisData(response: any): { emotion: string, sentiment: number } {
+  const responseString = response.response;
+  
+  const [emotion, sentimentStr] = responseString.split(',');
+  
+  // Parse sentiment as a number
+  let sentiment = 0;
+  if (sentimentStr) {
+    const trimmedSentiment = sentimentStr.trim();
+    // Try to extract a numerical value
+    const numericMatch = trimmedSentiment.match(/[-+]?\d+(\.\d+)?/);
+    if (numericMatch) {
+      sentiment = parseFloat(numericMatch[0]);
+    } else {
+      // Convert sentiment labels to scores if needed
+      if (trimmedSentiment.toLowerCase().includes('positive')) {
+        sentiment = 1.0;
+      } else if (trimmedSentiment.toLowerCase().includes('negative')) {
+        sentiment = -1.0;
+      } else if (trimmedSentiment.toLowerCase().includes('neutral')) {
+        sentiment = 0.0;
+      }
+    }
+  }
+  
+  // Print the extracted data to the backend console
+  console.log('-------------------------');
+  console.log('ANALYSIS RESULTS:');
+  console.log(`Emotion: ${emotion.trim()}`);
+  console.log(`Sentiment: ${sentiment}`);
+  console.log('-------------------------');
+  
+  return { 
+    emotion: emotion.trim(), 
+    sentiment: sentiment
+  };
+}
+
+export function analyze(query: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    console.log(`Analyzing journal text: "${query.substring(0, 50)}${query.length > 50 ? '...' : ''}"`);
+    
+    client.analyze({ query: query }, (err: any, response: any) => {
+      if (err) {
+        console.error('Analysis error:', err);
+        reject(err);
+      } else {
+        // Extract and log the data
+        const analyzed = extractAndLogAnalysisData(response);
+        
+        // For backward compatibility, just return the emotion
+        resolve(analyzed.emotion);
+      }
+    });
+  });
+}
+
+// Export a detailed analysis function that returns both emotion and sentiment
+export function analyzeDetailed(query: string): Promise<{ emotion: string, sentiment: number }> {
+  return new Promise((resolve, reject) => {
+    
+    client.analyze({ query: query }, (err: any, response: any) => {
+      if (err) {
+        console.error('Detailed analysis error:', err);
+        reject(err);
+      } else {
+        // Extract and log the data
+        const analyzed = extractAndLogAnalysisData(response);
+        
+        // Return the emotion and sentiment
+        resolve(analyzed);
+      }
+    });
+  });
+}
+
+// Get just the sentiment from the analysis
+export function getSentiment(query: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    client.analyze({ query: query }, (err: any, response: any) => {
+      if (err) {
+        console.error('Sentiment extraction error:', err);
+        reject(err);
+      } else {
+        // Extract data and return just the sentiment
+        const analyzed = extractAndLogAnalysisData(response);
+        resolve(analyzed.sentiment);
+      }
+    });
+  });
+}
+
+// Analyze journal record and return complete analysis
+export function analyzeJournalRecord(journalContent: string): Promise<{
+  emotion: string,
+  mood: string,
+  sentiment: number
+}> {
+  return new Promise((resolve, reject) => {
+    
+    client.analyze({ query: journalContent }, (err: any, response: any) => {
+      if (err) {
+        console.error('Journal record analysis error:', err);
+        reject(err);
+      } else {
+        // Extract data
+        const analyzed = extractAndLogAnalysisData(response);
+        
+        // Determine mood based on emotion
+        const mood = mapEmotionToMood(analyzed.emotion);
+        
+        console.log(`Mapped emotion ${analyzed.emotion} to mood: ${mood}`);
+        
+        // Return complete analysis
+        resolve({
+          emotion: analyzed.emotion,
+          mood: mood,
+          sentiment: analyzed.sentiment
+        });
+      }
+    });
+  });
+}
+
+// Helper function to map emotion to mood
+function mapEmotionToMood(emotion: string): string {
+  const normalizedEmotion = emotion.toLowerCase().trim();
+  
+  // Define mappings from emotions to moods
+  const emotionToMoodMap: {[key: string]: string} = {
+    'happiness': 'happy',
+    'joy': 'happy',
+    'contentment': 'happy',
+    'love': 'happy',
+    'enthusiasm': 'excited',
+    'optimism': 'excited',
+    'relief': 'calm',
+    'surprise': 'surprised',
+    'sadness': 'sad',
+    'disappointment': 'sad',
+    'worry': 'anxious',
+    'anxiety': 'anxious',
+    'fear': 'anxious',
+    'anger': 'angry',
+    'frustration': 'angry',
+    'hate': 'angry',
+    'boredom': 'bored',
+    'neutral': 'neutral'
+  };
+  
+  // Return the mapped mood or a default value
+  return emotionToMoodMap[normalizedEmotion] || 'neutral';
+}
