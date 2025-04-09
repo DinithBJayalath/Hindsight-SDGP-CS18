@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hindsight/screens/login_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/screens/login_screen.dart';
-import 'package:flutter/services.dart';
 
 class AuthService {
   final String auth0Domain = dotenv.env['AUTH0_DOMAIN'] ?? "";

@@ -18,7 +18,7 @@ class _JournalingScreenState extends State<JournalingScreen> {
   String userName = "User"; // Default username
   final _storage = const FlutterSecureStorage();
   late JournalProvider _journalProvider;
-  List<Map<String, dynamic>> _journalEntries = [];
+  List<Map<String, String>> _journalEntries = [];
   bool _isLoading = false;
 
   @override

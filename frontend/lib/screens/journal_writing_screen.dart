@@ -292,18 +292,15 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     });
 
     try {
-      // Use the detailed analysis endpoint
+      // Send the request to the backend
       final response = await _apiService
           .getData('algorithms/analyze', queryParams: {'query': query});
 
       setState(() {
         _responseMessage = 'Response: ${response['result']}';
       });
-
-      // For backward compatibility, return just the emotion
-      return emotion;
+      return response['result'];
     } catch (e) {
-      print('Error during journal analysis: $e');
       setState(() {
         _responseMessage = 'Error: $e';
       });
@@ -317,6 +314,8 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final emotionsProvider = Provider.of<EmotionsProvider>(context);
+    final emotions = emotionsProvider.allEmotions;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight), // Reduced height

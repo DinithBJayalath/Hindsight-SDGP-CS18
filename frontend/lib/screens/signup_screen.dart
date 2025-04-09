@@ -1,4 +1,4 @@
-import 'package:activities_feature/screens/home_screen.dart';
+import 'package:hindsight/screens/home_screen.dart';
 
 import 'login_screen.dart';
 import '../services/auth_service.dart';

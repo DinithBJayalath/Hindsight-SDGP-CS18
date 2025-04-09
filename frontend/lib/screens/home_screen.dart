@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     HomeContent(),
     JournalingScreen(),
     MoodTrackerScreen(),
-    ActivityRecommendationsScreen(),
-    MoodDashboardScreen(),
+    ActivitiesScreen(),
+    DashboardScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -503,40 +503,6 @@ class _HomeContentState extends State<HomeContent> {
           );
         }).toList(),
       ),
-    );
-  }
-}
-
-// Placeholder screens (these will be replaced with actual screen implementations)
-class MoodCheckInScreen extends StatelessWidget {
-  const MoodCheckInScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Mood Check-In Screen'),
-    );
-  }
-}
-
-class ActivityRecommendationsScreen extends StatelessWidget {
-  const ActivityRecommendationsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Activity Recommendations Screen'),
-    );
-  }
-}
-
-class MoodDashboardScreen extends StatelessWidget {
-  const MoodDashboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Mood Dashboard Screen'),
     );
   }
 }

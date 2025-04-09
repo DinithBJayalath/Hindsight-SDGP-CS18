@@ -1,10 +1,11 @@
-import '../services/auth_service.dart';
-import '../services/profile_service.dart';
-import '../widgets/popup_message.dart';
-import 'package:flutter/material.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:hindsight/screens/home_screen.dart';
+import 'package:hindsight/services/auth_service.dart';
+import 'package:hindsight/services/profile_service.dart';
+import 'package:hindsight/widgets/popup_message.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:frontend/screens/home_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userInfo;
