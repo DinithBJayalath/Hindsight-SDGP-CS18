@@ -37,6 +37,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   // Using the API_URL from environment variables
   final ApiService _apiService =
       ApiService(baseUrl: dotenv.env['API_URL'] ?? '');
+  final EmotionsProvider _emotionsProvider = EmotionsProvider(); // Initialize the provider
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
@@ -249,6 +250,7 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
             ),
             TextButton(
               onPressed: () {
+                _emotionsProvider.removeEmotion(widget.entryIndex);
                 widget.deleteJournalEntry(
                     widget.entryIndex); // Delete the journal entry
                 Navigator.pop(context); // Close the dialog

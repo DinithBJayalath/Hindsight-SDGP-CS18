@@ -63,4 +63,9 @@ class EmotionsProvider extends ChangeNotifier {
     _allEmotions.clear();
     notifyListeners();
   }
+
+  void removeEmotion(int index) {
+    _allEmotions.removeAt(index); // TODO: not working, check
+    notifyListeners();
+  }
 }
