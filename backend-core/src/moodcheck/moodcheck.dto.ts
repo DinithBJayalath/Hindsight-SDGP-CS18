@@ -19,13 +19,13 @@ export class MoodCheckDto {
 
     @IsString()
     @IsOptional()
-    journalTitle: string;
+    journalTitle: string = '';
 
     @IsString()
     @IsOptional()
-    journalContent: string;
+    journalContent: string = '';
 
     @IsNumber()
     @IsOptional()
-    sentiment: number;
+    sentiment: number = 0;
 }

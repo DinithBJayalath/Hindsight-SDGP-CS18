@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import '../services/API_Service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -53,8 +54,11 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
 
   List<String> selectedFactors = [];
 
+  final _storage = const FlutterSecureStorage();
+
   Future<void> _sendRequest() async {
-    final data = {"Mood": mood, "Emotion": emotion, "Factors": selectedFactors};
+    final data = {"mood": mood, "emotion": emotion, "factors": selectedFactors};
+    final body = {"profileID": _storage.read(key: "auth0_id"), "data": data};
     setState(() {
       _isLoading = true;
       _responseMessage = '';
@@ -62,7 +66,7 @@ class MoodImpactScreenState extends State<MoodImpactScreen> {
 
     try {
       // Send the request to the backend
-      final response = await _apiService.postData('moodcheck', data);
+      final response = await _apiService.postData('moodcheck', body);
 
       setState(() {
         _responseMessage = 'Response: ${response['result']}';
