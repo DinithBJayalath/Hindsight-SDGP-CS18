@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeContent(),
+            builder: (context) => HomeScreen(),
           ),
         );
       } catch (e) {
@@ -78,52 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
           isSuccess: false);
     }
   }
-
-  // Social login for Apple
-  /*void loginWithApple() async {
-    final result = await _authService.loginWithApple();
-    if (!mounted) return;
-    if (result != null) {
-      PopupMessage.show(context, "Apple Login successful", isSuccess: true);
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-      Map<String, dynamic> userInfo = {};
-      if (result.containsKey('id_token')) {
-        userInfo = Jwt.parseJwt(result['id_token']);
-      }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileScreen(userInfo: userInfo),
-        ),
-      );
-    } else {
-      PopupMessage.show(context, "Apple Login failed.", isSuccess: false);
-    }
-  }
-
-  // Social login for Twitter
-  void loginWithTwitter() async {
-    final result = await _authService.loginWithTwitter();
-    if (!mounted) return;
-    if (result != null) {
-      PopupMessage.show(context, "Twitter Login successful", isSuccess: true);
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (!mounted) return;
-      Map<String, dynamic> userInfo = {};
-      if (result.containsKey('id_token')) {
-        userInfo = Jwt.parseJwt(result['id_token']);
-      }
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfileScreen(userInfo: userInfo),
-        ),
-      );
-    } else {
-      PopupMessage.show(context, "Twitter Login failed.", isSuccess: false);
-    }
-  }*/
 
   @override
   void initState() {

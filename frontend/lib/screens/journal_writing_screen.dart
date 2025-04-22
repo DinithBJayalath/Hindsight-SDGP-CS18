@@ -37,7 +37,8 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
   // Using the API_URL from environment variables
   final ApiService _apiService =
       ApiService(baseUrl: dotenv.env['API_URL'] ?? '');
-  final EmotionsProvider _emotionsProvider = EmotionsProvider(); // Initialize the provider
+  final EmotionsProvider _emotionsProvider =
+      EmotionsProvider(); // Initialize the provider
   bool _isLoading = false;
   String _responseMessage = '';
   String selectedEmoji = '😊'; // Default emoji
@@ -104,12 +105,6 @@ class _JournalWritingScreenState extends State<JournalWritingScreen> {
     setState(() {
       textColor = textColor == Colors.black ? Colors.blue : Colors.black;
       updateTextStyle();
-    });
-  }
-
-  void _selectEmoji(String emoji) {
-    setState(() {
-      selectedEmoji = emoji;
     });
   }
 

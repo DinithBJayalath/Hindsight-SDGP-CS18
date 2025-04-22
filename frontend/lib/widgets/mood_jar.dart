@@ -426,7 +426,8 @@ class MoodJarState extends State<MoodJar> with TickerProviderStateMixin {
       height: 40,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        gradient: jarLidGradient, // moved the creation of the gradient outside and made it a final variable for performance
+        gradient:
+            jarLidGradient, // moved the creation of the gradient outside and made it a final variable for performance
         boxShadow: [
           BoxShadow(
             color: Colors.grey.shade900,

@@ -19,7 +19,6 @@ class _JournalingScreenState extends State<JournalingScreen> {
   final _storage = const FlutterSecureStorage();
   late JournalProvider _journalProvider;
   List<Map<String, String>> _journalEntries = [];
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -108,52 +107,6 @@ class _JournalingScreenState extends State<JournalingScreen> {
     setState(() {
       _journalEntries.removeAt(index); // Removes entry at the specified index
     });
-  }
-
-  // Show confirmation dialog before deleting
-  void _showDeleteConfirmationDialog(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "Are you sure you want to delete this entry?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: Text(
-                "Cancel",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 97, 210, 255),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                deleteJournalEntry(index); // Delete the entry
-                Navigator.pop(context); // Close the dialog
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Entry deleted')),
-                );
-              },
-              child: Text(
-                "Delete",
-                style: TextStyle(
-                  color: Color.fromARGB(255, 97, 210, 255),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override

@@ -627,21 +627,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          _buildSection(
-            'Appearance',
-            Icons.palette_outlined,
-            [
-              SwitchListTile(
-                title: const Text('Dark Mode'),
-                value: isDarkMode,
-                onChanged: (value) {
-                  _handleFieldChange(() {
-                    setState(() => isDarkMode = value);
-                  });
-                },
-              ),
-            ],
-          ),
+          // _buildSection(
+          //   'Appearance',
+          //   Icons.palette_outlined,
+          //   [
+          //     SwitchListTile(
+          //       title: const Text('Dark Mode'),
+          //       value: isDarkMode,
+          //       onChanged: (value) {
+          //         _handleFieldChange(() {
+          //           setState(() => isDarkMode = value);
+          //         });
+          //       },
+          //     ),
+          //   ],
+          // ),
           // _buildSection(
           //   'Privacy & Security',
           //   Icons.security_outlined,

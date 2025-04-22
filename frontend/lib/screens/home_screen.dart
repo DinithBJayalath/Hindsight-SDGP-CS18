@@ -9,7 +9,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'journaling_screen.dart';
 import '../widgets/custom_navigation_bar.dart';
 import '../widgets/mood_jar.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'profile_screen.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -147,14 +146,6 @@ class _HomeContentState extends State<HomeContent> {
   ];
   int _currentEmotionIndex = 0;
 
-  void _addTestEmoji() {
-    _moodJarKey.currentState
-        ?.addSpecificEmoji(_testEmotions[_currentEmotionIndex]);
-    setState(() {
-      _currentEmotionIndex = (_currentEmotionIndex + 1) % _testEmotions.length;
-    });
-  }
-
   void _navigateToProfile() async {
     final userInfo = await _authService.getUserProfile();
     if (userInfo.isNotEmpty) {
@@ -169,6 +160,17 @@ class _HomeContentState extends State<HomeContent> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to load user profile')),
       );
+    }
+  }
+
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 16) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
     }
   }
 
@@ -195,7 +197,7 @@ class _HomeContentState extends State<HomeContent> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Good Morning,',
+                            '${getGreeting()}',
                             style: TextStyle(
                               fontSize: 16,
                               color: const Color.fromARGB(255, 0, 0, 0),
@@ -436,74 +438,6 @@ class _HomeContentState extends State<HomeContent> {
   String _getEmojisForDate(DateTime date) {
     // Placeholder logic for getting emojis
     return "😊, 😢"; // Example emojis
-  }
-
-  Widget _buildMoodSelectionSection() {
-    final moods = [
-      {"name": "Awful", "color": const Color(0xFFB668D2), "emoji": "😫"},
-      {"name": "Bad", "color": const Color(0xFF6B88E8), "emoji": "😢"},
-      {"name": "Neutral", "color": const Color(0xFF5ECCE6), "emoji": "😐"},
-      {"name": "Good", "color": const Color(0xFF5ED48C), "emoji": "😊"},
-      {"name": "Great", "color": const Color(0xFFF87D7D), "emoji": "😄"},
-    ];
-
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 190, 230, 255),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: moods.map((mood) {
-          return GestureDetector(
-            onTap: () {
-              _moodJarKey.currentState
-                  ?.addSpecificEmoji((mood["name"] as String).toLowerCase());
-            },
-            child: Column(
-              children: [
-                SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: Center(
-                    child: Text(
-                      mood["emoji"] as String,
-                      style: TextStyle(
-                        fontSize: 36,
-                        shadows: [
-                          Shadow(
-                            color: (mood["color"] as Color).withOpacity(0.5),
-                            blurRadius: 10,
-                            offset: const Offset(0, 0),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  mood["name"] as String,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
   }
 }
 

@@ -148,3 +148,6 @@ algorithms/LLM_Analysis/tests/Emotions_dataset_distil_oai.json
 
 # Local vector index
 # algorithms/LLM_Analysis/tests/emotions_vector_store
+
+
+**/ephemeral/
